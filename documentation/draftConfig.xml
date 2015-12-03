@@ -1,0 +1,29 @@
+<GameConfig>
+	<BuildModes>
+		<Mode name="morph" />
+		<Mode name="busyBuild" />
+		<Mode name="nonBusyBuild" />
+	<BuildModes>
+
+	<Types>
+		<Type 
+			name="string"
+			mineral...costs="int"
+			supplyBonus="int"
+			blockingDependencyType="Type"
+			nonblockingDependencyType="Type"
+
+			buildMode="Mode"
+
+			energyMax="int"
+			energyStart="int"
+			>
+
+		<Actions>
+			<Action
+				energyCost="int"
+				target
+			/>
+
+		</Type>
+	</Types>
