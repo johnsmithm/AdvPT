@@ -1,56 +1,71 @@
+#ifndef _GAMEOBJECT_H_
+#define _GAMEOBJECT_H_
+
 #include <vector>
 
+class GameObject;
+
+
+enum class BuildType {
+    MORPH,
+    ACTIVE_BUILD,
+    INSTANTIATE
+};
+
+
 class GameObjectInstance {
-private:
-	static unsigned int maxID;//--???
-
-	unsigned int ID;
-	unsigned int energy;
-	unsigned int business;
-    bool MuleTarget;//??
-
-	GameObject type;
 public:
     bool hasEnergy(unsigned int val){
-      return val <= energy;
+        return (val <= energy);
     }
-    void UpdateEnergy(int val){ // val can be positive or negative
-      energy += val;
-    }    
+    
+    void updateEnergy(int val){ // val can be positive or negative
+        energy += val;
+    }
+    
+    bool isBusy() {
+        return (business == 0);
+    }
+
+private:
+    static unsigned int maxID;//--???
+
+    unsigned int ID;
+    unsigned int energy;
+    unsigned int business;
+    bool muleTarget;//??
+
+    GameObject* type;
 };
 
-class GameObject{
+
+class GameObject {
+public:
+    void addNewInstance();
+    
+    void removeInstance(GameObjectInstance instance);
+
 private:
-	unsigned int mineralCost;
-	unsigned int gasCost;
-        unsigned int buildTime;//
-        unsigned int suplyCost;//
-        unsigned int larvaCost;//?? bad aproach
-	unsigned int maxBusiness;
-	unsigned int maxEnergy;
-    
+    unsigned int mineralCost;
+    unsigned int gasCost;
+    unsigned int buildTime;//
+    unsigned int suplyCost;//
+    unsigned int larvaCost;//?? bad aproach
+    unsigned int maxBusiness;
+    unsigned int maxEnergy;
+
     std::string name;//how fast to find element by name
-    
+
     unsigned int blockedInstaces;//will block Instances from left to right
 
-	GameObject possibleProducers[];
-	GameObject dependencies[];
+    std::vector<GameObject> possibleProducers;
+    std::vector<GameObject> dependencies;
 
-	BuildType buildType;
+    BuildType buildType;
 
-	std::vector<GameObjectInstance> instanceID;
+    std::vector<GameObjectInstance> instances;
 
-public:
-	enum BuildType {
-		MORPH,
-		ACTIVE_BUILD,
-		INSTANTIATE
-	}
-    
-    void create(){
-    //read line from file
-    }
-
-	void addInstance();
-	void removeInstance();
 };
+
+
+#endif

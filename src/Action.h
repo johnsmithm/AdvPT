@@ -1,101 +1,95 @@
+#ifndef _ACTION_H_
+#define _ACTION_H_
+
+#include "GameObject.h"
+
 class Action {
 protected:
-	unsigned int finishTime;
+    unsigned int finishTime;
 
 public:
-	virtual bool canExecute() = 0;
-	virtual void start() = 0;
-	virtual void finish() = 0;
+    virtual bool canExecute() = 0;
+    virtual void start() = 0;
+    virtual void finish() = 0;
 };
+
 
 class BuildAction {
 private:
-	GameObject &objectToBuild;
-	GameObjectInstance &producingInstance;//need that larvae to be GameObjectInstance
+    GameObject &objectToBuild;
+    GameObjectInstance* producingInstance;//need that larvae to be GameObjectInstance
 public:
+
+    BuildAction(GameObject &objectToBuild)
+        : objectToBuild(objectToBuild), producingInstance(nullptr) {}
+
+    bool canExecute();
     
-    BuildAction(GameObject &objectToBuild_)
-        objectToBuild(objectToBuild_){}
+    void start();
     
-	bool canExecute() {
-        for(GameObject objectType : objectToBuild.possibleProducers)
-            for(GameObjectInstance object : objectType.InstaceID)
-                   if(object.notBussy() && Exist_resurses()){
-                          producingInstance = object;
-                          producingInstance.setBussy();
-                            return true;
-                     }
-    };
-	void start(){
-          if(objectToBuild.buildType==INSTANTIATE){
-              producingInstance.setFree();
-              //Eliminate that worker for that second from harving minerals or gas
-          }
-          if(race==Zerg && objectToBuild.morphFromLarvae()){
-          putNewLarvae();
-          }
-          CalculateFinishingTime();//checkMule
-    };
-    void finish(){
-        switch(objectToBuild.buildType){
-             case MORPH :  producingInstance.RemoveInstace();
-             case ACTIVE_BUILD :  producingInstance.setFree();
-        }        
-    };
+    void finish();
 };
 
-class BoostAction {//can a building be target again?
+
+/*class BoostAction {//can a building be target again?
 private:
-	GameObjectInstance &target;
+    GameObjectInstance &target;
     void start(){
          //check Target Actions, change finishing time
         CalculateFinishingTime();
     }
+    
     void finish(){
        target.unMarck();
     }
 };
 
+
 class CreateLarvaeHatcharyAction {//from eggs or from hatcharies??
 private:
-	GameObjectInstance &Hatchary;
+    GameObjectInstance &Hatchary;
     void finish(){
        ++NrLarvaue;
     }
 }
 
+
 class CreateLarvaeEggsAction {//from eggs or from hatcharies??
 private:
-	GameObjectInstance &Hatchary;
+    GameObjectInstance &Hatchary;
     void finish(){
-       NrLarvaue+=4;
+       NrLarvaue += 4;
     }
 }
 
+
 class MuleAction {
 private:
-   GameObject& CommandCenter_;
-   GameObject& OrbitalCommand_;
-   GameObjectInstance &target;    
-public:    
-    
-    MuleAction(GameObject& CommandCenter, GameObject& OrbitalCommand)
-        CommandCenter_(CommandCenter),OrbitalCommand_(OrbitalCommand){}//can be inatializated at the begining
-    
+   GameObject& commandCenter;
+   GameObject& orbitalCommand;
+   GameObjectInstance &target;
+public:
+
+    MuleAction(GameObject& commandCenter, GameObject& orbitalCommand)
+        commandCenter(commandCenter), orbitalCommand(orbitalCommand){}//can be inatializated at the begining
+
     bool canExecute(){//can be executed more time per second???
-        for(GameObjectInstace Command : CommandCenter_.instanceID)
+        for(GameObjectInstance command : commandCenter.instanceID)
                  if(Command.hasEnergy()){
-                    target = Command;
+                    target = command;
                     return true;
                  }
         //same for orbital
     }
     void start(){
-     target.UpdateEnergy(-50*1000);    
-     MuleIncrese = MineralRate * 4;  
-     CalculateFinishingTime();    
+     target.UpdateEnergy(-50*1000);
+     MuleIncrese = MineralRate * 4;
+     CalculateFinishingTime();
     }
     void finish(){
      MuleIncrese = 0;
     }
-};
+};*/
+
+
+#endif
