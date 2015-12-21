@@ -41,27 +41,32 @@ private:
 
 class GameObject {
 public:
+    GameObject(unsigned int mineralCost, unsigned int gasCost,
+               unsigned int buildTime, unsigned int supplyCost,
+               unsigned int supplyProvided, unsigned int maxEnergy,
+               unsigned int maxBusiness, BuildType buildType)
+        : mineralCost(mineralCost), gasCost(gasCost), buildTime(buildTime),
+          supplyCost(supplyCost), supplyProvided(supplyProvided),
+          maxEnergy(maxEnergy), maxBusiness(maxBusiness), buildType(buildType) {}
+
     void addNewInstance();
     
     void removeInstance(GameObjectInstance instance);
 
 private:
+    std::string name;//how fast to find element by name
     unsigned int mineralCost;
     unsigned int gasCost;
     unsigned int buildTime;//
-    unsigned int suplyCost;//
-    unsigned int larvaCost;//?? bad aproach
-    unsigned int maxBusiness;
+    unsigned int supplyCost;//
+    unsigned int supplyProvided;
+    //unsigned int larvaCost;//?? bad aproach
     unsigned int maxEnergy;
-
-    std::string name;//how fast to find element by name
-
-    unsigned int blockedInstaces;//will block Instances from left to right
-
-    std::vector<GameObject> possibleProducers;
-    std::vector<GameObject> dependencies;
-
+    unsigned int maxBusiness;
+    std::vector<GameObject*> possibleProducers;
+    std::vector<GameObject*> possibleDependencies;
     BuildType buildType;
+    //unsigned int blockedInstaces;//will block Instances from left to right
 
     std::vector<GameObjectInstance> instances;
 
