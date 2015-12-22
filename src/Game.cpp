@@ -1,16 +1,16 @@
 #include "Game.h"
 
 
-void Game::Game() {//can be done in constructor
-    currBuildListItem = buildList[0];
+Game::Game() {//can be done in constructor
+    currBuildListItem = &buildList[0];
     mineralsRate = 10;
     gasRate = 10;
 }
 
 
 void Game::timeStep() {
-    if (currBuildListItem == buildList.end())
-        stop();
+    //if ((*currBuildListItem) == buildList.back())
+    //    stop();
 
     //Add Resurces from previous second
     minerals += mineralsIncrease;
@@ -20,21 +20,21 @@ void Game::timeStep() {
     //increaseEnergy();
 
     //check runningAction
-    for (auto item : runningActions) {
-        if (item.isFinished){
-            item.finish();
-            item.erase();
+    for (Action& item : runningActions) {
+        if (/*item.isFinished*/true){
+            //item.finish();
+            //item.erase();
         } else {
-            item.updateTime();
+            //item.updateTime();
         }
     }
 
     //check buildList
-    if (currBuildListItem.canExecute()) {
-        currBuildListItem.start();
+    /*if (currBuildListItem->canExecute()) {
+        currBuildListItem->start();
         runningActions.push_back(currBuildListItem);
         currBuildListItem++;
-    }
+    }*/
 
     assignWorkers();
 

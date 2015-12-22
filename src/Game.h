@@ -15,6 +15,8 @@ public:
         ZERG
     };
 
+    Game();
+
     Race getRace() const {
         return currRace;
     }
@@ -56,7 +58,7 @@ private:
     std::vector<BuildAction> buildList;
     std::vector<GameObject> TechTree;
 
-    Action* currBuildListItem; //vector iterator
+    BuildAction* currBuildListItem; //vector iterator
     //GameObject * BuildingWithEnergy;
     Race currRace;
 

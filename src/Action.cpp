@@ -1,6 +1,6 @@
 #include "Action.h"
 
-bool BuildAction::canExecute() {
+/*bool BuildAction::canExecute() {
     for(GameObject objectType : objectToBuild.possibleProducers) {
         for(GameObjectInstance object : objectType.instances) {
             if(!object.isBusy() && ressourcesExist()){
@@ -32,4 +32,4 @@ void BuildAction::finish() {
     case BuildType::ACTIVE_BUILD :
         producingInstance.setFree();
     }
-}
+}*/

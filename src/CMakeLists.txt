@@ -19,5 +19,10 @@ configure_file (
 # so that we will find Config.h
 include_directories("${PROJECT_BINARY_DIR}")
 
+file(GLOB source_files
+    "*.h"
+    "*.cpp"
+)
+
 # add the executable
-add_executable(SC2BuildOptimize main.cpp)
+add_executable(SC2BuildOptimize ${source_files})

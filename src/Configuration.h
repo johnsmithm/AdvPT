@@ -11,17 +11,15 @@ class Configuration {
 public:
     Configuration() {}
 
-    void parseConfigFile(std::string filename);
-    
-    void parseBuildList(std::string filename);
+    void parseGameObjects(std::string filename);
 
-    std::vector<BuildAction> getGameObject(std::string name);
+    void parseBuildList(std::string filename, std::vector<BuildAction>& buildList);
 
 private:
     std::unordered_map<std::string, GameObject> protossMap;
     std::unordered_map<std::string, GameObject> zergMap;
     std::unordered_map<std::string, GameObject> terranMap;
-}
+};
 
 
 #endif
