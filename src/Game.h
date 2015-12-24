@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <string>
+#include <memory>
+#include "TechTree.h"
 #include "GameObject.h"
 #include "Action.h"
 
@@ -54,9 +56,9 @@ private:
     int mineralMiningWorkers = 0;
     int gasMiningWorkers = 0;
 
-    std::vector<Action> runningActions;
-    std::vector<BuildAction> buildList;
-    std::vector<GameObject> TechTree;
+	TechTree techTree;
+    std::vector<std::shared_ptr<Action>> runningActions;
+    std::vector<std::shared_ptr<BuildAction>> buildList;
 
     BuildAction* currBuildListItem; //vector iterator
     //GameObject * BuildingWithEnergy;

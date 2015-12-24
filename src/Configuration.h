@@ -3,22 +3,20 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include <unordered_map>
 #include "GameObject.h"
+#include "TechTree.h"
 #include "Action.h"
 
 class Configuration {
 public:
-    Configuration() {}
+    TechTree parseGameObjects(std::string filename);
 
-    void parseGameObjects(std::string filename);
-
-    void parseBuildList(std::string filename, std::vector<BuildAction>& buildList);
+    std::vector<std::shared_ptr<BuildAction>>
+    parseBuildList(std::string filename, TechTree& techTree);
 
 private:
-    std::unordered_map<std::string, GameObject> protossMap;
-    std::unordered_map<std::string, GameObject> zergMap;
-    std::unordered_map<std::string, GameObject> terranMap;
 };
 
 

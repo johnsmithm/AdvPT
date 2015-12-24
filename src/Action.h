@@ -14,13 +14,13 @@ public:
 };
 
 
-class BuildAction {
+class BuildAction : Action {
 private:
-    GameObject &objectToBuild;
-    GameObjectInstance* producingInstance;//need that larvae to be GameObjectInstance
+    GameObject* objectToBuild;
+    GameObjectInstance* producingInstance;
 public:
 
-    BuildAction(GameObject &objectToBuild)
+    BuildAction(GameObject* objectToBuild)
         : objectToBuild(objectToBuild), producingInstance(nullptr) {}
 
     bool canExecute();

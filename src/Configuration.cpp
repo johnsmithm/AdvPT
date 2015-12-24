@@ -19,7 +19,7 @@ std::vector<std::string> split(const std::string& str, char delimeter) {
 }
 
 
-void Configuration::parseGameObjects(std::string filename) {
+TechTree Configuration::parseGameObjects(std::string filename) {
     std::string line;
     std::ifstream fs(filename);
     if (fs.is_open()) {
@@ -33,9 +33,11 @@ void Configuration::parseGameObjects(std::string filename) {
     } else {
         throw "Cannot open file"; // TODO
     }
+    return TechTree(); // TODO
 }
 
-void Configuration::parseBuildList(std::string filename,
-                                   std::vector<BuildAction>& buildList) {
+
+std::vector<std::shared_ptr<BuildAction>>
+Configuration::parseBuildList(std::string filename, TechTree& techTree) {
 
 }

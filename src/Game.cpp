@@ -2,7 +2,7 @@
 
 
 Game::Game() {//can be done in constructor
-    currBuildListItem = &buildList[0];
+    currBuildListItem = buildList[0].get();
     mineralsRate = 10;
     gasRate = 10;
 }
@@ -20,7 +20,7 @@ void Game::timeStep() {
     //increaseEnergy();
 
     //check runningAction
-    for (Action& item : runningActions) {
+    for (auto item : runningActions) {
         if (/*item.isFinished*/true){
             //item.finish();
             //item.erase();
