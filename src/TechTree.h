@@ -1,6 +1,7 @@
 #ifndef _TECHTREE_H_
 #define _TECHTREE_H_
 
+#include <exception>
 #include <memory>
 #include <vector>
 #include <string>
@@ -14,6 +15,14 @@ enum class Race {
     ZERG
 };
 
+class TechTreeParsingException : public std::runtime_error {
+public:
+    TechTreeParsingException(const std::string &msg)
+        : std::runtime_error(msg){};
+
+    TechTreeParsingException(const std::string &msg, int line)
+        : std::runtime_error(msg + " on line " + std::to_string(line)){};
+};
 
 class TechTree {
 public:
