@@ -11,12 +11,6 @@
 class Game {
 public:
 
-    enum class Race {
-        TERRAN,
-        PROTOS,
-        ZERG
-    };
-
     Game();
 
     Race getRace() const {
