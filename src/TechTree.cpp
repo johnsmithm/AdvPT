@@ -1,9 +1,11 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 #include "TechTree.h"
+#include "GameObject.h"
 
 
 static const char DELIMETER    = ',';
@@ -14,7 +16,8 @@ static const char SUBDELIMITER = '/';
  *
  * @param str the string to split
  * @param delimiter the character to split at
- * @param func if specified, apply this function to the result tokens before returning them
+ * @param func if specified, store this function's result instead of the result tokens.
+ *             it will be passed the result tokens one by one
  *
  * @return a vector of the result tokens between the delimiter
  */
@@ -90,8 +93,33 @@ void TechTree::parseFile(std::string filename) {
     } else {
         throw TechTreeParsingException("Cannot open file");
     }
+
+    for(auto go : gameObjects){
+        try{
+            (*go).resolveNames(*this);
+        }catch(std::out_of_range){
+            throw TechTreeParsingException("Invalid reference");
+        }
+    }
 }
 
+/** @brief gets a GameObject by its name
+ *
+ * @param name the name of the game object to get
+ *
+ * @throw out_of_range if no GameObject with this name exists
+ *
+ * @return a reference to the object corresponding to this name
+ */
+ std::shared_ptr<GameObject> TechTree::getGameObject(const std::string name){
+    for(std::shared_ptr<GameObject> &go : gameObjects){
+        if((*go).name == name){
+            return go;
+        }
+    }
+
+    throw std::out_of_range("no game object with this name");
+ }
 
 /*BuildList TechTree::readBuildList(std::string filename) {
 

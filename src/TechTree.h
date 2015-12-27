@@ -6,9 +6,9 @@
 #include <string>
 #include <vector>
 
-#include "GameObject.h"
-#include "BuildList.h"
+class TechTree;
 
+#include "BuildList.h"
 
 enum class Race {
     TERRAN,
@@ -41,6 +41,8 @@ public:
      * Read BuildList from file using this TechTree
      */
     BuildList readBuildList(std::string filename);
+
+    std::shared_ptr<GameObject> getGameObject(const std::string name);
 
 private:
     std::vector<std::shared_ptr<GameObject>> gameObjects;
