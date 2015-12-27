@@ -21,12 +21,12 @@ public:
      * Creates an empty TechTree
      */
     TechTree() {}
-    
+
     /**
      * Parse TechTree from csv-File
      */
     void parseFile(std::string filename);
-    
+
     /**
      * Read BuildList from file using this TechTree
      */

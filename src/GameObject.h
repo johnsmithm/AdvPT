@@ -19,11 +19,11 @@ public:
     bool hasEnergy(unsigned int val){
         return (val <= energy);
     }
-    
+
     void updateEnergy(int val){ // val can be positive or negative
         energy += val;
     }
-    
+
     bool isBusy() {
         return (business == 0);
     }
@@ -51,7 +51,7 @@ public:
           maxEnergy(maxEnergy), maxBusiness(maxBusiness), buildType(buildType) {}
 
     void addNewInstance();
-    
+
     void removeInstance(GameObjectInstance instance);
 
 private:

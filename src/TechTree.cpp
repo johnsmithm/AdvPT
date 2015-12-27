@@ -37,5 +37,5 @@ void TechTree::parseFile(std::string filename) {
 
 
 /*BuildList TechTree::readBuildList(std::string filename) {
-    
+
 }*/

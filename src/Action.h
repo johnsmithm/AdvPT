@@ -24,9 +24,9 @@ public:
         : objectToBuild(objectToBuild), producingInstance(nullptr) {}
 
     bool canExecute();
-    
+
     void start();
-    
+
     void finish();
 };
 
@@ -38,7 +38,7 @@ private:
          //check Target Actions, change finishing time
         CalculateFinishingTime();
     }
-    
+
     void finish(){
        target.unMarck();
     }

@@ -20,7 +20,7 @@ public:
     void timeStep();
 
     void readConfiguration();
-    
+
     void readBuildList();
 
     void printOutput();
