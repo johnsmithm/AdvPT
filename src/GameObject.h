@@ -16,17 +16,9 @@ enum class BuildType {
 
 class GameObjectInstance {
 public:
-    bool hasEnergy(unsigned int val){
-        return (val <= energy);
-    }
-
-    void updateEnergy(int val){ // val can be positive or negative
-        energy += val;
-    }
-
-    bool isBusy() {
-        return (business == 0);
-    }
+    bool hasEnergy(unsigned int val);
+    bool isBusy();
+    void updateEnergy(int val);
 
 private:
     static unsigned int maxID;//--???
