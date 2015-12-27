@@ -3,15 +3,16 @@
 
 #include <exception>
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
+
 #include "GameObject.h"
 #include "BuildList.h"
 
 
 enum class Race {
     TERRAN,
-    PROTOS,
+    PROTOSS,
     ZERG
 };
 

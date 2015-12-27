@@ -34,13 +34,18 @@ private:
 
 class GameObject {
 public:
-    GameObject(unsigned int mineralCost, unsigned int gasCost,
-               unsigned int buildTime, unsigned int supplyCost,
-               unsigned int supplyProvided, unsigned int maxEnergy,
-               unsigned int maxBusiness, BuildType buildType)
-        : mineralCost(mineralCost), gasCost(gasCost), buildTime(buildTime),
+    GameObject(std::string name,
+               unsigned int mineralCost, unsigned int gasCost,
+               unsigned int buildTime,
+               unsigned int supplyCost, unsigned int supplyProvided,
+               unsigned int startEnergy, unsigned int maxEnergy,
+               unsigned int maxBusiness,
+               std::vector<std::string> producers,
+               std::vector<std::string> dependencies)
+        : name(name), mineralCost(mineralCost), gasCost(gasCost), buildTime(buildTime),
           supplyCost(supplyCost), supplyProvided(supplyProvided),
-          maxEnergy(maxEnergy), maxBusiness(maxBusiness), buildType(buildType) {}
+          startEnergy(startEnergy), maxEnergy(maxEnergy), maxBusiness(maxBusiness),
+          producers(producers), dependencies(dependencies) {}
 
     void addNewInstance();
 
@@ -50,14 +55,17 @@ private:
     std::string name;//how fast to find element by name
     unsigned int mineralCost;
     unsigned int gasCost;
-    unsigned int buildTime;//
-    unsigned int supplyCost;//
+    unsigned int buildTime;
+    unsigned int supplyCost;
     unsigned int supplyProvided;
     //unsigned int larvaCost;//?? bad aproach
+    unsigned int startEnergy;
     unsigned int maxEnergy;
     unsigned int maxBusiness;
-    std::vector<GameObject*> possibleProducers;
-    std::vector<GameObject*> possibleDependencies;
+
+    std::vector<std::string> producers;
+    std::vector<std::string> dependencies;
+
     BuildType buildType;
     //unsigned int blockedInstaces;//will block Instances from left to right
 
