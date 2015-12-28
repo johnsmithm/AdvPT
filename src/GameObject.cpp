@@ -12,7 +12,7 @@ static const char SUBDELIMITER = '/';
 
 
 bool GameObjectInstance::isBusy() {
-    return (business == 0);
+    return business < type.maxBusiness;
 }
 
 bool GameObjectInstance::hasEnergy(unsigned int val){

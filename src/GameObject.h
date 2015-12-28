@@ -51,6 +51,8 @@ private:
 
 
 class GameObject {
+friend class GameObjectInstance;
+
 public:
     GameObject(std::string name,
                unsigned int mineralCost, unsigned int gasCost,
