@@ -3,8 +3,10 @@
 #include "GameObject.h"
 #include "util.h"
 
+using namespace std;
+
 unsigned int GameObjectInstance::maxID = 0;
-std::vector<std::shared_ptr<GameObject>> GameObject::gameObjects;
+vector<shared_ptr<GameObject>> GameObject::gameObjects;
 
 static const char DELIMETER    = ',';
 static const char SUBDELIMITER = '/';
@@ -51,28 +53,28 @@ void GameObject::resolveNames(){
  *
  * @param filename the file to parse
  */
-void GameObject::parseFile(std::string filename) {
-    std::string line;
-    std::ifstream fs(filename);
+void GameObject::parseFile(string filename) {
+    string line;
+    ifstream fs(filename);
     unsigned int linecounter = 0;
     if (fs.is_open()) {
-        while (std::getline(fs, line) && (line.length() > 0) && (line[0] != '#')) {
+        while (getline(fs, line) && (line.length() > 0) && (line[0] != '#')) {
             linecounter++;
-            std::vector<std::string> tokens = split(line, DELIMETER, trim);
+            vector<string> tokens = split(line, DELIMETER, trim);
 
             if (tokens.size() < 11)
                 throw TechTreeParsingException("Too few tokens", linecounter);
 
-            gameObjects.push_back(std::make_shared<GameObject>(GameObject(
+            gameObjects.push_back(make_shared<GameObject>(GameObject(
                 tokens[0], // name
-                std::stol(tokens[1]), // mineralCost
-                std::stol(tokens[2]), // gasCost
-                std::stol(tokens[3]), // buildTime
-                std::stol(tokens[4]), // supplyCost
-                std::stol(tokens[5]), // supplyProvided
+                stol(tokens[1]), // mineralCost
+                stol(tokens[2]), // gasCost
+                stol(tokens[3]), // buildTime
+                stol(tokens[4]), // supplyCost
+                stol(tokens[5]), // supplyProvided
 
-                std::stol(tokens[6]), // startEnergy
-                std::stol(tokens[7]), // maxEnergy
+                stol(tokens[6]), // startEnergy
+                stol(tokens[7]), // maxEnergy
 
                 -1, //TODO: maxBusiness
 
@@ -95,7 +97,7 @@ void GameObject::parseFile(std::string filename) {
     for(auto go : GameObject::gameObjects){
         try{
             (*go).resolveNames();
-        }catch(std::out_of_range){
+        }catch(out_of_range){
             throw TechTreeParsingException("Invalid reference");
         }
     }
@@ -109,12 +111,12 @@ void GameObject::parseFile(std::string filename) {
  *
  * @return a reference to the object corresponding to this name
  */
- std::shared_ptr<GameObject> GameObject::getGameObject(const std::string name){
-    for(std::shared_ptr<GameObject> &go : GameObject::gameObjects){
+ shared_ptr<GameObject> GameObject::getGameObject(const string name){
+    for(shared_ptr<GameObject> &go : GameObject::gameObjects){
         if((*go).name == name){
             return go;
         }
     }
 
-    throw std::out_of_range("no game object with this name");
+    throw out_of_range("no game object with this name");
  }
