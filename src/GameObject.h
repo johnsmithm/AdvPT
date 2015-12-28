@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 class GameObject;
@@ -98,7 +99,7 @@ private:
 
     std::vector<GameObjectInstance> instances;
 
-    static std::vector<std::shared_ptr<GameObject>> gameObjects;
+    static std::unordered_map<std::string, std::shared_ptr<GameObject>> gameObjects;
 };
 
 

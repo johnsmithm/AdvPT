@@ -6,7 +6,7 @@
 using namespace std;
 
 unsigned int GameObjectInstance::maxID = 0;
-vector<shared_ptr<GameObject>> GameObject::gameObjects;
+unordered_map<string, shared_ptr<GameObject>> GameObject::gameObjects;
 
 static const char DELIMETER    = ',';
 static const char SUBDELIMITER = '/';
@@ -65,7 +65,7 @@ void GameObject::parseFile(string filename) {
             if (tokens.size() < 11)
                 throw TechTreeParsingException("Too few tokens", linecounter);
 
-            gameObjects.push_back(make_shared<GameObject>(GameObject(
+            gameObjects[tokens[0]] = (make_shared<GameObject>(GameObject(
                 tokens[0], // name
                 stol(tokens[1]), // mineralCost
                 stol(tokens[2]), // gasCost
@@ -94,9 +94,9 @@ void GameObject::parseFile(string filename) {
         throw TechTreeParsingException("Cannot open file");
     }
 
-    for(auto go : GameObject::gameObjects){
+    for(auto it : GameObject::gameObjects){
         try{
-            (*go).resolveNames();
+            (it.second)->resolveNames();
         }catch(out_of_range){
             throw TechTreeParsingException("Invalid reference");
         }
@@ -112,11 +112,5 @@ void GameObject::parseFile(string filename) {
  * @return a reference to the object corresponding to this name
  */
  shared_ptr<GameObject> GameObject::getGameObject(const string name){
-    for(shared_ptr<GameObject> &go : GameObject::gameObjects){
-        if((*go).name == name){
-            return go;
-        }
-    }
-
-    throw out_of_range("no game object with this name");
+    return GameObject::gameObjects.at(name);
  }
