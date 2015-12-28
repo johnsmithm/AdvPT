@@ -74,7 +74,7 @@ public:
     void resolveNames();
 
     static void parseFile(std::string filename);
-    static std::shared_ptr<GameObject> getGameObject(const std::string name);
+    static std::shared_ptr<GameObject>& getGameObject(const std::string name);
 
 private:
     std::string name;//how fast to find element by name

@@ -51,6 +51,8 @@ void GameObject::resolveNames(){
 
 /** @brief builds the techtree from a CSV file
  *
+ * @throw TechTreeParsingException if the csv file could not be parsed
+ *
  * @param filename the file to parse
  */
 void GameObject::parseFile(string filename) {
@@ -109,8 +111,8 @@ void GameObject::parseFile(string filename) {
  *
  * @throw out_of_range if no GameObject with this name exists
  *
- * @return a reference to the object corresponding to this name
+ * @return a reference to the shared pointer to the GameObject corresponding to this name
  */
- shared_ptr<GameObject> GameObject::getGameObject(const string name){
+ shared_ptr<GameObject>& GameObject::getGameObject(const string name){
     return GameObject::gameObjects.at(name);
  }
