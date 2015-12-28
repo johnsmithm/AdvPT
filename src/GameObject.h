@@ -7,12 +7,25 @@
 
 class GameObject;
 
-#include "TechTree.h"
-
 enum class BuildType {
     MORPH,
     ACTIVE_BUILD,
     INSTANTIATE
+};
+
+enum class Race {
+    TERRAN,
+    PROTOSS,
+    ZERG
+};
+
+class TechTreeParsingException : public std::runtime_error {
+public:
+    TechTreeParsingException(const std::string &msg)
+        : std::runtime_error(msg){};
+
+    TechTreeParsingException(const std::string &msg, int line)
+        : std::runtime_error(msg + " on line " + std::to_string(line)){};
 };
 
 
@@ -55,10 +68,13 @@ public:
     void addNewInstance();
     void removeInstance(GameObjectInstance instance);
 
-    void resolveNames(TechTree tt);
+    void resolveNames();
 
-    std::string name;//how fast to find element by name
+    static void parseFile(std::string filename);
+    static std::shared_ptr<GameObject> getGameObject(const std::string name);
+
 private:
+    std::string name;//how fast to find element by name
     unsigned int mineralCost;
     unsigned int gasCost;
     unsigned int buildTime;
@@ -80,6 +96,7 @@ private:
 
     std::vector<GameObjectInstance> instances;
 
+    static std::vector<std::shared_ptr<GameObject>> gameObjects;
 };
 
 
