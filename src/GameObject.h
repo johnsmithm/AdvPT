@@ -3,6 +3,8 @@
 
 #include <memory>
 #include <string>
+#include <sstream>
+#include <fstream>
 #include <unordered_map>
 #include <vector>
 
@@ -74,6 +76,8 @@ public:
     void resolveNames();
 
     static void parseFile(std::string filename);
+    static void parseString(std::string input);
+    static void parseStream(std::istream &inputStream);
     static std::shared_ptr<GameObject>& getGameObject(const std::string name);
 
 private:

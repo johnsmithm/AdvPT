@@ -7,7 +7,7 @@
 using namespace std;
 
 vector<string> split(const string& str, char delimeter, string func (const string &)) {
-    stringstream ss(str);
+    stringstream ss(str+delimeter);
     string token;
     vector<string> tokens;
     while (getline(ss, token, delimeter)) {
