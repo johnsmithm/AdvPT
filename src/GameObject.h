@@ -91,9 +91,6 @@ private:
     std::vector<std::string> producerNames;
     std::vector<std::string> dependencyNames;
 
-    std::vector<std::shared_ptr<GameObject>> producers = {nullptr}; //producers[0]!=nullptr can be asserted
-    std::vector<std::shared_ptr<GameObject>> dependencies = {nullptr};
-
     BuildType buildType;
     //unsigned int blockedInstaces;//will block Instances from left to right
 

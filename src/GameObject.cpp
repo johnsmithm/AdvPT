@@ -30,25 +30,6 @@ void GameObject::addNewInstance(){
 }
 
 
-/** @brief resolves the GameObjects of this Object's dependencies and producers by their name
- *
- *  Upon initialization of this Object not all dependencies and producer GameObjects might
- *  have been instanciated yet. Thus, only their names can be stored. After all GameObjects have
- *  been created, they can be resolved and stored using this function. This is mandatory before
- *  the object can be used! Resolving on startup instead of on use increases performance.
- *
- */
-void GameObject::resolveNames(){
-    producers.clear();
-    for(auto pn : producerNames)
-        producers.push_back(getGameObject(pn));
-
-    dependencies.clear();
-    for(auto dn : dependencyNames)
-        dependencies.push_back(getGameObject(dn));
-}
-
-
 /** @brief builds the techtree from a CSV file
  *
  * @throw TechTreeParsingException if the csv file could not be parsed
@@ -94,14 +75,6 @@ void GameObject::parseFile(string filename) {
         fs.close();
     } else {
         throw TechTreeParsingException("Cannot open file");
-    }
-
-    for(auto it : GameObject::gameObjects){
-        try{
-            (it.second)->resolveNames();
-        }catch(out_of_range){
-            throw TechTreeParsingException("Invalid reference");
-        }
     }
 }
 
