@@ -4,8 +4,16 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <istream>
 #include "GameObject.h"
 #include "Action.h"
+
+class SimulationException : public std::runtime_error {
+public:
+    SimulationException(const std::string &msg)
+        : std::runtime_error(msg){};
+};
+
 
 class Game {
 public:
@@ -20,7 +28,7 @@ public:
 
     void readConfiguration();
 
-    void readBuildList();
+    void readBuildList(std::string filename);
 
     void printOutput();
 
@@ -55,6 +63,8 @@ private:
     BuildAction* currBuildListItem; //vector iterator
     //GameObject * BuildingWithEnergy;
     Race currRace;
+
+    void readBuildList(std::istream &input);
 
     //std::string Output;
 };

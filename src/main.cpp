@@ -75,6 +75,13 @@ int main(int argc, char **argv){
         GameObject::parseString(defaultTechTree);
     }
 
+    Game g;
+    try{
+        g.readBuildList(buildListFilename);
+    }catch(const SimulationException &e){
+        cerr << e.what() << endl;
+    }
+
     //read config file
     //read buildlist
     //run simulation

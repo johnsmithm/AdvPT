@@ -1,6 +1,8 @@
 #ifndef _ACTION_H_
 #define _ACTION_H_
 
+#include <memory>
+
 #include "GameObject.h"
 
 class Action {
@@ -16,18 +18,18 @@ public:
 
 class BuildAction : Action {
 private:
-    GameObject* objectToBuild;
+    std::shared_ptr<GameObject>& objectToBuild;
     GameObjectInstance* producingInstance;
 public:
 
-    BuildAction(GameObject* objectToBuild)
+    BuildAction(std::shared_ptr<GameObject>& objectToBuild)
         : objectToBuild(objectToBuild), producingInstance(nullptr) {}
 
-    bool canExecute();
+    bool canExecute(){};
 
-    void start();
+    void start(){};
 
-    void finish();
+    void finish(){};
 };
 
 

@@ -1,8 +1,14 @@
+#include <iostream>
+#include <fstream>
+#include <memory>
+
+#include "Action.h"
 #include "Game.h"
 
+using namespace std;
 
 Game::Game() {//can be done in constructor
-    currBuildListItem = buildList[0].get();
+    // currBuildListItem = buildList[0].get(); //how can this ever be done in the constructor?!
     mineralsRate = 10;
     gasRate = 10;
 }
@@ -50,10 +56,34 @@ void Game::readConfiguration(){
 }
 
 
-void Game::readBuildList(){
-   //read name of item to build
-   //find GameObject from techtree
-   //construct Action
+void Game::readBuildList(string filename){
+    if(filename == "-"){
+        readBuildList(cin);
+    }else{
+        ifstream input(filename);
+        if (input.is_open()) {
+            readBuildList(input);
+            input.close();
+        } else {
+            cerr << "Cannot open file" << endl;
+            exit(1);
+        }
+    }
+
+}
+
+void Game::readBuildList(istream &input){
+    string line;
+    int linecounter = 0;
+    while(getline(input, line)){
+        linecounter++;
+        try{
+            buildList.push_back(make_shared<BuildAction>(BuildAction(GameObject::getGameObject(line))));
+            //TODO: check correct race?
+        }catch(const out_of_range& e){
+            throw SimulationException("Invalid build list: Unknown unit \"" + line + "\" on line " + to_string(linecounter));
+        }
+    }
 }
 
 
