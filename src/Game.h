@@ -5,8 +5,13 @@
 #include <string>
 #include <memory>
 #include <istream>
+
 #include "GameObject.h"
 #include "Action.h"
+
+//forward declare classes to fix cyclic dependencies
+class Action;
+class BuildAction;
 
 class SimulationException : public std::runtime_error {
 public:
@@ -23,6 +28,11 @@ public:
     Race getRace() const {
         return currRace;
     }
+
+    int getMineralAmount(){return minerals;}
+    int getGasAmount(){return gas;}
+    int getSupplyAmount(){return supply;}
+    int getLarvaAmount(){return larva;}
 
     void timeStep();
 

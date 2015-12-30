@@ -1,18 +1,15 @@
 #include "Action.h"
 
-/*bool BuildAction::canExecute() {
-    for(GameObject objectType : objectToBuild.possibleProducers) {
-        for(GameObjectInstance object : objectType.instances) {
-            if(!object.isBusy() && ressourcesExist()){
-                producingInstance = object;
-                producingInstance.setBusy();
-                return true;
-            }
-        }
-    }
+bool BuildAction::canExecute() {
+    GameObjectInstance *producer;
+    return game.getGasAmount() >= objectToBuild->getGasCost() &&
+            game.getMineralAmount() >= objectToBuild->getMineralCost() &&
+            game.getSupplyAmount() >= objectToBuild->getSupplyCost() &&
+            objectToBuild->areDependenciesMet() &&
+            objectToBuild->getPossibleProducer(producer);
 }
 
-
+/*
 void BuildAction::start() {
     if(objectToBuild.buildType==INSTANTIATE){
         producingInstance.setFree();

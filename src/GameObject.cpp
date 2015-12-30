@@ -118,3 +118,34 @@ void GameObject::parseStream(istream &inputStream) {
  shared_ptr<GameObject>& GameObject::getGameObject(const string name){
     return GameObject::gameObjects.at(name);
  }
+
+/** @brief gets a possible producer instance for this GameObject type.
+ *  The producer is guaranteed to be not too busy (i.e. it can produce this object)
+ *  and be a viable producer (i.e. it is allowed to produce this object)
+ *
+ *  @param result a reference to an object to write the possible producer to
+ *
+ *  @return true if a producer was found, false if there is no available producer
+ */
+bool GameObject::getPossibleProducer(GameObjectInstance* result){
+    for(string producerName : producerNames){
+        auto producer = getGameObject(producerName);
+        for(GameObjectInstance goi : producer->instances){
+            if(!goi.isBusy()){
+                result = &goi;
+                return true;
+            }
+        }
+    }
+    result = NULL;
+    return false;
+}
+
+bool GameObject::areDependenciesMet(){
+    for(string dependencyName : dependencyNames){
+        if(getGameObject(dependencyName)->instances.size() == 0){
+            return false;
+        }
+    }
+    return true;
+}

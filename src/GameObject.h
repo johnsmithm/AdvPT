@@ -35,7 +35,7 @@ public:
 class GameObjectInstance {
 public:
     GameObjectInstance(unsigned int energy, GameObject &type)
-      : ID(maxID++), energy(energy), business(0), type(type){};
+      : ID(++maxID), energy(energy), business(0), type(type){};
 
     bool hasEnergy(unsigned int val);
     bool isBusy();
@@ -74,6 +74,13 @@ public:
     void removeInstance(GameObjectInstance instance);
 
     void resolveNames();
+
+    bool areDependenciesMet();
+    bool getPossibleProducer(GameObjectInstance* result);
+
+    bool getMineralCost(){return mineralCost;}
+    bool getGasCost(){return gasCost;}
+    bool getSupplyCost(){return supplyCost;}
 
     static void parseFile(std::string filename);
     static void parseString(std::string input);

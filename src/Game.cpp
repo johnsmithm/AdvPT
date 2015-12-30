@@ -78,7 +78,7 @@ void Game::readBuildList(istream &input){
     while(getline(input, line)){
         linecounter++;
         try{
-            buildList.push_back(make_shared<BuildAction>(BuildAction(GameObject::getGameObject(line))));
+            buildList.push_back(make_shared<BuildAction>(BuildAction(*this, GameObject::getGameObject(line))));
             //TODO: check correct race?
         }catch(const out_of_range& e){
             throw SimulationException("Invalid build list: Unknown unit \"" + line + "\" on line " + to_string(linecounter));
