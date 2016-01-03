@@ -35,7 +35,8 @@ public:
 class GameObjectInstance {
 public:
     GameObjectInstance(unsigned int energy, GameObject &type)
-      : ID(maxID++), energy(energy), business(0), type(type){};
+      : ID(maxID++), energy(energy), business(0), type(type),
+        boostTarget (false) {};
 
     bool hasEnergy(unsigned int val);
     bool isBusy();
@@ -47,7 +48,7 @@ private:
     const unsigned int ID;
     unsigned int energy;
     unsigned int business;
-    bool muleTarget;//??
+    bool boostTarget;
 
     GameObject &type;
 };
@@ -81,13 +82,12 @@ public:
     static std::shared_ptr<GameObject>& getGameObject(const std::string name);
 
 private:
-    std::string name;//how fast to find element by name
+    std::string name;
     unsigned int mineralCost;
     unsigned int gasCost;
     unsigned int buildTime;
     unsigned int supplyCost;
     unsigned int supplyProvided;
-    //unsigned int larvaCost;//?? bad aproach
     unsigned int startEnergy;
     unsigned int maxEnergy;
     unsigned int maxBusiness;
