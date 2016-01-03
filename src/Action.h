@@ -25,11 +25,11 @@ public:
     BuildAction(std::shared_ptr<GameObject>& objectToBuild)
         : objectToBuild(objectToBuild), producingInstance(nullptr) {}
 
-    bool canExecute(){};
+    bool canExecute() { return false; };
 
-    void start(){};
+    void start() {};
 
-    void finish(){};
+    void finish() {};
 };
 
 
