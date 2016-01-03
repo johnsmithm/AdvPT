@@ -1,6 +1,7 @@
 #ifndef _GAMEOBJECT_H_
 #define _GAMEOBJECT_H_
 
+#include <list>
 #include <memory>
 #include <string>
 #include <sstream>
@@ -105,7 +106,7 @@ private:
     BuildType buildType;
     //unsigned int blockedInstaces;//will block Instances from left to right
 
-    std::vector<GameObjectInstance> instances;
+    std::list<GameObjectInstance> instances;
 
     static std::unordered_map<std::string, std::shared_ptr<GameObject>> gameObjects;
 };
