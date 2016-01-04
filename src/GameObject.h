@@ -9,7 +9,10 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Config.h"
+
 class GameObject;
+class Game;
 
 enum class BuildType {
     MORPH,
@@ -34,14 +37,29 @@ public:
 
 
 class GameObjectInstance {
+friend class GameObject;
 public:
     GameObjectInstance(unsigned int energy, GameObject &type)
-      : ID(maxID++), energy(energy), business(0), type(type),
-        boostTarget (false) {};
+      : ID(maxID++), energy(energy), business(0),
+        boostTarget (false), type(type) {};
 
+    void decreaseBusiness();
     bool hasEnergy(unsigned int val);
+    bool isBoostTarget(){return boostTarget;};
+
     bool isBusy();
+    void increaseEnergy();
+    void increaseBusiness();
     void updateEnergy(int val);
+
+    void setBoostTarget(bool isBoostTarget){
+        boostTarget = isBoostTarget;
+    }
+
+    //TODO: ask at the chair, why the fuck?!
+    bool operator==(const GameObjectInstance &other){
+        return ID==other.ID;
+    }
 
 private:
     static unsigned int maxID;
@@ -53,7 +71,6 @@ private:
 
     GameObject &type;
 };
-
 
 class GameObject {
 friend class GameObjectInstance;
@@ -73,21 +90,25 @@ public:
           producerNames(producerNames), dependencyNames(dependencyNames) {}
 
     void addNewInstance();
-    void removeInstance(GameObjectInstance instance);
+    void removeInstance(const GameObjectInstance instance, Game &game);
 
     void resolveNames();
 
     bool areDependenciesMet();
     bool getPossibleProducer(GameObjectInstance* result);
 
-    bool getMineralCost(){return mineralCost;}
-    bool getGasCost(){return gasCost;}
-    bool getSupplyCost(){return supplyCost;}
+    unsigned int getMineralCost(){return mineralCost;}
+    unsigned int getGasCost(){return gasCost;}
+    unsigned int getSupplyCost(){return supplyCost;}
+    unsigned int getBuildTime(){return buildTime;};
+    BuildType getBuildType(){return buildType;};
 
     static void parseFile(std::string filename);
     static void parseString(std::string input);
     static void parseStream(std::istream &inputStream);
     static std::shared_ptr<GameObject>& getGameObject(const std::string name);
+    static void increaseEnergy(int amount=DEFAULT_ENERGY_INCREASE);
+
 
 private:
     std::string name;

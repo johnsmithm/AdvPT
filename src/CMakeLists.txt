@@ -9,6 +9,8 @@ set (VERSION_MAJOR 0)
 set (VERSION_MINOR 1)
 set (BINARY_NAME SC2BuildOptimize)
 
+set (DEFAULT_ENERGY_INCREASE 5625)
+
 # configure a header file to pass some of the CMake settings
 # to the source code
 configure_file (

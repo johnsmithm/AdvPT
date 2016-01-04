@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "GameObject.h"
+#include "Game.h"
 #include "util.h"
 
 using namespace std;
@@ -15,12 +16,20 @@ static const char SUBDELIMITER = '/';
 
 
 
+void GameObjectInstance::decreaseBusiness(){
+    business--;
+}
+
 bool GameObjectInstance::isBusy() {
     return business < type.maxBusiness;
 }
 
 bool GameObjectInstance::hasEnergy(unsigned int val){
     return (val <= energy);
+}
+
+void GameObjectInstance::increaseBusiness(){
+    business++;
 }
 
 void GameObjectInstance::updateEnergy(int val){ // val can be positive or negative
@@ -82,7 +91,7 @@ void GameObject::parseStream(istream &inputStream) {
             throw TechTreeParsingException("Too few tokens", linecounter);
 
         gameObjects[tokens[0]] = (make_shared<GameObject>(GameObject(
-            tokens[0], // name
+            tokens[0], // name;
             stol(tokens[1]), // mineralCost
             stol(tokens[2]), // gasCost
             stol(tokens[3]), // buildTime
@@ -105,6 +114,13 @@ void GameObject::parseStream(istream &inputStream) {
             ))
         );
     }
+}
+
+/** @brief removes an instance from the game, freeing its supply
+ */
+void GameObject::removeInstance(GameObjectInstance instance, Game &game){
+    instances.remove(instance);
+    game.setSupplyAmount(game.getSupplyAmount() - instance.type.supplyCost);
 }
 
 /** @brief gets a GameObject by its name
@@ -148,4 +164,12 @@ bool GameObject::areDependenciesMet(){
         }
     }
     return true;
+}
+
+void GameObject::increaseEnergy(int amount){
+    for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects){
+        for(GameObjectInstance goi : objectPointer.second->instances){
+            goi.energy+=amount;
+        }
+    }
 }

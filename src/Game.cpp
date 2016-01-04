@@ -8,45 +8,44 @@
 using namespace std;
 
 Game::Game() {//can be done in constructor
-    // currBuildListItem = buildList[0].get(); //how can this ever be done in the constructor?!
     mineralsRate = 10;
     gasRate = 10;
 }
 
 
-void Game::timeStep() {
-    //if ((*currBuildListItem) == buildList.back())
-    //    stop();
+bool Game::timeStep() {
+    if (currBuildListItem == buildList.end())
+        return true;
 
     //Add Resurces from previous second
     minerals += mineralsIncrease;
     gas += gasIncrease;
 
-    //increse energy
-    //increaseEnergy();
+    //increse energy on all buildings
+    GameObject::increaseEnergy();
 
-    //check runningAction
-    for (auto item : runningActions) {
-        if (/*item.isFinished*/true){
-            //item.finish();
-            //item.erase();
-        } else {
-            //item.updateTime();
+    // check runningAction
+    for (shared_ptr<Action> item : runningActions) {
+        if (item->timeStep()){
+            item->finish();
+            runningActions.remove(item);
         }
     }
 
     //check buildList
-    /*if (currBuildListItem->canExecute()) {
-        currBuildListItem->start();
-        runningActions.push_back(currBuildListItem);
+    if ((**currBuildListItem).canExecute()) {
+        (**currBuildListItem).start();
+        runningActions.push_back(*currBuildListItem);
         currBuildListItem++;
-    }*/
+    }
 
-    assignWorkers();
+    // assignWorkers();
 
     //write messages
 
     ++curTime;
+
+    return false;
 }
 
 
@@ -89,6 +88,14 @@ void Game::readBuildList(istream &input){
 
 void Game::printOutput(){
 //print String
+}
+
+void Game::simulate(){
+    assert(buildList.size()!=0);
+
+    currBuildListItem = buildList.begin();
+
+    while(timeStep()){};
 }
 
 

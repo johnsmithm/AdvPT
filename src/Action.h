@@ -3,11 +3,12 @@
 
 #include <memory>
 
+//forward declare classes to fix cyclic dependencies
+class Game;
+
 #include "Game.h"
 #include "GameObject.h"
 
-//forward declare classes to fix cyclic dependencies
-class Game;
 
 class Action {
 protected:
@@ -20,23 +21,29 @@ public:
     virtual bool canExecute() = 0;
     virtual void start() = 0;
     virtual void finish() = 0;
+    virtual bool timeStep() = 0;
 };
 
 
 class BuildAction : public Action {
-private:
-    std::shared_ptr<GameObject>& objectToBuild;
-    GameObjectInstance* producingInstance;
 public:
 
     BuildAction(Game& game, std::shared_ptr<GameObject>& objectToBuild)
-        : Action(game), objectToBuild(objectToBuild), producingInstance(nullptr) {}
+        : Action(game), objectToBuild(objectToBuild) {}
 
     bool canExecute();
 
-    void start() {};
+    void start();
 
-    void finish() {};
+    void finish();
+
+    bool timeStep();
+
+private:
+    std::shared_ptr<GameObject>& objectToBuild;
+    GameObjectInstance* producingInstance = nullptr;
+
+    int timeLeft;
 };
 
 

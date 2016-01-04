@@ -1,7 +1,12 @@
 #include "Action.h"
 
+/** @brief checks if an action can be executed
+ *
+ *  @return true if all dependencies for this action
+ *           are met (resources, buildings and units), else false
+ */
 bool BuildAction::canExecute() {
-    GameObjectInstance *producer;
+    GameObjectInstance *producer = nullptr;
     return game.getGasAmount() >= objectToBuild->getGasCost() &&
             game.getMineralAmount() >= objectToBuild->getMineralCost() &&
             game.getSupplyAmount() >= objectToBuild->getSupplyCost() &&
@@ -9,24 +14,43 @@ bool BuildAction::canExecute() {
             objectToBuild->getPossibleProducer(producer);
 }
 
-/*
-void BuildAction::start() {
-    if(objectToBuild.buildType==INSTANTIATE){
-        producingInstance.setFree();
-        //Eliminate that worker for that second from harving minerals or gas
+
+/** @brief starts the action
+ *  Increases business of dependencies, subtracts resources and removes
+ *  morphed units. Does not recheck canExecute! Do this before calling start.
+ */
+void BuildAction::start() {;
+    objectToBuild->getPossibleProducer(producingInstance);
+
+    if(objectToBuild->getBuildType() == BuildType::MORPH){
+        objectToBuild->removeInstance(*producingInstance, game);
+    }else if(objectToBuild->getBuildType() == BuildType::ACTIVE_BUILD){
+        producingInstance->increaseBusiness();
     }
-    if(race==Zerg && objectToBuild.morphFromLarvae()){
-        putNewLarva();
-    }
-    CalculateFinishingTime();//checkMule
+
+    timeLeft = objectToBuild->getBuildTime()*10;//timeLeft is thenths of a second, buildTime is seconds
+    game.setSupplyAmount(game.getSupplyAmount() - objectToBuild->getSupplyCost());
+    game.setGasAmount(game.getGasAmount() - objectToBuild->getGasCost());
+    game.setMineralAmount(game.getMineralAmount() - objectToBuild->getMineralCost());
 }
 
 
-void BuildAction::finish() {
-    switch(objectToBuild.buildType) {
-    case BuildType::MORPH :
-        producingInstance.removeInstance();
-    case BuildType::ACTIVE_BUILD :
-        producingInstance.setFree();
+/** @brief informs the action of a timestep and checks if it is finished
+ *
+ *  @return true if the action is finished, false if it still needs time
+ */
+bool BuildAction::timeStep(){
+    timeLeft -= producingInstance->isBoostTarget() ? 15 : 10;
+
+    return timeLeft >= 0;
+}
+
+/** @brief finishs the action
+ *  Saves the created instance, decreases the producing instance's busyness
+ */
+void BuildAction::finish(){
+    objectToBuild->addNewInstance();
+    if(objectToBuild->getBuildType() == BuildType::ACTIVE_BUILD){
+        producingInstance->decreaseBusiness();
     }
-}*/
+}

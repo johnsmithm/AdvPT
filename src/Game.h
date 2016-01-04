@@ -1,8 +1,10 @@
 #ifndef _GAME_H_
 #define _GAME_H_
 
+#include <cassert>
 #include <vector>
 #include <string>
+#include <list>
 #include <memory>
 #include <istream>
 
@@ -29,18 +31,21 @@ public:
         return currRace;
     }
 
-    int getMineralAmount(){return minerals;}
-    int getGasAmount(){return gas;}
-    int getSupplyAmount(){return supply;}
-    int getLarvaAmount(){return larva;}
+    unsigned int getMineralAmount(){return minerals;}
+    unsigned int getGasAmount(){return gas;}
+    unsigned int getSupplyAmount(){return supply;}
 
-    void timeStep();
+    void setMineralAmount(int amount){minerals = amount;}
+    void setGasAmount(int amount){gas = amount;}
+    void setSupplyAmount(int amount){supply = amount;}
 
     void readConfiguration();
 
     void readBuildList(std::string filename);
 
     void printOutput();
+
+    void simulate();
 
     //virtual void increaseEnergy() = 0;//{ for()item.increse() }??
 
@@ -49,10 +54,9 @@ public:
 private:
     int curTime = 0;
 
-    int minerals = 0;
-    int gas = 0;
-    int supply = 0;
-    int larva = 0;
+    unsigned int minerals = 0;
+    unsigned int gas = 0;
+    unsigned int supply = 0;
 
     int mineralsRate = 0;
     int gasRate = 0;
@@ -67,14 +71,15 @@ private:
     int mineralMiningWorkers = 0;
     int gasMiningWorkers = 0;
 
-    std::vector<std::shared_ptr<Action>> runningActions;
+    std::list<std::shared_ptr<Action>> runningActions;
     std::vector<std::shared_ptr<BuildAction>> buildList;
 
-    BuildAction* currBuildListItem; //vector iterator
+    std::vector<std::shared_ptr<BuildAction>>::iterator currBuildListItem; //vector iterator
     //GameObject * BuildingWithEnergy;
     Race currRace;
 
     void readBuildList(std::istream &input);
+    bool timeStep();
 
     //std::string Output;
 };
