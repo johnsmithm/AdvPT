@@ -105,5 +105,5 @@ barracks_with_tech_lab,50,25,25,0,0,0,0,terran,barracks , \n\
 starport_with_reactor,50,50,50,0,0,0,0,terran,starport , \n\
 starport_with_tech_lab,50,25,25,0,0,0,0,terran,starport , \n\
 factory_with_reactor,50,50,50,0,0,0,0,terran,factory , \n\
-factory_with_tech_lab,50,25,25,0,0,0,0,terran,factory , \n\
+factory_with_tech_lab,50,25,25,0,0,0,0,terran,factory , \
 ";

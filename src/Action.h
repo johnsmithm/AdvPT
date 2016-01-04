@@ -34,9 +34,9 @@ public:
 
     bool canExecute();
 
-    void start(){};
+    void start() {};
 
-    void finish(){};
+    void finish() {};
 };
 
 
