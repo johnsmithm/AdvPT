@@ -95,7 +95,7 @@ void Game::simulate(){
 
     currBuildListItem = buildList.begin();
 
-    while(timeStep()){};
+    while(!timeStep()){};
 }
 
 
