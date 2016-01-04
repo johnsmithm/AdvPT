@@ -41,7 +41,7 @@ void BuildAction::start() {;
 bool BuildAction::timeStep(){
     timeLeft -= producingInstance->isBoostTarget() ? 15 : 10;
 
-    return timeLeft >= 0;
+    return timeLeft <= 0;
 }
 
 /** @brief finishs the action

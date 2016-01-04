@@ -22,6 +22,7 @@ public:
     virtual void start() = 0;
     virtual void finish() = 0;
     virtual bool timeStep() = 0;
+    virtual std::string getObiectToBuildName() = 0;
 };
 
 
@@ -42,6 +43,8 @@ public:
     unsigned int getGasCost(){return objectToBuild->getGasCost();};
     unsigned int getSupplyCost(){return objectToBuild->getSupplyCost();};
     unsigned int getMineralCost(){return objectToBuild->getMineralCost();};
+    
+    std::string getObiectToBuildName(){ return objectToBuild->getName();};
 
 private:
     std::shared_ptr<GameObject>& objectToBuild;

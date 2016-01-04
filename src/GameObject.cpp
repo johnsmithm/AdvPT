@@ -21,7 +21,7 @@ void GameObjectInstance::decreaseBusiness(){
 }
 
 bool GameObjectInstance::isBusy() {
-    return business >= type.maxBusiness;
+    return (business >= type.maxBusiness);
 }
 
 bool GameObjectInstance::hasEnergy(unsigned int val){
@@ -40,6 +40,7 @@ void GameObject::addNewInstance(Game &game){
     instances.push_back(GameObjectInstance(maxEnergy, *this));
 
     game.setSupplyAmount(game.getSupplyAmount() + supplyProvided);
+    game.setTotalSupplyAmount(supplyProvided);
 }
 
 
@@ -102,16 +103,16 @@ void GameObject::parseStream(istream &inputStream) {
 
         gameObjects[tokens[0]] = make_shared<GameObject>(GameObject(
             tokens[0], // name;
-            stol(tokens[1]), // mineralCost
-            stol(tokens[2]), // gasCost
+            stol(tokens[1])*10000, // mineralCost
+            stol(tokens[2])*10000, // gasCost
             stol(tokens[3]), // buildTime
             stol(tokens[4]), // supplyCost
             stol(tokens[5]), // supplyProvided
 
-            stol(tokens[6]), // startEnergy
-            stol(tokens[7]), // maxEnergy
+            stol(tokens[6])*10000, // startEnergy
+            stol(tokens[7])*10000, // maxEnergy
 
-            -1, //TODO: maxBusiness
+            1, //TODO: maxBusiness
 
             //race, we don't need this (yet?)
             // tokens[8] == "terran" ? Race::TERRAN :
@@ -158,8 +159,10 @@ void GameObject::removeInstance(GameObjectInstance instance, Game &game){
 GameObjectInstance* GameObject::getPossibleProducer(){
     for(string producerName : producerNames){
         auto producer = getGameObject(producerName);
+       // cout<<producer->getName()<<" "<<producer->instances.size()<<"\n";
         for(GameObjectInstance &goi : producer->instances){
             if(!goi.isBusy()){
+              //cout<<goi.business<<" "<<goi.type.maxBusiness<<"\n";
                 return &goi;
             }
         }
@@ -185,8 +188,6 @@ unsigned int GameObject::getFreeWorkerCount(){
 bool GameObject::areDependenciesMet(){
     for(string dependencyName : dependencyNames){
 
-        cout << "checking dependencies" << dependencyName << endl;
-        continue;
         if(getGameObject(dependencyName)->instances.size() == 0){
             return false;
         }

@@ -85,7 +85,7 @@ int main(int argc, char **argv){
     }
 
     g.simulate();
-
+    g.printOutput();
     //read config file
     //read buildlist
     //run simulation

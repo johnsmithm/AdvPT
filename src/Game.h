@@ -37,7 +37,7 @@ public:
         go.addNewInstance(*this);
 
         GameObject::getGameObject("nexus")->addNewInstance(*this);
-        setMineralAmount(50);
+        setMineralAmount(50*10000);
     };
 
     Race getRace() const {
@@ -51,22 +51,29 @@ public:
     void setMineralAmount(int amount){minerals = amount;}
     void setGasAmount(int amount){gas = amount;}
     void setSupplyAmount(int amount){supply = amount;}
+    void setTotalSupplyAmount(int amount){totalSupply += amount;};
 
     void readConfiguration();
 
     void readBuildList(std::string filename);
 
     void printOutput();
+    
+    
 
     void simulate();
 
 
 private:
-    int curTime = 0;
+    int curTime = 1;
 
     unsigned int minerals = 0;
     unsigned int gas = 0;
     unsigned int supply = 0;
+    unsigned int totalSupply = 0;
+    
+    unsigned int gasMiningWorkers = 0;
+    unsigned int  mineralMiningWorkers = 6;
 
     const int mineralsRate = DEFAULT_MINERAL_INCREASE;
     const int gasRate = DEFAULT_GAS_INCREASE;
@@ -82,10 +89,11 @@ private:
     Race currRace;
 
     void readBuildList(std::istream &input);
+    void writeMessages(std::shared_ptr<Action> action, bool start);
     bool timeStep();
     void generateResources();
 
-    //std::string Output;
+    std::string output = "";
 };
 
 /*class ZergGame : Game {

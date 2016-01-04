@@ -66,7 +66,7 @@ private:
 
     const unsigned int ID;
     unsigned int energy;
-    unsigned int business;
+    unsigned int business = 0;
     bool boostTarget;
 
     GameObject &type;
@@ -103,6 +103,7 @@ public:
     unsigned int getSupplyCost(){return supplyCost;}
     unsigned int getBuildTime(){return buildTime;};
     BuildType getBuildType(){return buildType;};
+    std::string getName(){return name;};    
 
     static unsigned int getFreeWorkerCount();
     static void parseFile(std::string filename);
@@ -121,7 +122,7 @@ private:
     unsigned int supplyProvided;
     unsigned int startEnergy;
     unsigned int maxEnergy;
-    unsigned int maxBusiness;
+    unsigned int maxBusiness = 1;
 
     std::vector<std::string> producerNames;
     std::vector<std::string> dependencyNames;

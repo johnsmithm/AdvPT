@@ -3,35 +3,54 @@
 #include <fstream>
 #include <memory>
 
+#include <stdlib.h>
 #include "Action.h"
 #include "Game.h"
+
+//#include <json.h>
 
 using namespace std;
 
 
 bool Game::timeStep() {
-    if (currBuildListItem == buildList.end())
+    if (currBuildListItem == buildList.end() && runningActions.size() == 0) {
         return true;
+    }
+    
+    minerals += mineralMiningWorkers * mineralsRate;
+    gas += gasMiningWorkers * gasRate;
 
     //increase energy on all buildings
     GameObject::increaseEnergy(energyRate);
 
     // check runningAction
+    std::list<std::shared_ptr<Action>> toRemove;
     for (shared_ptr<Action> item : runningActions) {
         if (item->timeStep()){
             item->finish();
-            runningActions.remove(item);
+            writeMessages(item,false);
+            //runningActions.remove(item);
+            toRemove.push_back(item);
         }
+    }
+    for (shared_ptr<Action> item : toRemove) {
+      runningActions.remove(item);
     }
 
     //check buildList
-    if ((**currBuildListItem).canExecute()) {
-        (**currBuildListItem).start();
-        runningActions.push_back(*currBuildListItem);
-        currBuildListItem++;
+    if(currBuildListItem != buildList.end()) {
+      
+      if ((**currBuildListItem).canExecute()) { 
+          
+          (**currBuildListItem).start();
+          writeMessages(*currBuildListItem,true);
+          runningActions.push_back(*currBuildListItem);
+          currBuildListItem++;
+      }
+      
+      generateResources();
     }
 
-    generateResources();
 
     if(++curTime > 1000)
         throw SimulationException("Maximum timesteps exceeded");
@@ -39,6 +58,22 @@ bool Game::timeStep() {
     return false;
 }
 
+//For testing
+void Game::writeMessages(shared_ptr<Action> action, bool start){
+  cout<<"Time:"<<curTime<<"\n"
+      << "resourses{minerals :" << minerals / 10000
+      << ", vespene :" << gas / 10000 
+      << ", supply-used :" <<  (totalSupply-supply)
+      << ", supply :" << totalSupply << "}\n"
+      << "workers{minerals :" << mineralMiningWorkers
+      << ", vespene :" << gasMiningWorkers<< "}\n";          
+  if(start){
+    cout<<"start "<<action->getObiectToBuildName()<<"\n";
+  }
+  else {
+    cout<<"finish "<<action->getObiectToBuildName()<<"\n";
+  }
+}
 
 void Game::readConfiguration(){
     //read line
@@ -78,7 +113,7 @@ void Game::readBuildList(istream &input){
 
 
 void Game::printOutput(){
-//print String
+  cout<<output;
 }
 
 void Game::simulate(){
@@ -91,11 +126,14 @@ void Game::simulate(){
 
 
 void Game::generateResources() {
+    if(currBuildListItem == buildList.end()) {
+      return;
+    }
     int gasDifference =  (**currBuildListItem).getGasCost() - getGasAmount();
     int mineralDifference = (**currBuildListItem).getMineralCost() - getMineralAmount();
 
-    unsigned int gasMiningWorkers = 0;
-    unsigned int  mineralMiningWorkers = 0;
+    gasMiningWorkers = 0;
+    mineralMiningWorkers = 0;
     unsigned int freeWorkers = GameObject::getFreeWorkerCount();
 
     if (gasDifference > 0 && mineralDifference <= 0) {
@@ -107,9 +145,6 @@ void Game::generateResources() {
     } else {
        gasMiningWorkers = min(exploitedGeysers * 3, (unsigned int)((freeWorkers+1)/2));
        mineralMiningWorkers = freeWorkers - gasMiningWorkers;
-    }
-
-    minerals += mineralMiningWorkers * mineralsRate;
-    gas += gasMiningWorkers * gasRate;
+    }   
 }
 
