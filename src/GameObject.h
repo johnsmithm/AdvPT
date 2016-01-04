@@ -89,7 +89,7 @@ public:
           startEnergy(startEnergy), maxEnergy(maxEnergy), maxBusiness(maxBusiness),
           producerNames(producerNames), dependencyNames(dependencyNames) {}
 
-    void addNewInstance();
+    void addNewInstance(Game &game);
     void removeInstance(const GameObjectInstance instance, Game &game);
 
     void resolveNames();
@@ -103,6 +103,7 @@ public:
     unsigned int getBuildTime(){return buildTime;};
     BuildType getBuildType(){return buildType;};
 
+    static unsigned int getFreeWorkerCount();
     static void parseFile(std::string filename);
     static void parseString(std::string input);
     static void parseStream(std::istream &inputStream);

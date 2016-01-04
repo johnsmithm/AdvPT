@@ -36,8 +36,10 @@ void GameObjectInstance::updateEnergy(int val){ // val can be positive or negati
     energy += val;
 }
 
-void GameObject::addNewInstance(){
+void GameObject::addNewInstance(Game &game){
     instances.push_back(GameObjectInstance(maxEnergy, *this));
+
+    game.setSupplyAmount(game.getSupplyAmount() + supplyProvided);
 }
 
 
@@ -120,7 +122,7 @@ void GameObject::parseStream(istream &inputStream) {
  */
 void GameObject::removeInstance(GameObjectInstance instance, Game &game){
     instances.remove(instance);
-    game.setSupplyAmount(game.getSupplyAmount() - instance.type.supplyCost);
+    game.setSupplyAmount(game.getSupplyAmount() - instance.type.supplyCost - instance.type.supplyProvided);
 }
 
 /** @brief gets a GameObject by its name
@@ -155,6 +157,21 @@ bool GameObject::getPossibleProducer(GameObjectInstance* result){
     }
     result = NULL;
     return false;
+}
+
+unsigned int GameObject::getFreeWorkerCount(){
+    //TODO: Do this only for the current race, make string configurable
+    int freeWorkers = 0;
+    for(auto unit : getGameObject("probe")->instances)
+        if(!unit.isBusy())
+            freeWorkers++;
+    for(auto unit : getGameObject("drone")->instances)
+        if(!unit.isBusy())
+            freeWorkers++;
+    for(auto unit : getGameObject("scv")->instances)
+        if(!unit.isBusy())
+            freeWorkers++;
+    return freeWorkers;
 }
 
 bool GameObject::areDependenciesMet(){

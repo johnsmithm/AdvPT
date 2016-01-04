@@ -39,6 +39,10 @@ public:
 
     bool timeStep();
 
+    unsigned int getGasCost(){return objectToBuild->getGasCost();};
+    unsigned int getSupplyCost(){return objectToBuild->getSupplyCost();};
+    unsigned int getMineralCost(){return objectToBuild->getMineralCost();};
+
 private:
     std::shared_ptr<GameObject>& objectToBuild;
     GameObjectInstance* producingInstance = nullptr;

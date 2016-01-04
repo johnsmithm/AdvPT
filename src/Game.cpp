@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <fstream>
 #include <memory>
@@ -7,22 +8,13 @@
 
 using namespace std;
 
-Game::Game() {//can be done in constructor
-    mineralsRate = 10;
-    gasRate = 10;
-}
-
 
 bool Game::timeStep() {
     if (currBuildListItem == buildList.end())
         return true;
 
-    //Add Resurces from previous second
-    minerals += mineralsIncrease;
-    gas += gasIncrease;
-
-    //increse energy on all buildings
-    GameObject::increaseEnergy();
+    //increase energy on all buildings
+    GameObject::increaseEnergy(energyRate);
 
     // check runningAction
     for (shared_ptr<Action> item : runningActions) {
@@ -39,9 +31,7 @@ bool Game::timeStep() {
         currBuildListItem++;
     }
 
-    // assignWorkers();
-
-    //write messages
+    generateResources();
 
     ++curTime;
 
@@ -99,25 +89,26 @@ void Game::simulate(){
 }
 
 
-void Game::assignWorkers() {//naive
-    /*if (!needGas(currBuildListItem)) {
-        //All workers harv minerals
-        mineralMiningWorkers += freeWorkers + gasMiningWorkers;
+void Game::generateResources() {
+    int gasDifference =  (**currBuildListItem).getGasCost() - getGasAmount();
+    int mineralDifference = (**currBuildListItem).getMineralCost() - getMineralAmount();
+
+    unsigned int gasMiningWorkers = 0;
+    unsigned int  mineralMiningWorkers = 0;
+    unsigned int freeWorkers = GameObject::getFreeWorkerCount();
+
+    if (gasDifference > 0 && mineralDifference <= 0) {
+       gasMiningWorkers = min(exploitedGeysers * 3, freeWorkers);
+       mineralMiningWorkers = freeWorkers - gasMiningWorkers;
+    } else if (mineralDifference > 0 && gasDifference <= 0) {
+       mineralMiningWorkers = freeWorkers;
+       gasMiningWorkers = 0;
     } else {
-        //Maximum numbers of workers go to gas, others go to minerals
-        freeWorkers += mineralMiningWorkers + gasMiningWorkers;
-        if (exploitedGeysers * 3 <= freeWorkers) {
-            //we have more workers than Geysers need
-            gasMiningWorkers = exploitedGeysers * 3;
-            freeWorkers -= gasMiningWorkers;
-            mineralMiningWorkers = freeWorkers;
-        } else {
-            gasMiningWorkers = freeWorkers;
-            mineralMiningWorkers = 0;
-        }
+       gasMiningWorkers = min(exploitedGeysers * 3, (unsigned int)((freeWorkers+1)/2));
+       mineralMiningWorkers = freeWorkers - gasMiningWorkers;
     }
-    freeWorkers = 0;
-    mineralsIncrise = mineralMiningWorkers * mineralsRate + MuleIncrese;
-    gasIncrise = gasMiningWorkers * gasRate;*/
+
+    minerals += mineralMiningWorkers * mineralsRate;
+    gas += gasMiningWorkers * gasRate;
 }
 

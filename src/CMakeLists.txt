@@ -10,6 +10,8 @@ set (VERSION_MINOR 1)
 set (BINARY_NAME SC2BuildOptimize)
 
 set (DEFAULT_ENERGY_INCREASE 5625)
+set (DEFAULT_GAS_INCREASE 3500)
+set (DEFAULT_MINERAL_INCREASE 7000)
 
 # configure a header file to pass some of the CMake settings
 # to the source code

@@ -49,7 +49,7 @@ bool BuildAction::timeStep(){
  *  Saves the created instance, decreases the producing instance's busyness
  */
 void BuildAction::finish(){
-    objectToBuild->addNewInstance();
+    objectToBuild->addNewInstance(game);
     if(objectToBuild->getBuildType() == BuildType::ACTIVE_BUILD){
         producingInstance->decreaseBusiness();
     }

@@ -25,7 +25,7 @@ public:
 class Game {
 public:
 
-    Game();
+    Game(){};
 
     Race getRace() const {
         return currRace;
@@ -47,9 +47,6 @@ public:
 
     void simulate();
 
-    //virtual void increaseEnergy() = 0;//{ for()item.increse() }??
-
-    void assignWorkers();
 
 private:
     int curTime = 0;
@@ -58,18 +55,11 @@ private:
     unsigned int gas = 0;
     unsigned int supply = 0;
 
-    int mineralsRate = 0;
-    int gasRate = 0;
-    int energyRate = 0;
+    const int mineralsRate = DEFAULT_MINERAL_INCREASE;
+    const int gasRate = DEFAULT_GAS_INCREASE;
+    const int energyRate = DEFAULT_ENERGY_INCREASE;
 
-    int mineralsIncrease = 0;
-    int gasIncrease = 0;
-    int MuleIncrease = 0;
-
-    int exploitedGeysers = 0;
-    int freeWorkers = 0;
-    int mineralMiningWorkers = 0;
-    int gasMiningWorkers = 0;
+    unsigned int exploitedGeysers = 0;
 
     std::list<std::shared_ptr<Action>> runningActions;
     std::vector<std::shared_ptr<BuildAction>> buildList;
@@ -80,6 +70,7 @@ private:
 
     void readBuildList(std::istream &input);
     bool timeStep();
+    void generateResources();
 
     //std::string Output;
 };
