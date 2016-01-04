@@ -73,6 +73,7 @@ void Game::writeMessages(shared_ptr<Action> action, bool start){
   else {
     cout<<"finish "<<action->getObiectToBuildName()<<"\n";
   }
+  cout << endl;
 }
 
 void Game::readConfiguration(){

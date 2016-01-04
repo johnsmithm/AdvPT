@@ -39,7 +39,6 @@ void GameObjectInstance::updateEnergy(int val){ // val can be positive or negati
 void GameObject::addNewInstance(Game &game){
     instances.push_back(GameObjectInstance(maxEnergy, *this));
 
-    game.setUsedSupplyAmount(game.getUsedSupplyAmount() + supplyCost);
     game.setTotalSupplyAmount(game.getTotalSupplyAmount() + supplyProvided);
 }
 
