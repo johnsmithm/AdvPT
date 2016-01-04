@@ -8,7 +8,7 @@
 bool BuildAction::canExecute() {
     return game.getGasAmount() >= objectToBuild->getGasCost() &&
             game.getMineralAmount() >= objectToBuild->getMineralCost() &&
-            game.getSupplyAmount() >= objectToBuild->getSupplyCost() &&
+            game.getAvailableSupplyAmount() >= objectToBuild->getSupplyCost() &&
             objectToBuild->areDependenciesMet() &&
             objectToBuild->getPossibleProducer() != nullptr;
 }
@@ -28,7 +28,7 @@ void BuildAction::start() {;
     }
 
     timeLeft = objectToBuild->getBuildTime()*10;//timeLeft is thenths of a second, buildTime is seconds
-    game.setSupplyAmount(game.getSupplyAmount() - objectToBuild->getSupplyCost());
+    game.setUsedSupplyAmount(game.getUsedSupplyAmount() + objectToBuild->getSupplyCost());
     game.setGasAmount(game.getGasAmount() - objectToBuild->getGasCost());
     game.setMineralAmount(game.getMineralAmount() - objectToBuild->getMineralCost());
 }

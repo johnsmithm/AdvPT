@@ -63,7 +63,7 @@ void Game::writeMessages(shared_ptr<Action> action, bool start){
   cout<<"Time:"<<curTime<<"\n"
       << "resourses{minerals :" << minerals / 10000
       << ", vespene :" << gas / 10000 
-      << ", supply-used :" <<  (totalSupply-supply)
+      << ", supply-used :" <<  usedSupply
       << ", supply :" << totalSupply << "}\n"
       << "workers{minerals :" << mineralMiningWorkers
       << ", vespene :" << gasMiningWorkers<< "}\n";          

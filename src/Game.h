@@ -46,12 +46,14 @@ public:
 
     unsigned int getMineralAmount(){return minerals;}
     unsigned int getGasAmount(){return gas;}
-    unsigned int getSupplyAmount(){return supply;}
+    unsigned int getUsedSupplyAmount(){return usedSupply;}
+    unsigned int getTotalSupplyAmount(){return totalSupply;}
+    unsigned int getAvailableSupplyAmount(){return totalSupply-usedSupply;}
 
     void setMineralAmount(int amount){minerals = amount;}
     void setGasAmount(int amount){gas = amount;}
-    void setSupplyAmount(int amount){supply = amount;}
-    void setTotalSupplyAmount(int amount){totalSupply += amount;};
+    void setUsedSupplyAmount(int amount){usedSupply = amount;}
+    void setTotalSupplyAmount(int amount){totalSupply = amount;};
 
     void readConfiguration();
 
@@ -69,7 +71,7 @@ private:
 
     unsigned int minerals = 0;
     unsigned int gas = 0;
-    unsigned int supply = 0;
+    unsigned int usedSupply = 0;
     unsigned int totalSupply = 0;
     
     unsigned int gasMiningWorkers = 0;

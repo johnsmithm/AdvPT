@@ -39,8 +39,8 @@ void GameObjectInstance::updateEnergy(int val){ // val can be positive or negati
 void GameObject::addNewInstance(Game &game){
     instances.push_back(GameObjectInstance(maxEnergy, *this));
 
-    game.setSupplyAmount(game.getSupplyAmount() + supplyProvided);
-    game.setTotalSupplyAmount(supplyProvided);
+    game.setUsedSupplyAmount(game.getUsedSupplyAmount() + supplyCost);
+    game.setTotalSupplyAmount(game.getTotalSupplyAmount() + supplyProvided);
 }
 
 
@@ -135,7 +135,8 @@ void GameObject::parseStream(istream &inputStream) {
  */
 void GameObject::removeInstance(GameObjectInstance instance, Game &game){
     instances.remove(instance);
-    game.setSupplyAmount(game.getSupplyAmount() - instance.type.supplyCost - instance.type.supplyProvided);
+    game.setUsedSupplyAmount(game.getUsedSupplyAmount() - instance.type.supplyCost);
+    game.setTotalSupplyAmount(game.getTotalSupplyAmount() - instance.type.supplyProvided);
 }
 
 /** @brief gets a GameObject by its name
