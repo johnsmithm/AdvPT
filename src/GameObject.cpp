@@ -21,7 +21,7 @@ void GameObjectInstance::decreaseBusiness(){
 }
 
 bool GameObjectInstance::isBusy() {
-    return business < type.maxBusiness;
+    return business >= type.maxBusiness;
 }
 
 bool GameObjectInstance::hasEnergy(unsigned int val){
@@ -89,10 +89,18 @@ void GameObject::parseStream(istream &inputStream) {
 
         vector<string> tokens = split(line, DELIMETER, trim);
 
-        if (tokens.size() < 11)
+        if (tokens.size() < 12)
             throw TechTreeParsingException("Too few tokens", linecounter);
 
-        gameObjects[tokens[0]] = (make_shared<GameObject>(GameObject(
+        vector<string> producers = split(tokens[9], SUBDELIMITER, trim);
+        vector<string> dependencies = split(tokens[10], SUBDELIMITER, trim);
+
+        if(producers[0] == "")
+            producers.clear();
+        if(dependencies[0] == "")
+            dependencies.clear();
+
+        gameObjects[tokens[0]] = make_shared<GameObject>(GameObject(
             tokens[0], // name;
             stol(tokens[1]), // mineralCost
             stol(tokens[2]), // gasCost
@@ -111,10 +119,14 @@ void GameObject::parseStream(istream &inputStream) {
             //     (tokens[8] == "protoss" ? Race::PROTOSS :
             //         throw TechTreeParsingException("Invalid race", linecounter))),
 
-            split(tokens[9], SUBDELIMITER, trim), // producers
-            split(tokens[10], SUBDELIMITER, trim) // dependencies
-            ))
-        );
+            producers,
+            dependencies,
+
+            tokens[11] == "morph" ? BuildType::MORPH :
+                (tokens[11] == "active" ? BuildType::ACTIVE_BUILD :
+                (tokens[11] == "warp" ? BuildType::INSTANTIATE :
+                    throw TechTreeParsingException("Invalid build type", linecounter)))
+            ));
     }
 }
 
@@ -141,22 +153,18 @@ void GameObject::removeInstance(GameObjectInstance instance, Game &game){
  *  The producer is guaranteed to be not too busy (i.e. it can produce this object)
  *  and be a viable producer (i.e. it is allowed to produce this object)
  *
- *  @param result a reference to an object to write the possible producer to
- *
- *  @return true if a producer was found, false if there is no available producer
+ *  @return a pointer to the producer or nullptr if there is no available producer
  */
-bool GameObject::getPossibleProducer(GameObjectInstance* result){
+GameObjectInstance* GameObject::getPossibleProducer(){
     for(string producerName : producerNames){
         auto producer = getGameObject(producerName);
-        for(GameObjectInstance goi : producer->instances){
+        for(GameObjectInstance &goi : producer->instances){
             if(!goi.isBusy()){
-                result = &goi;
-                return true;
+                return &goi;
             }
         }
     }
-    result = NULL;
-    return false;
+    return nullptr;
 }
 
 unsigned int GameObject::getFreeWorkerCount(){
@@ -176,6 +184,9 @@ unsigned int GameObject::getFreeWorkerCount(){
 
 bool GameObject::areDependenciesMet(){
     for(string dependencyName : dependencyNames){
+
+        cout << "checking dependencies" << dependencyName << endl;
+        continue;
         if(getGameObject(dependencyName)->instances.size() == 0){
             return false;
         }

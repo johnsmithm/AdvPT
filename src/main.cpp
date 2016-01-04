@@ -81,7 +81,10 @@ int main(int argc, char **argv){
         g.readBuildList(buildListFilename);
     }catch(const SimulationException &e){
         cerr << e.what() << endl;
+        exit(1);
     }
+
+    g.simulate();
 
     //read config file
     //read buildlist

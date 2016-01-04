@@ -83,11 +83,12 @@ public:
                unsigned int startEnergy, unsigned int maxEnergy,
                unsigned int maxBusiness,
                std::vector<std::string> producerNames,
-               std::vector<std::string> dependencyNames)
+               std::vector<std::string> dependencyNames,
+               BuildType buildType)
         : name(name), mineralCost(mineralCost), gasCost(gasCost), buildTime(buildTime),
           supplyCost(supplyCost), supplyProvided(supplyProvided),
           startEnergy(startEnergy), maxEnergy(maxEnergy), maxBusiness(maxBusiness),
-          producerNames(producerNames), dependencyNames(dependencyNames) {}
+          producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType) {}
 
     void addNewInstance(Game &game);
     void removeInstance(const GameObjectInstance instance, Game &game);
@@ -95,7 +96,7 @@ public:
     void resolveNames();
 
     bool areDependenciesMet();
-    bool getPossibleProducer(GameObjectInstance* result);
+    GameObjectInstance* getPossibleProducer();
 
     unsigned int getMineralCost(){return mineralCost;}
     unsigned int getGasCost(){return gasCost;}

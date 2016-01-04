@@ -33,7 +33,8 @@ bool Game::timeStep() {
 
     generateResources();
 
-    ++curTime;
+    if(++curTime > 1000)
+        throw SimulationException("Maximum timesteps exceeded");
 
     return false;
 }

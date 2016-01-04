@@ -6,12 +6,11 @@
  *           are met (resources, buildings and units), else false
  */
 bool BuildAction::canExecute() {
-    GameObjectInstance *producer = nullptr;
     return game.getGasAmount() >= objectToBuild->getGasCost() &&
             game.getMineralAmount() >= objectToBuild->getMineralCost() &&
             game.getSupplyAmount() >= objectToBuild->getSupplyCost() &&
             objectToBuild->areDependenciesMet() &&
-            objectToBuild->getPossibleProducer(producer);
+            objectToBuild->getPossibleProducer() != nullptr;
 }
 
 
@@ -20,7 +19,7 @@ bool BuildAction::canExecute() {
  *  morphed units. Does not recheck canExecute! Do this before calling start.
  */
 void BuildAction::start() {;
-    objectToBuild->getPossibleProducer(producingInstance);
+    producingInstance = objectToBuild->getPossibleProducer();
 
     if(objectToBuild->getBuildType() == BuildType::MORPH){
         objectToBuild->removeInstance(*producingInstance, game);

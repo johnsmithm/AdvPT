@@ -25,7 +25,20 @@ public:
 class Game {
 public:
 
-    Game(){};
+    Game(){
+        currRace = Race::PROTOSS;
+        GameObject &go = *GameObject::getGameObject("probe");
+        go.addNewInstance(*this);
+        go.addNewInstance(*this);
+        go.addNewInstance(*this);
+
+        go.addNewInstance(*this);
+        go.addNewInstance(*this);
+        go.addNewInstance(*this);
+
+        GameObject::getGameObject("nexus")->addNewInstance(*this);
+        setMineralAmount(50);
+    };
 
     Race getRace() const {
         return currRace;
