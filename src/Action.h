@@ -29,7 +29,7 @@ public:
 class BuildAction : public Action {
 public:
 
-    BuildAction(Game& game, std::shared_ptr<GameObject>& objectToBuild)
+    BuildAction(Game& game, GameObject& objectToBuild)
         : Action(game), objectToBuild(objectToBuild) {}
 
     bool canExecute();
@@ -40,14 +40,14 @@ public:
 
     bool timeStep();
 
-    unsigned int getGasCost(){return objectToBuild->getGasCost();};
-    unsigned int getSupplyCost(){return objectToBuild->getSupplyCost();};
-    unsigned int getMineralCost(){return objectToBuild->getMineralCost();};
+    unsigned int getGasCost(){return objectToBuild.getGasCost();};
+    unsigned int getSupplyCost(){return objectToBuild.getSupplyCost();};
+    unsigned int getMineralCost(){return objectToBuild.getMineralCost();};
     
-    std::string getObiectToBuildName(){ return objectToBuild->getName();};
+    std::string getObiectToBuildName(){ return objectToBuild.getName();};
 
 private:
-    std::shared_ptr<GameObject>& objectToBuild;
+    GameObject& objectToBuild;
     GameObjectInstance* producingInstance = nullptr;
 
     int timeLeft;
