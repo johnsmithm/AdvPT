@@ -104,7 +104,7 @@ void Game::readBuildList(istream &input){
     while(getline(input, line)){
         linecounter++;
         try{
-            buildList.push_back(make_shared<BuildAction>(BuildAction(*this, *GameObject::getGameObject(line))));
+            buildList.push_back(make_shared<BuildAction>(BuildAction(*this, GameObject::get(line))));
             //TODO: check correct race?
         }catch(const out_of_range& e){
             throw SimulationException("Invalid build list: Unknown unit \"" + line + "\" on line " + to_string(linecounter));
@@ -135,7 +135,7 @@ void Game::generateResources() {
 
     gasMiningWorkers = 0;
     mineralMiningWorkers = 0;
-    unsigned int freeWorkers = GameObject::getFreeWorkerCount();
+    unsigned int freeWorkers = worker.getFreeInstancesCount();
 
     if (gasDifference > 0 && mineralDifference <= 0) {
        gasMiningWorkers = min(exploitedGeysers * 3, freeWorkers);
@@ -147,5 +147,15 @@ void Game::generateResources() {
        gasMiningWorkers = min(exploitedGeysers * 3, (unsigned int)((freeWorkers+1)/2));
        mineralMiningWorkers = freeWorkers - gasMiningWorkers;
     }   
+}
+
+
+ProtosGame::ProtosGame()
+    : Game(GameObject::get("probe"), GameObject::get("assimilator")) {
+
+    for (int i = 0; i < 6; ++i)
+        worker.addNewInstance(*this);
+
+    GameObject::get("nexus").addNewInstance(*this);
 }
 

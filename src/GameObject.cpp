@@ -144,10 +144,10 @@ void GameObject::removeInstance(GameObjectInstance instance, Game &game){
  *
  * @throw out_of_range if no GameObject with this name exists
  *
- * @return a reference to the shared pointer to the GameObject corresponding to this name
+ * @return a reference to the GameObject corresponding to this name
  */
- shared_ptr<GameObject>& GameObject::getGameObject(const string name){
-    return GameObject::gameObjects.at(name);
+ GameObject& GameObject::get(const string name){
+    return *GameObject::gameObjects.at(name);
  }
 
 /** @brief gets a possible producer instance for this GameObject type.
@@ -158,9 +158,9 @@ void GameObject::removeInstance(GameObjectInstance instance, Game &game){
  */
 GameObjectInstance* GameObject::getPossibleProducer(){
     for(string producerName : producerNames){
-        auto producer = getGameObject(producerName);
+        GameObject& producer = get(producerName);
        // cout<<producer->getName()<<" "<<producer->instances.size()<<"\n";
-        for(GameObjectInstance &goi : producer->instances){
+        for(GameObjectInstance& goi : producer.instances){
             if(!goi.isBusy()){
               //cout<<goi.business<<" "<<goi.type.maxBusiness<<"\n";
                 return &goi;
@@ -170,29 +170,26 @@ GameObjectInstance* GameObject::getPossibleProducer(){
     return nullptr;
 }
 
-unsigned int GameObject::getFreeWorkerCount(){
-    //TODO: Do this only for the current race, make string configurable
-    int freeWorkers = 0;
-    for(auto unit : getGameObject("probe")->instances)
-        if(!unit.isBusy())
-            freeWorkers++;
-    for(auto unit : getGameObject("drone")->instances)
-        if(!unit.isBusy())
-            freeWorkers++;
-    for(auto unit : getGameObject("scv")->instances)
-        if(!unit.isBusy())
-            freeWorkers++;
-    return freeWorkers;
-}
-
 bool GameObject::areDependenciesMet(){
     for(string dependencyName : dependencyNames){
 
-        if(getGameObject(dependencyName)->instances.size() == 0){
+        if(get(dependencyName).instances.size() == 0){
             return false;
         }
     }
     return true;
+}
+
+/** @brief gets the number of currently non busy instances of this GameObject
+ *
+ *  @return the number of the currently free instances
+ */
+unsigned int GameObject::getFreeInstancesCount() {
+    unsigned int free = 0;
+    for(auto unit : instances)
+        if(!unit.isBusy())
+            ++free;
+    return free;
 }
 
 void GameObject::increaseEnergy(int amount){

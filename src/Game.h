@@ -25,24 +25,10 @@ public:
 class Game {
 public:
 
-    Game(){
-        currRace = Race::PROTOSS;
-        GameObject &go = *GameObject::getGameObject("probe");
-        go.addNewInstance(*this);
-        go.addNewInstance(*this);
-        go.addNewInstance(*this);
-
-        go.addNewInstance(*this);
-        go.addNewInstance(*this);
-        go.addNewInstance(*this);
-
-        GameObject::getGameObject("nexus")->addNewInstance(*this);
+    Game(GameObject& worker, GameObject& geyserExploiter)
+        : worker(worker), geyserExploiter(geyserExploiter) {
         setMineralAmount(50*10000);
     };
-
-    Race getRace() const {
-        return currRace;
-    }
 
     unsigned int getMineralAmount(){return minerals;}
     unsigned int getGasAmount(){return gas;}
@@ -65,6 +51,9 @@ public:
 
     void simulate();
 
+protected:
+    GameObject& worker;
+    GameObject& geyserExploiter;
 
 private:
     int curTime = 1;
@@ -86,9 +75,7 @@ private:
     std::list<std::shared_ptr<Action>> runningActions;
     std::vector<std::shared_ptr<BuildAction>> buildList;
 
-    std::vector<std::shared_ptr<BuildAction>>::iterator currBuildListItem; //vector iterator
-    //GameObject * BuildingWithEnergy;
-    Race currRace;
+    std::vector<std::shared_ptr<BuildAction>>::iterator currBuildListItem;
 
     void readBuildList(std::istream &input);
     void writeMessages(std::shared_ptr<Action> action, bool start);
@@ -97,6 +84,16 @@ private:
 
     std::string output = "";
 };
+
+
+class ProtosGame : public Game {
+public:
+    ProtosGame();
+
+private:
+
+};
+
 
 /*class ZergGame : Game {
     Race currRace = ZERG;

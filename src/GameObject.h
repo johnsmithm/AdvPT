@@ -97,6 +97,7 @@ public:
 
     bool areDependenciesMet();
     GameObjectInstance* getPossibleProducer();
+    unsigned int getFreeInstancesCount();
 
     unsigned int getMineralCost(){return mineralCost;}
     unsigned int getGasCost(){return gasCost;}
@@ -105,11 +106,10 @@ public:
     BuildType getBuildType(){return buildType;};
     std::string getName(){return name;};    
 
-    static unsigned int getFreeWorkerCount();
     static void parseFile(std::string filename);
     static void parseString(std::string input);
     static void parseStream(std::istream &inputStream);
-    static std::shared_ptr<GameObject>& getGameObject(const std::string name);
+    static GameObject& get(const std::string name);
     static void increaseEnergy(int amount=DEFAULT_ENERGY_INCREASE);
 
 
