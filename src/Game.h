@@ -24,11 +24,7 @@ public:
 
 class Game {
 public:
-
-    Game(GameObject& worker, GameObject& geyserExploiter)
-        : worker(worker), geyserExploiter(geyserExploiter) {
-        setMineralAmount(50*10000);
-    };
+    Game(GameObject& worker, GameObject& geyserExploiter);
 
     unsigned int getMineralAmount(){return minerals;}
     unsigned int getGasAmount(){return gas;}

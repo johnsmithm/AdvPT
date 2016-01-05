@@ -12,6 +12,12 @@
 using namespace std;
 
 
+Game::Game(GameObject& worker, GameObject& geyserExploiter)
+    : worker(worker), geyserExploiter(geyserExploiter) {
+    setMineralAmount(50*10000);
+}
+
+
 bool Game::timeStep() {
     if (currBuildListItem == buildList.end() && runningActions.size() == 0) {
         return true;
