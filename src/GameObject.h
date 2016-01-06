@@ -105,7 +105,9 @@ public:
     unsigned int getSupplyCost(){return supplyCost;}
     unsigned int getBuildTime(){return buildTime;};
     BuildType getBuildType(){return buildType;};
-    std::string getName(){return name;};    
+    std::string getName(){return name;};
+    const std::vector<std::string>& getProducerNames(){return producerNames;}
+    const std::vector<std::string>& getDependencyNames(){return dependencyNames;}
 
     static void parseFile(std::string filename);
     static void parseString(std::string input);

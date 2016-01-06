@@ -22,7 +22,7 @@ public:
     virtual void start() = 0;
     virtual void finish() = 0;
     virtual bool timeStep() = 0;
-    virtual std::string getObiectToBuildName() = 0;
+    virtual std::string getName() = 0;
 };
 
 
@@ -44,7 +44,8 @@ public:
     unsigned int getSupplyCost(){return objectToBuild.getSupplyCost();};
     unsigned int getMineralCost(){return objectToBuild.getMineralCost();};
     
-    std::string getObiectToBuildName(){ return objectToBuild.getName();};
+    std::string getName(){return objectToBuild.getName();};
+    GameObject& getObjectToBuild(){return objectToBuild;};
 
 private:
     GameObject& objectToBuild;

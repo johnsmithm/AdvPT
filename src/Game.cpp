@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
+#include <unordered_set>
 
 #include <stdlib.h>
 #include "Action.h"
@@ -74,10 +75,10 @@ void Game::writeMessages(shared_ptr<Action> action, bool start){
       << "workers{minerals :" << mineralMiningWorkers
       << ", vespene :" << gasMiningWorkers<< "}\n";          
   if(start){
-    cout<<"start "<<action->getObiectToBuildName()<<"\n";
+    cout<<"start "<<action->getName()<<"\n";
   }
   else {
-    cout<<"finish "<<action->getObiectToBuildName()<<"\n";
+    cout<<"finish "<<action->getName()<<"\n";
   }
   cout << endl;
 }
@@ -118,6 +119,49 @@ void Game::readBuildList(istream &input){
     }
 }
 
+/** @brief Do quick checks to determine if the current buildList is valid.
+ *  Dependencies are checked.
+ *  The producer is also checked but there is additional checking at simulation time required.
+ *  For all objects that need vespene gas there is also checked that a geyserExploiter
+ *  is present.
+ *  
+ *  @return true if the buildList is valid
+ */
+bool Game::precheckBuildList(){
+    unordered_set<string> existing;
+    existing.insert("nexus"); // TODO
+    existing.insert("probe");
+    
+    bool hasGeyserExploiter = false;
+    for (auto item : buildList){
+        auto obj = item->getObjectToBuild();
+
+        // check if producer and dependencies are existant
+        bool depErr = (obj.getDependencyNames().size() > 0);
+        bool prodErr = (obj.getProducerNames().size() > 0);
+        for (auto dep : obj.getDependencyNames())
+            if (existing.count(dep)) {
+                depErr = false;
+                break;
+            }
+        for (auto prod : obj.getProducerNames())
+            if (existing.count(prod)) {
+                prodErr = false;
+                break;
+            }
+        if (depErr || prodErr)
+            return false;
+
+        // if object needs gas ensure that a geyserExploiter is present
+        if (obj.getGasCost() > 0 && (!hasGeyserExploiter))
+            return false;
+
+        if (obj.getName() == geyserExploiter.getName())
+            hasGeyserExploiter = true;
+        existing.insert(obj.getName());
+    }
+    return true;
+}
 
 void Game::printOutput(){
   cout<<output;
@@ -125,6 +169,9 @@ void Game::printOutput(){
 
 void Game::simulate(){
     assert(buildList.size()!=0);
+
+    if (!precheckBuildList())
+        throw SimulationException("BuildList invalid");
 
     currBuildListItem = buildList.begin();
 

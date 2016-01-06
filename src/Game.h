@@ -43,7 +43,7 @@ public:
 
     void printOutput();
     
-    
+    bool precheckBuildList();
 
     void simulate();
 
