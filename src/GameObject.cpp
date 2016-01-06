@@ -171,13 +171,13 @@ GameObjectInstance* GameObject::getPossibleProducer(){
 }
 
 bool GameObject::areDependenciesMet(){
+    if (dependencyNames.size() == 0) return true;
     for(string dependencyName : dependencyNames){
-
-        if(get(dependencyName).instances.size() == 0){
-            return false;
+        if(get(dependencyName).instances.size() > 0){
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
 /** @brief gets the number of currently non busy instances of this GameObject
