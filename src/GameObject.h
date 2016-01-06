@@ -98,6 +98,7 @@ public:
     bool areDependenciesMet();
     GameObjectInstance* getPossibleProducer();
     unsigned int getFreeInstancesCount();
+    unsigned int getInstancesCount(){return instances.size();}
 
     unsigned int getMineralCost(){return mineralCost;}
     unsigned int getGasCost(){return gasCost;}

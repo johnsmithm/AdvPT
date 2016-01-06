@@ -66,8 +66,6 @@ private:
     const int gasRate = DEFAULT_GAS_INCREASE;
     const int energyRate = DEFAULT_ENERGY_INCREASE;
 
-    unsigned int exploitedGeysers = 0;
-
     std::list<std::shared_ptr<Action>> runningActions;
     std::vector<std::shared_ptr<BuildAction>> buildList;
 

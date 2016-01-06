@@ -144,13 +144,13 @@ void Game::generateResources() {
     unsigned int freeWorkers = worker.getFreeInstancesCount();
 
     if (gasDifference > 0 && mineralDifference <= 0) {
-       gasMiningWorkers = min(exploitedGeysers * 3, freeWorkers);
+       gasMiningWorkers = min(geyserExploiter.getInstancesCount() * 3, freeWorkers);
        mineralMiningWorkers = freeWorkers - gasMiningWorkers;
     } else if (mineralDifference > 0 && gasDifference <= 0) {
        mineralMiningWorkers = freeWorkers;
        gasMiningWorkers = 0;
     } else {
-       gasMiningWorkers = min(exploitedGeysers * 3, (unsigned int)((freeWorkers+1)/2));
+       gasMiningWorkers = min(geyserExploiter.getInstancesCount() * 3, (unsigned int)((freeWorkers+1)/2));
        mineralMiningWorkers = freeWorkers - gasMiningWorkers;
     }   
 }
