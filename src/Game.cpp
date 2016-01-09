@@ -40,7 +40,7 @@ bool Game::timeStep() {
     for (shared_ptr<Action> item : runningActions) {
         if (item->timeStep()){
             item->finish();
-            writeMessages(item,false);
+            debugOutput(item, false);
             //runningActions.remove(item);
             toRemove.push_back(item);
         }
@@ -55,7 +55,7 @@ bool Game::timeStep() {
       if ((**currBuildListItem).canExecute()) {
 
           (**currBuildListItem).start();
-          writeMessages(*currBuildListItem,true);
+          debugOutput(*currBuildListItem, true);
           runningActions.push_back(*currBuildListItem);
           currBuildListItem++;
       }
@@ -73,21 +73,22 @@ bool Game::timeStep() {
 }
 
 //For testing
-void Game::writeMessages(shared_ptr<Action> action, bool start){
-  cout<<"Time:"<<curTime<<"\n"
-      << "resourses{minerals :" << minerals / 10000
-      << ", vespene :" << gas / 10000
-      << ", supply-used :" <<  usedSupply
-      << ", supply :" << totalSupply << "}\n"
-      << "workers{minerals :" << mineralMiningWorkers
-      << ", vespene :" << gasMiningWorkers<< "}\n";
-  if(start){
-    cout<<"start "<<action->getName()<<"\n";
-  }
-  else {
-    cout<<"finish "<<action->getName()<<"\n";
-  }
-  cout << endl;
+void Game::debugOutput(shared_ptr<Action> action, bool start){
+    cerr << "Time:"<<curTime<<"\n"
+         << "resourses{minerals :" << minerals / 10000
+         << ", vespene :" << gas / 10000
+         << ", supply-used :" <<  usedSupply
+         << ", supply :" << totalSupply << "}\n"
+         << "workers{minerals :" << mineralMiningWorkers
+         << ", vespene :" << gasMiningWorkers<< "}\n";
+
+    if(start) {
+        cerr << "start " << action->getName() << "\n";
+    } else {
+        cerr << "finish " << action->getName() << "\n";
+    }
+
+    cerr << endl;
 }
 
 void Game::readConfiguration(){

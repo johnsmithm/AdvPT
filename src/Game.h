@@ -75,7 +75,7 @@ private:
     std::vector<std::shared_ptr<BuildAction>>::iterator currBuildListItem;
 
     void readBuildList(std::istream &input);
-    void writeMessages(std::shared_ptr<Action> action, bool start);
+    void debugOutput(std::shared_ptr<Action> action, bool start);
     bool timeStep();
     void generateResources();
 
