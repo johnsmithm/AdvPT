@@ -1,6 +1,7 @@
 #ifndef _GAMEOBJECT_H_
 #define _GAMEOBJECT_H_
 
+#include <iostream>
 #include <list>
 #include <memory>
 #include <string>
@@ -60,6 +61,8 @@ public:
     bool operator==(const GameObjectInstance &other){
         return ID==other.ID;
     }
+
+    friend std::ostream& operator<<(std::ostream &out, const GameObjectInstance &other);
 
 private:
     static unsigned int maxID;

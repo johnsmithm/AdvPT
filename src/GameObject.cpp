@@ -36,6 +36,14 @@ void GameObjectInstance::updateEnergy(int val){ // val can be positive or negati
     energy += val;
 }
 
+
+
+std::ostream& operator<<(std::ostream &out, const GameObjectInstance &other){
+    out << "GameObject " << other.type.getName() << " with ID " << other.ID;
+    return out;
+}
+
+
 void GameObject::addNewInstance(Game &game){
     instances.push_back(GameObjectInstance(maxEnergy, *this));
 
