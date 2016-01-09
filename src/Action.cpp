@@ -15,7 +15,7 @@ bool BuildAction::canExecute() {
 
 
 /** @brief starts the action
- *  Increases business of dependencies, subtracts resources and removes
+ *  Increases busyness of dependencies, subtracts resources and removes
  *  morphed units. Does not recheck canExecute! Do this before calling start.
  */
 void BuildAction::start() {;
@@ -24,7 +24,7 @@ void BuildAction::start() {;
     if(objectToBuild.getBuildType() == BuildType::MORPH){
         objectToBuild.removeInstance(*producingInstance, game);
     }else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
-        producingInstance->increaseBusiness();
+        producingInstance->increaseBusyness();
     }
 
     timeLeft = objectToBuild.getBuildTime()*10;//timeLeft is thenths of a second, buildTime is seconds
@@ -50,6 +50,6 @@ bool BuildAction::timeStep(){
 void BuildAction::finish(){
     objectToBuild.addNewInstance(game);
     if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
-        producingInstance->decreaseBusiness();
+        producingInstance->decreaseBusyness();
     }
 }

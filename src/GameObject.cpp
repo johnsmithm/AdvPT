@@ -16,20 +16,20 @@ static const char SUBDELIMITER = '/';
 
 
 
-void GameObjectInstance::decreaseBusiness(){
-    business--;
+void GameObjectInstance::decreaseBusyness(){
+    busyness--;
 }
 
 bool GameObjectInstance::isBusy() {
-    return (business >= type.maxBusiness);
+    return (busyness >= type.maxBusyness);
 }
 
 bool GameObjectInstance::hasEnergy(unsigned int val){
     return (val <= energy);
 }
 
-void GameObjectInstance::increaseBusiness(){
-    business++;
+void GameObjectInstance::increaseBusyness(){
+    busyness++;
 }
 
 void GameObjectInstance::updateEnergy(int val){ // val can be positive or negative
@@ -111,7 +111,7 @@ void GameObject::parseStream(istream &inputStream) {
             stol(tokens[6])*10000, // startEnergy
             stol(tokens[7])*10000, // maxEnergy
 
-            1, //TODO: maxBusiness
+            1, //TODO: maxBusyness
 
             //race, we don't need this (yet?)
             // tokens[8] == "terran" ? Race::TERRAN :
@@ -162,7 +162,7 @@ GameObjectInstance* GameObject::getPossibleProducer(){
        // cout<<producer->getName()<<" "<<producer->instances.size()<<"\n";
         for(GameObjectInstance& goi : producer.instances){
             if(!goi.isBusy()){
-              //cout<<goi.business<<" "<<goi.type.maxBusiness<<"\n";
+              //cout<<goi.busyness<<" "<<goi.type.maxBusyness<<"\n";
                 return &goi;
             }
         }

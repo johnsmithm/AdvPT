@@ -40,16 +40,16 @@ class GameObjectInstance {
 friend class GameObject;
 public:
     GameObjectInstance(unsigned int energy, GameObject &type)
-      : ID(maxID++), energy(energy), business(0),
+      : ID(maxID++), energy(energy), busyness(0),
         boostTarget (false), type(type) {};
 
-    void decreaseBusiness();
+    void decreaseBusyness();
     bool hasEnergy(unsigned int val);
     bool isBoostTarget(){return boostTarget;};
 
     bool isBusy();
     void increaseEnergy();
-    void increaseBusiness();
+    void increaseBusyness();
     void updateEnergy(int val);
 
     void setBoostTarget(bool isBoostTarget){
@@ -66,7 +66,7 @@ private:
 
     const unsigned int ID;
     unsigned int energy;
-    unsigned int business = 0;
+    unsigned int busyness = 0;
     bool boostTarget;
 
     GameObject &type;
@@ -81,13 +81,13 @@ public:
                unsigned int buildTime,
                unsigned int supplyCost, unsigned int supplyProvided,
                unsigned int startEnergy, unsigned int maxEnergy,
-               unsigned int maxBusiness,
+               unsigned int maxBusyness,
                std::vector<std::string> producerNames,
                std::vector<std::string> dependencyNames,
                BuildType buildType)
         : name(name), mineralCost(mineralCost), gasCost(gasCost), buildTime(buildTime),
           supplyCost(supplyCost), supplyProvided(supplyProvided),
-          startEnergy(startEnergy), maxEnergy(maxEnergy), maxBusiness(maxBusiness),
+          startEnergy(startEnergy), maxEnergy(maxEnergy), maxBusyness(maxBusyness),
           producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType) {}
 
     void addNewInstance(Game &game);
@@ -125,7 +125,7 @@ private:
     unsigned int supplyProvided;
     unsigned int startEnergy;
     unsigned int maxEnergy;
-    unsigned int maxBusiness = 1;
+    unsigned int maxBusyness = 1;
 
     std::vector<std::string> producerNames;
     std::vector<std::string> dependencyNames;
