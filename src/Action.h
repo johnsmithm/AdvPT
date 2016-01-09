@@ -22,7 +22,7 @@ public:
     virtual void start() = 0;
     virtual void finish() = 0;
     virtual bool timeStep() = 0;
-    virtual std::string getName() = 0;
+    virtual std::string getName(){return "Generic Action";};
 };
 
 
@@ -55,20 +55,23 @@ private:
 };
 
 
-/*class BoostAction {//can a building be target again?
+class BoostAction : public Action{
+public:
+    BoostAction(Game& game, GameObjectInstance& target)
+        : Action(game), target(target) {}
+
+    virtual bool canExecute(){return true;};
+    virtual void start(){target.setBoostTarget(true);};
+    virtual void finish(){target.setBoostTarget(false);}
+    virtual bool timeStep(){return --timeLeft == 0;};
+    virtual std::string getName(){return "BoostAction";};
+
 private:
     GameObjectInstance &target;
-    void start(){
-         //check Target Actions, change finishing time
-        CalculateFinishingTime();
-    }
-
-    void finish(){
-       target.unMarck();
-    }
+    unsigned int timeLeft = 20;
 };
 
-
+/*
 class CreateLarvaeHatcharyAction {//from eggs or from hatcharies??
 private:
     GameObjectInstance &Hatchary;

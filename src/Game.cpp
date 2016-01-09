@@ -216,7 +216,26 @@ ProtosGame::ProtosGame()
            GameObject::get("assimilator")) {}
 
 
+
+bool getNonBoostedBuildings(GameObjectInstance &goi){
+    return !goi.isBoostTarget() && goi.getBusyness() >= 0 && goi.getType().isBuilding();
+}
+
 void ProtosGame::invokeSpecial() {
-    // TODO create special actions
+    for(GameObjectInstance& instance : GameObject::get("nexus").getAllInstances()){
+        while(instance.hasEnergy(25*10000)){
+            vector<GameObjectInstance*> targets = GameObject::getAll(getNonBoostedBuildings);
+
+            if(targets.size() > 0){
+                shared_ptr<BoostAction> action = make_shared<BoostAction>(BoostAction(*this, *targets[0]));
+                Game::debugOutput(action, true);
+
+                action->start();
+                instance.updateEnergy(-25*10000);
+
+                runningActions.push_back(action);
+            }
+        }
+    }
 }
 

@@ -49,9 +49,11 @@ protected:
     GameObject& mainBuilding;
     GameObject& worker;
     GameObject& geyserExploiter;
+    std::list<std::shared_ptr<Action>> runningActions;
 
     Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
 
+    void debugOutput(std::shared_ptr<Action> action, bool start);
     virtual void invokeSpecial() = 0;
 
 private:
@@ -69,13 +71,11 @@ private:
     const int gasRate = DEFAULT_GAS_INCREASE;
     const int energyRate = DEFAULT_ENERGY_INCREASE;
 
-    std::list<std::shared_ptr<Action>> runningActions;
     std::vector<std::shared_ptr<BuildAction>> buildList;
 
     std::vector<std::shared_ptr<BuildAction>>::iterator currBuildListItem;
 
     void readBuildList(std::istream &input);
-    void debugOutput(std::shared_ptr<Action> action, bool start);
     bool timeStep();
     void generateResources();
 
