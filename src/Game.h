@@ -40,7 +40,7 @@ public:
     void readBuildList(std::string filename);
 
     void printOutput();
-    
+
     bool precheckBuildList();
 
     void simulate();
@@ -49,9 +49,9 @@ protected:
     GameObject& mainBuilding;
     GameObject& worker;
     GameObject& geyserExploiter;
-    
+
     Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
-    
+
     virtual void invokeSpecial() = 0;
 
 private:
@@ -61,7 +61,7 @@ private:
     unsigned int gas = 0;
     unsigned int usedSupply = 0;
     unsigned int totalSupply = 0;
-    
+
     unsigned int gasMiningWorkers = 0;
     unsigned int  mineralMiningWorkers = 6;
 

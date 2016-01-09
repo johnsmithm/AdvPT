@@ -43,7 +43,7 @@ public:
     unsigned int getGasCost(){return objectToBuild.getGasCost();};
     unsigned int getSupplyCost(){return objectToBuild.getSupplyCost();};
     unsigned int getMineralCost(){return objectToBuild.getMineralCost();};
-    
+
     std::string getName(){return objectToBuild.getName();};
     GameObject& getObjectToBuild(){return objectToBuild;};
 
