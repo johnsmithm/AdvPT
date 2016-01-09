@@ -24,8 +24,6 @@ public:
 
 class Game {
 public:
-    Game(GameObject& worker, GameObject& geyserExploiter);
-
     unsigned int getMineralAmount(){return minerals;}
     unsigned int getGasAmount(){return gas;}
     unsigned int getUsedSupplyAmount(){return usedSupply;}
@@ -48,8 +46,11 @@ public:
     void simulate();
 
 protected:
+    GameObject& mainBuilding;
     GameObject& worker;
     GameObject& geyserExploiter;
+    
+    Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
 
 private:
     int curTime = 1;

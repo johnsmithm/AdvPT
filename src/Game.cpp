@@ -13,9 +13,14 @@
 using namespace std;
 
 
-Game::Game(GameObject& worker, GameObject& geyserExploiter)
-    : worker(worker), geyserExploiter(geyserExploiter) {
+Game::Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter)
+    : mainBuilding(mainBuilding), worker(worker), geyserExploiter(geyserExploiter) {
     setMineralAmount(50*10000);
+    
+    for (int i = 0; i < 6; ++i)
+        worker.addNewInstance(*this);
+
+    mainBuilding.addNewInstance(*this);
 }
 
 
@@ -129,8 +134,8 @@ void Game::readBuildList(istream &input){
  */
 bool Game::precheckBuildList(){
     unordered_set<string> existing;
-    existing.insert("nexus"); // TODO
-    existing.insert("probe");
+    existing.insert(mainBuilding.getName());
+    existing.insert(worker.getName());
     
     bool hasGeyserExploiter = false;
     for (auto item : buildList){
@@ -204,11 +209,6 @@ void Game::generateResources() {
 
 
 ProtosGame::ProtosGame()
-    : Game(GameObject::get("probe"), GameObject::get("assimilator")) {
-
-    for (int i = 0; i < 6; ++i)
-        worker.addNewInstance(*this);
-
-    GameObject::get("nexus").addNewInstance(*this);
-}
+    : Game(GameObject::get("nexus"), GameObject::get("probe"),
+           GameObject::get("assimilator")) {}
 
