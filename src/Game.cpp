@@ -63,6 +63,8 @@ bool Game::timeStep() {
       generateResources();
     }
 
+    // invoke race specific special actions
+    invokeSpecial();
 
     if(++curTime > 1000)
         throw SimulationException("Maximum timesteps exceeded");
@@ -211,4 +213,9 @@ void Game::generateResources() {
 ProtosGame::ProtosGame()
     : Game(GameObject::get("nexus"), GameObject::get("probe"),
            GameObject::get("assimilator")) {}
+
+
+void ProtosGame::invokeSpecial() {
+    // TODO create special actions
+}
 

@@ -51,6 +51,8 @@ protected:
     GameObject& geyserExploiter;
     
     Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
+    
+    virtual void invokeSpecial() = 0;
 
 private:
     int curTime = 1;
@@ -85,7 +87,8 @@ class ProtosGame : public Game {
 public:
     ProtosGame();
 
-private:
+protected:
+    virtual void invokeSpecial() override;
 
 };
 
