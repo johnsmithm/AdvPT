@@ -1,6 +1,8 @@
 #ifndef _GAMEOBJECT_H_
 #define _GAMEOBJECT_H_
 
+#include <functional>
+#include <iostream>
 #include <list>
 #include <memory>
 #include <string>
@@ -40,16 +42,19 @@ class GameObjectInstance {
 friend class GameObject;
 public:
     GameObjectInstance(unsigned int energy, GameObject &type)
-      : ID(maxID++), energy(energy), business(0),
+      : ID(maxID++), energy(energy), busyness(0),
         boostTarget (false), type(type) {};
 
-    void decreaseBusiness();
+    void decreaseBusyness();
     bool hasEnergy(unsigned int val);
+    GameObject& getType(){return type;};
     bool isBoostTarget(){return boostTarget;};
 
     bool isBusy();
+    unsigned int getEnergy(){ return energy; };
+    unsigned int getBusyness(){return busyness;};
     void increaseEnergy();
-    void increaseBusiness();
+    void increaseBusyness();
     void updateEnergy(int val);
 
     void setBoostTarget(bool isBoostTarget){
@@ -61,12 +66,14 @@ public:
         return ID==other.ID;
     }
 
+    friend std::ostream& operator<<(std::ostream &out, const GameObjectInstance &other);
+
 private:
     static unsigned int maxID;
 
     const unsigned int ID;
     unsigned int energy;
-    unsigned int business = 0;
+    unsigned int busyness = 0;
     bool boostTarget;
 
     GameObject &type;
@@ -81,14 +88,16 @@ public:
                unsigned int buildTime,
                unsigned int supplyCost, unsigned int supplyProvided,
                unsigned int startEnergy, unsigned int maxEnergy,
-               unsigned int maxBusiness,
+               unsigned int maxBusyness,
                std::vector<std::string> producerNames,
                std::vector<std::string> dependencyNames,
-               BuildType buildType)
+               BuildType buildType,
+               bool isBuilding)
         : name(name), mineralCost(mineralCost), gasCost(gasCost), buildTime(buildTime),
           supplyCost(supplyCost), supplyProvided(supplyProvided),
-          startEnergy(startEnergy), maxEnergy(maxEnergy), maxBusiness(maxBusiness),
-          producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType) {}
+          startEnergy(startEnergy), maxEnergy(maxEnergy), maxBusyness(maxBusyness),
+          producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType),
+          _isBuilding(isBuilding) {}
 
     void addNewInstance(Game &game);
     void removeInstance(const GameObjectInstance instance, Game &game);
@@ -99,6 +108,7 @@ public:
     GameObjectInstance* getPossibleProducer();
     unsigned int getFreeInstancesCount();
     unsigned int getInstancesCount(){return instances.size();}
+    std::list<GameObjectInstance>& getAllInstances();
 
     unsigned int getMineralCost(){return mineralCost;}
     unsigned int getGasCost(){return gasCost;}
@@ -108,11 +118,15 @@ public:
     std::string getName(){return name;};
     const std::vector<std::string>& getProducerNames(){return producerNames;}
     const std::vector<std::string>& getDependencyNames(){return dependencyNames;}
+    bool isBuilding(){return _isBuilding;};
 
     static void parseFile(std::string filename);
     static void parseString(std::string input);
     static void parseStream(std::istream &inputStream);
+
     static GameObject& get(const std::string name);
+    static std::vector<GameObjectInstance*> getAll(std::function<bool(GameObjectInstance&)> filter=[](GameObjectInstance &goi){return true;});
+
     static void increaseEnergy(int amount=DEFAULT_ENERGY_INCREASE);
 
 
@@ -125,12 +139,14 @@ private:
     unsigned int supplyProvided;
     unsigned int startEnergy;
     unsigned int maxEnergy;
-    unsigned int maxBusiness = 1;
+    unsigned int maxBusyness = 1;
 
     std::vector<std::string> producerNames;
     std::vector<std::string> dependencyNames;
 
     BuildType buildType;
+    bool _isBuilding;
+
     //unsigned int blockedInstaces;//will block Instances from left to right
 
     std::list<GameObjectInstance> instances;

@@ -16,7 +16,7 @@ using namespace std;
 Game::Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter)
     : mainBuilding(mainBuilding), worker(worker), geyserExploiter(geyserExploiter) {
     setMineralAmount(50*10000);
-    
+
     for (int i = 0; i < 6; ++i)
         worker.addNewInstance(*this);
 
@@ -28,7 +28,7 @@ bool Game::timeStep() {
     if (currBuildListItem == buildList.end() && runningActions.size() == 0) {
         return true;
     }
-    
+
     minerals += mineralMiningWorkers * mineralsRate;
     gas += gasMiningWorkers * gasRate;
 
@@ -40,26 +40,26 @@ bool Game::timeStep() {
     for (shared_ptr<Action> item : runningActions) {
         if (item->timeStep()){
             item->finish();
-            writeMessages(item,false);
+            debugOutput(item, false);
             //runningActions.remove(item);
             toRemove.push_back(item);
         }
     }
     for (shared_ptr<Action> item : toRemove) {
-      runningActions.remove(item);
+        runningActions.remove(item);
     }
 
     //check buildList
     if(currBuildListItem != buildList.end()) {
-      
-      if ((**currBuildListItem).canExecute()) { 
-          
+
+      if ((**currBuildListItem).canExecute()) {
+
           (**currBuildListItem).start();
-          writeMessages(*currBuildListItem,true);
+          debugOutput(*currBuildListItem, true);
           runningActions.push_back(*currBuildListItem);
           currBuildListItem++;
       }
-      
+
       generateResources();
     }
 
@@ -73,21 +73,22 @@ bool Game::timeStep() {
 }
 
 //For testing
-void Game::writeMessages(shared_ptr<Action> action, bool start){
-  cout<<"Time:"<<curTime<<"\n"
-      << "resourses{minerals :" << minerals / 10000
-      << ", vespene :" << gas / 10000 
-      << ", supply-used :" <<  usedSupply
-      << ", supply :" << totalSupply << "}\n"
-      << "workers{minerals :" << mineralMiningWorkers
-      << ", vespene :" << gasMiningWorkers<< "}\n";          
-  if(start){
-    cout<<"start "<<action->getName()<<"\n";
-  }
-  else {
-    cout<<"finish "<<action->getName()<<"\n";
-  }
-  cout << endl;
+void Game::debugOutput(shared_ptr<Action> action, bool start){
+    cerr << "Time:"<<curTime<<"\n"
+         << "resourses{minerals :" << minerals / 10000
+         << ", vespene :" << gas / 10000
+         << ", supply-used :" <<  usedSupply
+         << ", supply :" << totalSupply << "}\n"
+         << "workers{minerals :" << mineralMiningWorkers
+         << ", vespene :" << gasMiningWorkers<< "}\n";
+
+    if(start) {
+        cerr << "start " << action->getName() << "\n";
+    } else {
+        cerr << "finish " << action->getName() << "\n";
+    }
+
+    cerr << endl;
 }
 
 void Game::readConfiguration(){
@@ -131,14 +132,14 @@ void Game::readBuildList(istream &input){
  *  The producer is also checked but there is additional checking at simulation time required.
  *  For all objects that need vespene gas there is also checked that a geyserExploiter
  *  is present.
- *  
+ *
  *  @return true if the buildList is valid
  */
 bool Game::precheckBuildList(){
     unordered_set<string> existing;
     existing.insert(mainBuilding.getName());
     existing.insert(worker.getName());
-    
+
     bool hasGeyserExploiter = false;
     for (auto item : buildList){
         auto obj = item->getObjectToBuild();
@@ -188,7 +189,7 @@ void Game::simulate(){
 
 void Game::generateResources() {
     if(currBuildListItem == buildList.end()) {
-      return;
+        return;
     }
     int gasDifference =  (**currBuildListItem).getGasCost() - getGasAmount();
     int mineralDifference = (**currBuildListItem).getMineralCost() - getMineralAmount();
@@ -206,7 +207,7 @@ void Game::generateResources() {
     } else {
        gasMiningWorkers = min(geyserExploiter.getInstancesCount() * 3, (unsigned int)((freeWorkers+1)/2));
        mineralMiningWorkers = freeWorkers - gasMiningWorkers;
-    }   
+    }
 }
 
 
@@ -215,7 +216,26 @@ ProtosGame::ProtosGame()
            GameObject::get("assimilator")) {}
 
 
+
+bool getNonBoostedBuildings(GameObjectInstance &goi){
+    return !goi.isBoostTarget() && goi.getBusyness() >= 0 && goi.getType().isBuilding();
+}
+
 void ProtosGame::invokeSpecial() {
-    // TODO create special actions
+    for(GameObjectInstance& instance : GameObject::get("nexus").getAllInstances()){
+        while(instance.hasEnergy(25*10000)){
+            vector<GameObjectInstance*> targets = GameObject::getAll(getNonBoostedBuildings);
+
+            if(targets.size() > 0){
+                shared_ptr<BoostAction> action = make_shared<BoostAction>(BoostAction(*this, *targets[0]));
+                Game::debugOutput(action, true);
+
+                action->start();
+                instance.updateEnergy(-25*10000);
+
+                runningActions.push_back(action);
+            }
+        }
+    }
 }
 

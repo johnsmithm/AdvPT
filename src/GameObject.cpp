@@ -16,30 +16,42 @@ static const char SUBDELIMITER = '/';
 
 
 
-void GameObjectInstance::decreaseBusiness(){
-    business--;
+void GameObjectInstance::decreaseBusyness(){
+    busyness--;
 }
 
 bool GameObjectInstance::isBusy() {
-    return (business >= type.maxBusiness);
+    return (busyness >= type.maxBusyness);
 }
 
 bool GameObjectInstance::hasEnergy(unsigned int val){
     return (val <= energy);
 }
 
-void GameObjectInstance::increaseBusiness(){
-    business++;
+void GameObjectInstance::increaseBusyness(){
+    busyness++;
 }
 
 void GameObjectInstance::updateEnergy(int val){ // val can be positive or negative
     energy += val;
 }
 
+
+
+std::ostream& operator<<(std::ostream &out, const GameObjectInstance &other){
+    out << "GameObject " << other.type.getName() << " with ID " << other.ID;
+    return out;
+}
+
+
 void GameObject::addNewInstance(Game &game){
-    instances.push_back(GameObjectInstance(maxEnergy, *this));
+    instances.push_back(GameObjectInstance(startEnergy, *this));
 
     game.setTotalSupplyAmount(game.getTotalSupplyAmount() + supplyProvided);
+}
+
+std::list<GameObjectInstance>& GameObject::getAllInstances(){
+    return instances;
 }
 
 
@@ -89,7 +101,7 @@ void GameObject::parseStream(istream &inputStream) {
 
         vector<string> tokens = split(line, DELIMETER, trim);
 
-        if (tokens.size() < 12)
+        if (tokens.size() < 13)
             throw TechTreeParsingException("Too few tokens", linecounter);
 
         vector<string> producers = split(tokens[9], SUBDELIMITER, trim);
@@ -111,7 +123,7 @@ void GameObject::parseStream(istream &inputStream) {
             stol(tokens[6])*10000, // startEnergy
             stol(tokens[7])*10000, // maxEnergy
 
-            1, //TODO: maxBusiness
+            1, //TODO: maxBusyness
 
             //race, we don't need this (yet?)
             // tokens[8] == "terran" ? Race::TERRAN :
@@ -125,7 +137,8 @@ void GameObject::parseStream(istream &inputStream) {
             tokens[11] == "morph" ? BuildType::MORPH :
                 (tokens[11] == "active" ? BuildType::ACTIVE_BUILD :
                 (tokens[11] == "warp" ? BuildType::INSTANTIATE :
-                    throw TechTreeParsingException("Invalid build type", linecounter)))
+                    throw TechTreeParsingException("Invalid build type", linecounter))),
+            tokens[12][0] == '1' //isBuilding
             ));
     }
 }
@@ -150,6 +163,22 @@ void GameObject::removeInstance(GameObjectInstance instance, Game &game){
     return *GameObject::gameObjects.at(name);
  }
 
+
+// bool catchAll
+
+vector<GameObjectInstance*> GameObject::getAll(function<bool(GameObjectInstance&)> filter){
+    vector<GameObjectInstance*> results;
+
+    for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects){
+        for(GameObjectInstance goi : objectPointer.second->instances){
+            if(filter(goi))
+                results.push_back(&goi);
+        }
+    }
+
+    return results;
+}
+
 /** @brief gets a possible producer instance for this GameObject type.
  *  The producer is guaranteed to be not too busy (i.e. it can produce this object)
  *  and be a viable producer (i.e. it is allowed to produce this object)
@@ -162,7 +191,7 @@ GameObjectInstance* GameObject::getPossibleProducer(){
        // cout<<producer->getName()<<" "<<producer->instances.size()<<"\n";
         for(GameObjectInstance& goi : producer.instances){
             if(!goi.isBusy()){
-              //cout<<goi.business<<" "<<goi.type.maxBusiness<<"\n";
+              //cout<<goi.busyness<<" "<<goi.type.maxBusyness<<"\n";
                 return &goi;
             }
         }
@@ -194,8 +223,10 @@ unsigned int GameObject::getFreeInstancesCount() {
 
 void GameObject::increaseEnergy(int amount){
     for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects){
-        for(GameObjectInstance goi : objectPointer.second->instances){
-            goi.energy+=amount;
+        for(GameObjectInstance& goi : objectPointer.second->instances){
+            goi.energy += amount;
+            if(goi.energy > goi.type.maxEnergy)
+                goi.energy = goi.type.maxEnergy;
         }
     }
 }
