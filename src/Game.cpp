@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include "Action.h"
 #include "Game.h"
-#include "Output.hpp"
 
 //#include <json.h>
 
@@ -75,7 +74,7 @@ bool Game::timeStep() {
 
 void Game::debugOutput(shared_ptr<Action> action, bool start) {
   cerr << "Time:" << curTime << "\n"
-          << "resourses{minerals :" << minerals / 10000
+          << "resources{minerals :" << minerals / 10000
           << ", vespene :" << gas / 10000
           << ", supply-used :" << usedSupply
           << ", supply :" << totalSupply << "}\n"
@@ -193,7 +192,7 @@ void Game::simulate() {
         output["intialUnits"][goi->getType().getName()].append(goi->getID());
     }
 
-    getResoursesBuildListItem = currBuildListItem = buildList.begin();
+    getResourcesBuildListItem = currBuildListItem = buildList.begin();
 
   while (!timeStep()) {
   };
@@ -272,21 +271,21 @@ int Game::ternarySearch(int left, int right, int neededGas, int neededMineral, i
 }
 
 void Game::generateResources() {
-  if (getResoursesBuildListItem == buildList.end()) {
+  if (getResourcesBuildListItem == buildList.end()) {
     return;
   }
 
-  int gasDifference = (**getResoursesBuildListItem).getGasCost() - getGasAmount();
-  int mineralDifference = (**getResoursesBuildListItem).getMineralCost() - getMineralAmount();
+  int gasDifference = (**getResourcesBuildListItem).getGasCost() - getGasAmount();
+  int mineralDifference = (**getResourcesBuildListItem).getMineralCost() - getMineralAmount();
 
   // If we have enough resources, we move to next item
   while (gasDifference <= 0 && mineralDifference <= 0) {
-    getResoursesBuildListItem++;
-    if (getResoursesBuildListItem == buildList.end()) {
+    getResourcesBuildListItem++;
+    if (getResourcesBuildListItem == buildList.end()) {
       return;
     }
-    gasDifference += (**getResoursesBuildListItem).getGasCost();
-    mineralDifference += (**getResoursesBuildListItem).getMineralCost();
+    gasDifference += (**getResourcesBuildListItem).getGasCost();
+    mineralDifference += (**getResourcesBuildListItem).getMineralCost();
   }
 
   gasMiningWorkers = 0;
@@ -324,7 +323,7 @@ void ProtosGame::invokeSpecial() {
       vector<GameObjectInstance*> targets = GameObject::getAll(getNonBoostedBuildings);
 
       if (targets.size() > 0) {
-        shared_ptr<BoostAction> action = make_shared<BoostAction>(BoostAction(*this, *targets[0]));
+        shared_ptr<BoostAction> action = make_shared<BoostAction>(BoostAction(*this, *targets[0], instance));
         Game::debugOutput(action, true);
 
         action->start();

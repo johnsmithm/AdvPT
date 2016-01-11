@@ -86,7 +86,7 @@ private:
     unsigned int totalSupply = 0;
 
     unsigned int gasMiningWorkers = 0;
-    unsigned int  mineralMiningWorkers = 6;
+    unsigned int mineralMiningWorkers = 6;
 
     const int mineralsRate = DEFAULT_MINERAL_INCREASE;
     const int gasRate = DEFAULT_GAS_INCREASE;
@@ -95,7 +95,7 @@ private:
     std::vector<std::shared_ptr<BuildAction>> buildList;
 
     std::vector<std::shared_ptr<BuildAction>>::iterator currBuildListItem;
-    std::vector<std::shared_ptr<BuildAction>>::iterator getResoursesBuildListItem;
+    std::vector<std::shared_ptr<BuildAction>>::iterator getResourcesBuildListItem;
 
     void readBuildList(std::istream &input);
     bool timeStep();
