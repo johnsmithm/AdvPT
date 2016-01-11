@@ -24,8 +24,6 @@ public:
 
 class Game {
 public:
-    Game(GameObject& worker, GameObject& geyserExploiter);
-
     unsigned int getMineralAmount(){return minerals;}
     unsigned int getGasAmount(){return gas;}
     unsigned int getUsedSupplyAmount(){return usedSupply;}
@@ -42,14 +40,21 @@ public:
     void readBuildList(std::string filename);
 
     void printOutput();
-    
+
     bool precheckBuildList();
 
     void simulate();
 
 protected:
+    GameObject& mainBuilding;
     GameObject& worker;
     GameObject& geyserExploiter;
+    std::list<std::shared_ptr<Action>> runningActions;
+
+    Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
+
+    void debugOutput(std::shared_ptr<Action> action, bool start);
+    virtual void invokeSpecial() = 0;
 
 private:
     int curTime = 1;
@@ -58,7 +63,7 @@ private:
     unsigned int gas = 0;
     unsigned int usedSupply = 0;
     unsigned int totalSupply = 0;
-    
+
     unsigned int gasMiningWorkers = 0;
     unsigned int  mineralMiningWorkers = 6;
 
@@ -66,14 +71,12 @@ private:
     const int gasRate = DEFAULT_GAS_INCREASE;
     const int energyRate = DEFAULT_ENERGY_INCREASE;
 
-    std::list<std::shared_ptr<Action>> runningActions;
     std::vector<std::shared_ptr<BuildAction>> buildList;
 
     std::vector<std::shared_ptr<BuildAction>>::iterator currBuildListItem;
     std::vector<std::shared_ptr<BuildAction>>::iterator getResoursesBuildListItem;
 
     void readBuildList(std::istream &input);
-    void writeMessages(std::shared_ptr<Action> action, bool start);
     bool timeStep();
     void generateResources();
     int ternarySearch(int left, int right, int neededGas,int neededMineral, int freeWorkers);
@@ -87,7 +90,8 @@ class ProtosGame : public Game {
 public:
     ProtosGame();
 
-private:
+protected:
+    virtual void invokeSpecial() override;
 
 };
 
