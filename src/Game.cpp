@@ -173,7 +173,7 @@ void Game::simulate(){
     if (!precheckBuildList())
         throw SimulationException("BuildList invalid");
 
-    gerResoursesBuildListItem = currBuildListItem = buildList.begin();
+    getResoursesBuildListItem = currBuildListItem = buildList.begin();
 
     while(!timeStep()){};
 }
@@ -277,13 +277,14 @@ void Game::generateResources() {
     if (gasDifference > 0 && mineralDifference <= 0) {
        gasMiningWorkers = min(geyserExploiter.getInstancesCount() * 3, freeWorkers);
        mineralMiningWorkers = freeWorkers - gasMiningWorkers;
+       
     } else if (mineralDifference > 0 && gasDifference <= 0) {
        mineralMiningWorkers = freeWorkers;
        gasMiningWorkers = 0;
     } else {
       int MaxGasMiningWorkers = min(geyserExploiter.getInstancesCount() * 3, freeWorkers);
-      int neededGas = gasDifference > 0 ? 0 : -gasDifference;
-      int neededMineral = mineralDifference > 0 ? 0 : -mineralDifference;
+      int neededGas = gasDifference < 0 ? 0 : gasDifference;
+      int neededMineral = mineralDifference < 0 ? 0 : mineralDifference;
       gasMiningWorkers =  ternarySearch(0, MaxGasMiningWorkers, neededGas, neededMineral, freeWorkers);
       mineralMiningWorkers = freeWorkers - gasMiningWorkers;
     }   
