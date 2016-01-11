@@ -70,11 +70,14 @@ private:
     std::vector<std::shared_ptr<BuildAction>> buildList;
 
     std::vector<std::shared_ptr<BuildAction>>::iterator currBuildListItem;
+    std::vector<std::shared_ptr<BuildAction>>::iterator getResoursesBuildListItem;
 
     void readBuildList(std::istream &input);
     void writeMessages(std::shared_ptr<Action> action, bool start);
     bool timeStep();
     void generateResources();
+    int ternarySearch(int left, int right, int neededGas,int neededMineral, int freeWorkers);
+    int getMiningTime(int gasMiningWorkers, int mineralMiningWorkers, int neededGas,int neededMineral);
 
     std::string output = "";
 };
