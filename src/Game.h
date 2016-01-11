@@ -29,6 +29,7 @@ public:
     unsigned int getUsedSupplyAmount(){return usedSupply;}
     unsigned int getTotalSupplyAmount(){return totalSupply;}
     unsigned int getAvailableSupplyAmount(){return totalSupply-usedSupply;}
+    unsigned int getCurrentTime(){return curTime;};
 
     void setMineralAmount(int amount){minerals = amount;}
     void setGasAmount(int amount){gas = amount;}
@@ -44,6 +45,20 @@ public:
     bool precheckBuildList();
 
     void simulate();
+
+    virtual Race getRace() = 0;
+    std::string getRaceString(){
+        switch(getRace()){
+            case Race::PROTOSS:
+                return "protos";
+            case Race::ZERG:
+                return "zerg";
+            case Race::TERRAN:
+                return "terran";
+            default:
+                return "unknown";
+        }
+    }
 
 protected:
     GameObject& mainBuilding;
@@ -78,8 +93,6 @@ private:
     void readBuildList(std::istream &input);
     bool timeStep();
     void generateResources();
-
-    std::string output = "";
 };
 
 
@@ -87,9 +100,10 @@ class ProtosGame : public Game {
 public:
     ProtosGame();
 
+    virtual Race getRace(){return Race::PROTOSS;};
+
 protected:
     virtual void invokeSpecial() override;
-
 };
 
 

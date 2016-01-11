@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include "Action.h"
 #include "Game.h"
+#include "Output.hpp"
 
 //#include <json.h>
 
@@ -172,14 +173,24 @@ bool Game::precheckBuildList(){
 }
 
 void Game::printOutput(){
-  cout<<output;
+    Output::print();
 }
 
 void Game::simulate(){
     assert(buildList.size()!=0);
 
-    if (!precheckBuildList())
+    Output::put("game", "sc2-hots"+getRaceString());
+
+    if (!precheckBuildList()){
+        Output::put("buildlistValid", 0);
         throw SimulationException("BuildList invalid");
+    }
+
+    Output::put("buildlistValid", 1);
+
+    for(auto goi : GameObject::getAll()){
+        Output::addListItem("intialUnits."+goi->getType().getName(), goi->getID());
+    }
 
     currBuildListItem = buildList.begin();
 

@@ -8,6 +8,7 @@ class Game;
 
 #include "Game.h"
 #include "GameObject.h"
+#include "Output.hpp"
 
 
 class Action {
@@ -19,7 +20,7 @@ public:
     Action(Game& game)
         : game(game){};
     virtual bool canExecute() = 0;
-    virtual void start() = 0;
+    virtual void start();
     virtual void finish() = 0;
     virtual bool timeStep() = 0;
     virtual std::string getName(){return "Generic Action";};

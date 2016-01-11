@@ -170,7 +170,7 @@ vector<GameObjectInstance*> GameObject::getAll(function<bool(GameObjectInstance&
     vector<GameObjectInstance*> results;
 
     for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects){
-        for(GameObjectInstance goi : objectPointer.second->instances){
+        for(GameObjectInstance& goi : objectPointer.second->instances){
             if(filter(goi))
                 results.push_back(&goi);
         }
@@ -188,7 +188,6 @@ vector<GameObjectInstance*> GameObject::getAll(function<bool(GameObjectInstance&
 GameObjectInstance* GameObject::getPossibleProducer(){
     for(string producerName : producerNames){
         GameObject& producer = get(producerName);
-       // cout<<producer->getName()<<" "<<producer->instances.size()<<"\n";
         for(GameObjectInstance& goi : producer.instances){
             if(!goi.isBusy()){
               //cout<<goi.busyness<<" "<<goi.type.maxBusyness<<"\n";

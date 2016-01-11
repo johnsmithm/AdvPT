@@ -1,5 +1,10 @@
 #include "Action.h"
 
+void Action::start(){
+    Output::addListItem("messages", game.getCurrentTime(), "time");
+    Output::addListItem("messages.events", -7, "foobar");
+}
+
 /** @brief checks if an action can be executed
  *
  *  @return true if all dependencies for this action
@@ -18,7 +23,9 @@ bool BuildAction::canExecute() {
  *  Increases busyness of dependencies, subtracts resources and removes
  *  morphed units. Does not recheck canExecute! Do this before calling start.
  */
-void BuildAction::start() {;
+void BuildAction::start() {
+    Action::start();
+
     producingInstance = objectToBuild.getPossibleProducer();
 
     if(objectToBuild.getBuildType() == BuildType::MORPH){

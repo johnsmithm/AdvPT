@@ -51,8 +51,9 @@ public:
     bool isBoostTarget(){return boostTarget;};
 
     bool isBusy();
-    unsigned int getEnergy(){ return energy; };
     unsigned int getBusyness(){return busyness;};
+    unsigned int getEnergy(){ return energy; };
+    unsigned int getID(){ return ID; };
     void increaseEnergy();
     void increaseBusyness();
     void updateEnergy(int val);
