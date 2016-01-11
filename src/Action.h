@@ -9,6 +9,7 @@ class Game;
 #include "Game.h"
 #include "GameObject.h"
 #include "Output.hpp"
+#include "json/json.h"
 
 
 class Action {
@@ -16,11 +17,13 @@ protected:
     Game& game;
     unsigned int finishTime;
 
+    Json::Value& updateMessage();
+
 public:
     Action(Game& game)
         : game(game){};
     virtual bool canExecute() = 0;
-    virtual void start();
+    virtual void start() = 0;
     virtual void finish() = 0;
     virtual bool timeStep() = 0;
     virtual std::string getName(){return "Generic Action";};
@@ -58,17 +61,18 @@ private:
 
 class BoostAction : public Action{
 public:
-    BoostAction(Game& game, GameObjectInstance& target)
-        : Action(game), target(target) {}
+    BoostAction(Game& game, GameObjectInstance& target, GameObjectInstance& source)
+        : Action(game), target(target), source(source) {}
 
     virtual bool canExecute(){return true;};
-    virtual void start(){target.setBoostTarget(true);};
+    virtual void start();
     virtual void finish(){target.setBoostTarget(false);}
     virtual bool timeStep(){return --timeLeft == 0;};
     virtual std::string getName(){return "BoostAction";};
 
 private:
     GameObjectInstance &target;
+    GameObjectInstance &source;
     unsigned int timeLeft = 20;
 };
 

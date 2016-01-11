@@ -1,8 +1,37 @@
 #include "Action.h"
+#include "util.h"
 
-void Action::start(){
-    Output::addListItem("messages", game.getCurrentTime(), "time");
-    Output::addListItem("messages.events", -7, "foobar");
+#include <iostream>
+using namespace std;
+Json::Value& Action::updateMessage(){
+    Json::Value& output = game.modifyOutput();
+    unsigned int curTime = game.getCurrentTime();
+
+    if(output["messages"] == Json::Value())
+        output["messages"] = Json::Value(Json::arrayValue);
+
+
+    if(output["messages"].size() == 0 || last(output["messages"])["time"] != curTime){
+        Json::Value newMessage(Json::objectValue);
+
+        newMessage["time"] = curTime;
+        newMessage["events"] = Json::Value(Json::arrayValue);
+
+        output["messages"].append(newMessage);
+    }
+
+    Json::Value& message = last(output["messages"]);
+    message["status"]["resources"]["minerals"] = game.getMineralAmount();
+    message["status"]["resources"]["vespene"] = game.getGasAmount();
+    message["status"]["resources"]["supply"] = game.getTotalSupplyAmount();
+    message["status"]["resources"]["supply-used"] = game.getUsedSupplyAmount();
+
+    message["status"]["workers"]["minerals"] = game.getMineralMiningWorkers();
+    message["status"]["workers"]["vespene"] = game.getGasMiningWorkers();
+
+    message["events"].append(Json::Value(Json::objectValue));
+
+    return last(message["events"]);
 }
 
 /** @brief checks if an action can be executed
@@ -24,8 +53,6 @@ bool BuildAction::canExecute() {
  *  morphed units. Does not recheck canExecute! Do this before calling start.
  */
 void BuildAction::start() {
-    Action::start();
-
     producingInstance = objectToBuild.getPossibleProducer();
 
     if(objectToBuild.getBuildType() == BuildType::MORPH){
@@ -38,6 +65,11 @@ void BuildAction::start() {
     game.setUsedSupplyAmount(game.getUsedSupplyAmount() + objectToBuild.getSupplyCost());
     game.setGasAmount(game.getGasAmount() - objectToBuild.getGasCost());
     game.setMineralAmount(game.getMineralAmount() - objectToBuild.getMineralCost());
+
+    Json::Value& curEvent = updateMessage();
+    curEvent["type"] = "build-event";
+    curEvent["name"] = objectToBuild.getName();
+    curEvent["producerID"] = producingInstance->getID();
 }
 
 
@@ -59,4 +91,21 @@ void BuildAction::finish(){
     if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
         producingInstance->decreaseBusyness();
     }
+
+    Json::Value& curEvent = updateMessage();
+    curEvent["type"] = "build-end";
+    curEvent["name"] = objectToBuild.getName();
+    curEvent["producerID"] = producingInstance->getID();
+    curEvent["producedIDs"].append(producingInstance->getID());
+}
+
+
+void BoostAction::start(){
+    target.setBoostTarget(true);
+
+    Json::Value& curEvent = updateMessage();
+    curEvent["type"] = "special";
+    curEvent["name"] = "chronoboost";
+    curEvent["triggeredBy"] = source.getID();
+    curEvent["targetBuilding"] = target.getID();
 }

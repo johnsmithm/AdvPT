@@ -1,6 +1,7 @@
 #ifndef _UTIL_H_
 #define _UTIL_H_
 
+#include "json/json.h"
 
 /** @brief Removes whitespace from the beginning and end of a string
  *  Whitespace is: SPACE ( ), TAB (\t), NEWLINE (\n), CARRIAGE RETURN (\r),
@@ -23,5 +24,8 @@ std::string trim(const std::string &input);
  * @return a vector of the result tokens between the delimiter
  */
 std::vector<std::string> split(const std::string& str, char delimeter, std::string func (const std::string &)=NULL);
+
+/** @brief returns the last element in a json array*/
+Json::Value& last(Json::Value& elem);
 
 #endif

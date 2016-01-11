@@ -24,3 +24,7 @@ string trim(const string &input){
 
     return s;
 }
+
+Json::Value& last(Json::Value& elem){
+    return elem[elem.size()-1];
+}

@@ -173,23 +173,23 @@ bool Game::precheckBuildList(){
 }
 
 void Game::printOutput(){
-    Output::print();
+    cout << output;
 }
 
 void Game::simulate(){
     assert(buildList.size()!=0);
 
-    Output::put("game", "sc2-hots"+getRaceString());
+    output["game"] = "sc2-hots-"+getRaceString();
 
     if (!precheckBuildList()){
-        Output::put("buildlistValid", 0);
+        output["buildlistValid"] = 0;
         throw SimulationException("BuildList invalid");
     }
 
-    Output::put("buildlistValid", 1);
+    output["buildlistValid"] = 1;
 
     for(auto goi : GameObject::getAll()){
-        Output::addListItem("intialUnits."+goi->getType().getName(), goi->getID());
+        output["intialUnits"][goi->getType().getName()].append(goi->getID());
     }
 
     currBuildListItem = buildList.begin();
@@ -238,7 +238,7 @@ void ProtosGame::invokeSpecial() {
             vector<GameObjectInstance*> targets = GameObject::getAll(getNonBoostedBuildings);
 
             if(targets.size() > 0){
-                shared_ptr<BoostAction> action = make_shared<BoostAction>(BoostAction(*this, *targets[0]));
+                shared_ptr<BoostAction> action = make_shared<BoostAction>(BoostAction(*this, *targets[0], instance));
                 Game::debugOutput(action, true);
 
                 action->start();

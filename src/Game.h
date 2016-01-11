@@ -10,6 +10,7 @@
 
 #include "GameObject.h"
 #include "Action.h"
+#include "json/json.h"
 
 //forward declare classes to fix cyclic dependencies
 class Action;
@@ -25,7 +26,9 @@ public:
 class Game {
 public:
     unsigned int getMineralAmount(){return minerals;}
+    unsigned int getMineralMiningWorkers(){return mineralMiningWorkers;}
     unsigned int getGasAmount(){return gas;}
+    unsigned int getGasMiningWorkers(){return gasMiningWorkers;}
     unsigned int getUsedSupplyAmount(){return usedSupply;}
     unsigned int getTotalSupplyAmount(){return totalSupply;}
     unsigned int getAvailableSupplyAmount(){return totalSupply-usedSupply;}
@@ -34,12 +37,13 @@ public:
     void setMineralAmount(int amount){minerals = amount;}
     void setGasAmount(int amount){gas = amount;}
     void setUsedSupplyAmount(int amount){usedSupply = amount;}
-    void setTotalSupplyAmount(int amount){totalSupply = amount;};
+    void setTotalSupplyAmount(int amount){totalSupply = amount;}
 
     void readConfiguration();
 
     void readBuildList(std::string filename);
 
+    Json::Value& modifyOutput(){return output;}
     void printOutput();
 
     bool precheckBuildList();
@@ -65,6 +69,8 @@ protected:
     GameObject& worker;
     GameObject& geyserExploiter;
     std::list<std::shared_ptr<Action>> runningActions;
+
+    Json::Value output;
 
     Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
 
