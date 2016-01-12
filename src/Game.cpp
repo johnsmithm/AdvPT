@@ -299,20 +299,13 @@ int Game::ternarySearch(int left, int right, int neededGas, int neededMineral, i
 }
 
 void Game::generateResources() {
-  if (getResourcesBuildListItem == buildList.end()) {
-    return;
-  }
-
-//ToDo assign-changes just at events
+  //ToDo assign-changes just at events
   int gasDifference = (**getResourcesBuildListItem).getGasCost() - getGasAmount();
   int mineralDifference = (**getResourcesBuildListItem).getMineralCost() - getMineralAmount();
 
   // If we have enough resources, we move to next item
-  while (gasDifference <= 0 && mineralDifference <= 0) {
+  while ((*getResourcesBuildListItem != buildList.back()) && gasDifference <= 0 && mineralDifference <= 0) {
     getResourcesBuildListItem++; //print event
-    if (getResourcesBuildListItem == buildList.end()) {
-      return;
-    }
     gasDifference += (**getResourcesBuildListItem).getGasCost();
     mineralDifference += (**getResourcesBuildListItem).getMineralCost();
   }
