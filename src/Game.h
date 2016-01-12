@@ -25,6 +25,9 @@ public:
 
 class Game {
 public:
+
+    virtual ~Game(){};
+
     unsigned int getMineralAmount(){return minerals;}
     unsigned int getMineralMiningWorkers(){return mineralMiningWorkers;}
     unsigned int getGasAmount(){return gas;}
