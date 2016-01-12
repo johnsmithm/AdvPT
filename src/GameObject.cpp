@@ -147,7 +147,7 @@ void GameObject::parseStream(istream &inputStream) {
  */
 void GameObject::removeInstance(GameObjectInstance instance, Game &game){
     instances.remove(instance);
-    game.setUsedSupplyAmount(game.getUsedSupplyAmount() - instance.type.supplyCost);
+    game.setUsedSupplyAmount(game.getUsedSupplyAmount() + instance.type.supplyCost);
     game.setTotalSupplyAmount(game.getTotalSupplyAmount() - instance.type.supplyProvided);
 }
 

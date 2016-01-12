@@ -16,11 +16,12 @@ using namespace std;
 Game::Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter)
 : mainBuilding(mainBuilding), worker(worker), geyserExploiter(geyserExploiter) {
   setMineralAmount(50 * 10000);
-
   for (int i = 0; i < 6; ++i)
     worker.addNewInstance(*this);
 
   mainBuilding.addNewInstance(*this);
+    
+  setUsedSupplyAmount(6);
 }
 
 bool Game::finishBuildAction(){
@@ -47,6 +48,7 @@ bool Game::timeStep() {
   std::list<std::shared_ptr < Action>> toRemove;
   for (shared_ptr<Action> item : runningActions) {
     if (item->timeStep()) {
+      
       item->finish();
       debugOutput(item, false);
       //runningActions.remove(item);
@@ -63,7 +65,7 @@ bool Game::timeStep() {
   if (currBuildListItem != buildList.end()) {
 
     if ((**currBuildListItem).canExecute()) {
-
+      
       (**currBuildListItem).start();
       triggeredBuild = true;
       debugOutput(*currBuildListItem, true);
@@ -233,7 +235,7 @@ void Game::simulate() {
 int Game::getMiningTime(int gasMiningWorkers, int mineralMiningWorkers, int neededGas, int neededMineral) {
   assert(gasMiningWorkers >= 0 && mineralMiningWorkers >= 0);
   assert(neededGas >= 0 && neededMineral >= 0);
-
+//Todo add mule thing
   if (neededGas == 0 && neededMineral == 0) {
     return 0;
   }
@@ -272,7 +274,6 @@ int Game::ternarySearch(int left, int right, int neededGas, int neededMineral, i
   assert(left >= 0 && right >= left);
   assert(neededGas >= 0 && neededMineral >= 0);
   assert(freeWorkers >= 0);
-
   if (right - left == 0) {
     return right;
   }
@@ -302,12 +303,13 @@ void Game::generateResources() {
     return;
   }
 
+//ToDo assign-changes just at events
   int gasDifference = (**getResourcesBuildListItem).getGasCost() - getGasAmount();
   int mineralDifference = (**getResourcesBuildListItem).getMineralCost() - getMineralAmount();
 
   // If we have enough resources, we move to next item
   while (gasDifference <= 0 && mineralDifference <= 0) {
-    getResourcesBuildListItem++;
+    getResourcesBuildListItem++; //print event
     if (getResourcesBuildListItem == buildList.end()) {
       return;
     }
@@ -353,7 +355,7 @@ void ProtosGame::invokeSpecial() {
   for (GameObjectInstance& instance : GameObject::get("nexus").getAllInstances()) {
     while (instance.hasEnergy(25 * 10000)) {
       vector<GameObjectInstance*> targets = GameObject::getAll(getNonBoostedBuildings);
-
+      
       if (targets.size() > 0) {
         shared_ptr<BoostAction> action = make_shared<BoostAction>(BoostAction(*this, *targets[0], instance));
         Game::debugOutput(action, true);
