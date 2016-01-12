@@ -218,7 +218,7 @@ void Game::simulate() {
 int Game::getMiningTime(int gasMiningWorkers, int mineralMiningWorkers, int neededGas, int neededMineral) {
   assert(gasMiningWorkers >= 0 && mineralMiningWorkers >= 0);
   assert(neededGas >= 0 && neededMineral >= 0);
-
+//Todo add mule thing
   if (neededGas == 0 && neededMineral == 0) {
     return 0;
   }
@@ -257,7 +257,6 @@ int Game::ternarySearch(int left, int right, int neededGas, int neededMineral, i
   assert(left >= 0 && right >= left);
   assert(neededGas >= 0 && neededMineral >= 0);
   assert(freeWorkers >= 0);
-
   if (right - left == 0) {
     return right;
   }
@@ -287,12 +286,13 @@ void Game::generateResources() {
     return;
   }
 
+//ToDo assign-changes just at events
   int gasDifference = (**getResourcesBuildListItem).getGasCost() - getGasAmount();
   int mineralDifference = (**getResourcesBuildListItem).getMineralCost() - getMineralAmount();
 
   // If we have enough resources, we move to next item
   while (gasDifference <= 0 && mineralDifference <= 0) {
-    getResourcesBuildListItem++;
+    getResourcesBuildListItem++; //print event
     if (getResourcesBuildListItem == buildList.end()) {
       return;
     }
