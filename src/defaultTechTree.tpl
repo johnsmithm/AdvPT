@@ -54,7 +54,7 @@ mutalisk,100,100,33,2,0,0,0,zerg, larva ,spire/greater_spire ,morph, 0\n\
 hatchery,300,0,100,0,2,0,0,zerg,drone , ,morph, 1\n\
 evolution_chamber,75,0,35,0,0,0,0,zerg,drone ,hatchery ,morph, 1\n\
 spore_crawler,75,0,30,0,0,0,0,zerg,drone ,evolution_chamber ,morph, 1\n\
-lair,150,100,80,0,0,0,0,zerg,hatchery ,hatchery/spawning_pool ,morph, 1\n\
+lair,150,100,80,0,2,0,0,zerg,hatchery ,hatchery/spawning_pool ,morph, 1\n\
 spawning_pool,200,0,65,0,0,0,0,zerg,drone ,hatchery ,morph, 1\n\
 extractor,25,0,30,0,0,0,0,zerg,drone , ,morph, 1\n\
 spine_crawler,100,0,50,0,0,0,0,zerg,drone ,spawning_pool ,morph, 1\n\
@@ -62,7 +62,7 @@ roach_warren,150,0,55,0,0,0,0,zerg,drone ,spawning_pool ,morph, 1\n\
 baneling_nest,100,50,60,0,0,0,0,zerg,drone ,spawning_pool ,morph, 1\n\
 hydralisk_den,100,100,40,0,0,0,0,zerg,drone ,lair ,morph, 1\n\
 infestation_pit,100,100,50,0,0,0,0,zerg,drone ,lair ,morph, 1\n\
-hive,200,150,100,0,0,0,0,zerg,lair ,infestation_pit ,morph, 1\n\
+hive,200,150,100,0,2,0,0,zerg,lair ,infestation_pit ,morph, 1\n\
 nydus_network,150,200,50,0,0,0,0,zerg,drone ,lair ,morph, 1\n\
 ultralisk_cavern,150,200,65,0,0,0,0,zerg,drone ,hive ,morph, 1\n\
 greater_spire,100,150,100,0,0,0,0,zerg,spire ,hive ,morph, 1\n\
@@ -92,7 +92,7 @@ refinery,75,0,30,0,0,0,0,terran,scv , ,active, 1\n\
 engineering_bay,125,0,35,0,0,0,0,terran,scv , ,active, 1\n\
 missile_turret,100,0,25,0,0,0,0,terran,scv ,engineering_bay ,active, 1\n\
 sensor_tower,125,100,25,0,0,0,0,terran,scv ,engineering_bay ,active, 1\n\
-barracks,150,0,65,0,0,0,0,terran,scv ,supply_depot ,active, 1\n\
+barracks,150,0,65,0,11,0,0,terran,scv ,supply_depot ,active, 1\n\
 factory,150,100,60,0,0,0,0,terran,scv ,barracks/barracks_with_tech_lab/barracks_with_reactor ,active, 1\n\
 armory,150,100,65,0,0,0,0,terran,scv ,barracks/barracks_with_tech_lab/barracks_with_reactor ,active, 1\n\
 bunker,100,0,35,0,0,0,0,terran,scv ,barracks/barracks_with_tech_lab/barracks_with_reactor ,active, 1\n\

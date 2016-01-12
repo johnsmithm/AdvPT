@@ -15,11 +15,12 @@ using namespace std;
 Game::Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter)
 : mainBuilding(mainBuilding), worker(worker), geyserExploiter(geyserExploiter) {
   setMineralAmount(50 * 10000);
-
   for (int i = 0; i < 6; ++i)
     worker.addNewInstance(*this);
 
   mainBuilding.addNewInstance(*this);
+    
+  setUsedSupplyAmount(6);
 }
 
 bool Game::finishBuildAction(){
@@ -46,6 +47,7 @@ bool Game::timeStep() {
   std::list<std::shared_ptr < Action>> toRemove;
   for (shared_ptr<Action> item : runningActions) {
     if (item->timeStep()) {
+      
       item->finish();
       debugOutput(item, false);
       //runningActions.remove(item);
@@ -60,7 +62,7 @@ bool Game::timeStep() {
   if (currBuildListItem != buildList.end()) {
 
     if ((**currBuildListItem).canExecute()) {
-
+      
       (**currBuildListItem).start();
       debugOutput(*currBuildListItem, true);
       runningActions.push_back(*currBuildListItem);
@@ -336,7 +338,7 @@ void ProtosGame::invokeSpecial() {
   for (GameObjectInstance& instance : GameObject::get("nexus").getAllInstances()) {
     while (instance.hasEnergy(25 * 10000)) {
       vector<GameObjectInstance*> targets = GameObject::getAll(getNonBoostedBuildings);
-
+      
       if (targets.size() > 0) {
         shared_ptr<BoostAction> action = make_shared<BoostAction>(BoostAction(*this, *targets[0], instance));
         Game::debugOutput(action, true);

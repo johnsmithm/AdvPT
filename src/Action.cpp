@@ -56,7 +56,7 @@ void BuildAction::start() {
     producingInstance = objectToBuild.getPossibleProducer();
 
     if(objectToBuild.getBuildType() == BuildType::MORPH){
-        objectToBuild.removeInstance(*producingInstance, game);
+        objectToBuild.removeInstance(*producingInstance, game);//should do in finish
     }else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
         producingInstance->increaseBusyness();
     }
