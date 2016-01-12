@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include "Action.h"
 #include "Game.h"
+#include "util.h"
 
 //#include <json.h>
 
@@ -57,11 +58,14 @@ bool Game::timeStep() {
   }
 
   //check buildList
+  bool triggeredBuild = false;
+
   if (currBuildListItem != buildList.end()) {
 
     if ((**currBuildListItem).canExecute()) {
 
       (**currBuildListItem).start();
+      triggeredBuild = true;
       debugOutput(*currBuildListItem, true);
       runningActions.push_back(*currBuildListItem);
       currBuildListItem++;
@@ -69,10 +73,23 @@ bool Game::timeStep() {
 
   }
 
-  // invoke race specific special actions
-  invokeSpecial();
-  
+  // invoke race specific special actions, if no build was triggered
+  if(!triggeredBuild)
+    invokeSpecial();
+
   generateResources();
+
+  //if an action has created a new message, populate its global entries
+  Json::Value& message = last(output["messages"]);
+  if(message["time"] == getCurrentTime()){
+    message["status"]["resources"]["minerals"] = getMineralAmount()/10000;
+    message["status"]["resources"]["vespene"] = getGasAmount()/10000;
+    message["status"]["resources"]["supply"] = getTotalSupplyAmount();
+    message["status"]["resources"]["supply-used"] = getUsedSupplyAmount();
+
+    message["status"]["workers"]["minerals"] = getMineralMiningWorkers();
+    message["status"]["workers"]["vespene"] = getGasMiningWorkers();
+  }
 
   if (++curTime > 1000)
     throw SimulationException("Maximum timesteps exceeded");
@@ -348,7 +365,7 @@ void ProtosGame::invokeSpecial() {
       }
     }
   }
-  
+
 }
 
   void TerranGame::invokeSpecial() {
@@ -362,7 +379,7 @@ void ProtosGame::invokeSpecial() {
         instance.updateEnergy(-50 * 10000);
 
         runningActions.push_back(action);
-      
+
     }
   }
 }

@@ -21,16 +21,7 @@ Json::Value& Action::updateMessage(){
     }
 
     Json::Value& message = last(output["messages"]);
-    message["status"]["resources"]["minerals"] = game.getMineralAmount()/10000;
-    message["status"]["resources"]["vespene"] = game.getGasAmount()/10000;
-    message["status"]["resources"]["supply"] = game.getTotalSupplyAmount();
-    message["status"]["resources"]["supply-used"] = game.getUsedSupplyAmount();
-
-    message["status"]["workers"]["minerals"] = game.getMineralMiningWorkers();
-    message["status"]["workers"]["vespene"] = game.getGasMiningWorkers();
-
     message["events"].append(Json::Value(Json::objectValue));
-
     return last(message["events"]);
 }
 
