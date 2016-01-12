@@ -32,6 +32,10 @@ void GameObjectInstance::increaseBusyness(){
     busyness++;
 }
 
+void GameObjectInstance::setBusy(){
+    busyness = type.maxBusyness;
+}
+
 void GameObjectInstance::updateEnergy(int val){ // val can be positive or negative
     energy += val;
 }

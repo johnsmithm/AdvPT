@@ -47,7 +47,7 @@ void BuildAction::start() {
     producingInstance = objectToBuild.getPossibleProducer();
 
     if(objectToBuild.getBuildType() == BuildType::MORPH){
-        objectToBuild.removeInstance(*producingInstance, game);//should do in finish
+        producingInstance->setBusy();
     }else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
         producingInstance->increaseBusyness();
     }
@@ -79,7 +79,10 @@ bool BuildAction::timeStep(){
  */
 void BuildAction::finish(){
     objectToBuild.addNewInstance(game);
-    if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
+
+    if(objectToBuild.getBuildType() == BuildType::MORPH){
+        objectToBuild.removeInstance(*producingInstance, game);
+    }else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
         producingInstance->decreaseBusyness();
     }
 

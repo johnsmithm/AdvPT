@@ -56,6 +56,7 @@ public:
     unsigned int getID(){ return ID; };
     void increaseEnergy();
     void increaseBusyness();
+    void setBusy();
     void updateEnergy(int val);
 
     void setBoostTarget(bool isBoostTarget){
