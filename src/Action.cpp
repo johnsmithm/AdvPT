@@ -109,3 +109,16 @@ void BoostAction::start(){
     curEvent["triggeredBy"] = source.getID();
     curEvent["targetBuilding"] = target.getID();
 }
+
+void MuleAction::start(){
+    game.setMuleAction(1);
+
+    Json::Value& curEvent = updateMessage();
+    curEvent["type"] = "special";
+    curEvent["name"] = "mule";
+    curEvent["triggeredBy"] = source.getID();
+}
+
+void MuleAction::finish(){
+    game.setMuleAction(-1);
+}

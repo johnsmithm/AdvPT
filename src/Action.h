@@ -75,6 +75,24 @@ private:
     unsigned int timeLeft = 20;
 };
 
+class MuleAction : public Action {
+public:
+
+    MuleAction(Game& game, GameObjectInstance& source)
+        : Action(game), source(source) {}
+
+    virtual bool canExecute(){return true;};
+    virtual void start();
+    virtual void finish();
+    virtual bool timeStep(){return --timeLeft == 0;};
+    virtual std::string getName(){return "MuleAction";};
+
+private:
+    GameObjectInstance &source;
+    unsigned int timeLeft = 90;
+    
+};
+
 /*
 class CreateLarvaeHatcharyAction {//from eggs or from hatcharies??
 private:
@@ -94,33 +112,7 @@ private:
 }
 
 
-class MuleAction {
-private:
-   GameObject& commandCenter;
-   GameObject& orbitalCommand;
-   GameObjectInstance &target;
-public:
-
-    MuleAction(GameObject& commandCenter, GameObject& orbitalCommand)
-        commandCenter(commandCenter), orbitalCommand(orbitalCommand){}//can be inatializated at the begining
-
-    bool canExecute(){//can be executed more time per second???
-        for(GameObjectInstance command : commandCenter.instanceID)
-                 if(Command.hasEnergy()){
-                    target = command;
-                    return true;
-                 }
-        //same for orbital
-    }
-    void start(){
-     target.UpdateEnergy(-50*1000);
-     MuleIncrese = MineralRate * 4;
-     CalculateFinishingTime();
-    }
-    void finish(){
-     MuleIncrese = 0;
-    }
-};*/
+*/
 
 
 #endif

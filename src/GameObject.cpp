@@ -123,7 +123,7 @@ void GameObject::parseStream(istream &inputStream) {
             stol(tokens[6])*10000, // startEnergy
             stol(tokens[7])*10000, // maxEnergy
 
-            1, //TODO: maxBusyness
+            tokens[0].find("_with_reactor") != std::string::npos? 2 : 1, //TODO: maxBusyness
 
             //race, we don't need this (yet?)
             // tokens[8] == "terran" ? Race::TERRAN :

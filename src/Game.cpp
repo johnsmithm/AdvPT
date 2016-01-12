@@ -22,12 +22,21 @@ Game::Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExplo
   mainBuilding.addNewInstance(*this);
 }
 
+bool Game::finishBuildAction(){
+  for (shared_ptr<Action> item : runningActions) {
+    if(item->getName() != "BoostAction" && item->getName() != "MuleAction"){
+      return false;
+    }
+  }
+  return true;
+}
+
 bool Game::timeStep() {
-  if (currBuildListItem == buildList.end() && runningActions.size() == 0) {
+  if (currBuildListItem == buildList.end() && finishBuildAction()) {
     return true;
   }
 
-  minerals += mineralMiningWorkers * mineralsRate;
+  minerals += mineralMiningWorkers * mineralsRate + muleActions * 4 * mineralsRate;
   gas += gasMiningWorkers * gasRate;
 
   //increase energy on all buildings
@@ -58,11 +67,12 @@ bool Game::timeStep() {
       currBuildListItem++;
     }
 
-    generateResources();
   }
 
   // invoke race specific special actions
   invokeSpecial();
+  
+  generateResources();
 
   if (++curTime > 1000)
     throw SimulationException("Maximum timesteps exceeded");
@@ -313,6 +323,11 @@ ProtosGame::ProtosGame()
 GameObject::get("assimilator")) {
 }
 
+TerranGame::TerranGame()
+: Game(GameObject::get("command_center"), GameObject::get("scv"),
+GameObject::get("refinery")) {
+}
+
 bool getNonBoostedBuildings(GameObjectInstance &goi) {
   return !goi.isBoostTarget() && goi.getBusyness() >= 0 && goi.getType().isBuilding();
 }
@@ -331,6 +346,23 @@ void ProtosGame::invokeSpecial() {
 
         runningActions.push_back(action);
       }
+    }
+  }
+  
+}
+
+  void TerranGame::invokeSpecial() {
+  for (GameObjectInstance& instance : GameObject::get("orbital_command").getAllInstances()) {
+    if (instance.hasEnergy(50 * 10000)) {
+
+        shared_ptr<MuleAction> action = make_shared<MuleAction>(MuleAction(*this, instance));
+        Game::debugOutput(action, true);
+
+        action->start();
+        instance.updateEnergy(-50 * 10000);
+
+        runningActions.push_back(action);
+      
     }
   }
 }

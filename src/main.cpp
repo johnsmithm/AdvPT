@@ -76,7 +76,7 @@ int main(int argc, char **argv){
         GameObject::parseString(defaultTechTree);
     }
 
-    ProtosGame g;
+    TerranGame g;
     try{
         g.readBuildList(buildListFilename);
     }catch(const SimulationException &e){

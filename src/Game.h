@@ -47,6 +47,8 @@ public:
     void printOutput();
 
     bool precheckBuildList();
+    
+    void setMuleAction(int value){muleActions += value;};
 
     void simulate();
 
@@ -87,6 +89,8 @@ private:
 
     unsigned int gasMiningWorkers = 0;
     unsigned int mineralMiningWorkers = 6;
+    
+    unsigned int muleActions = 0;
 
     const int mineralsRate = DEFAULT_MINERAL_INCREASE;
     const int gasRate = DEFAULT_GAS_INCREASE;
@@ -100,7 +104,7 @@ private:
     void readBuildList(std::istream &input);
     bool timeStep();
     void generateResources();
-
+    bool finishBuildAction();
     int ternarySearch(int left, int right, int neededGas,int neededMineral, int freeWorkers);
     int getMiningTime(int gasMiningWorkers, int mineralMiningWorkers, int neededGas,int neededMineral);
 };
@@ -111,6 +115,16 @@ public:
     ProtosGame();
 
     virtual Race getRace(){return Race::PROTOSS;};
+
+protected:
+    virtual void invokeSpecial() override;
+};
+
+class TerranGame : public Game {
+public:
+    TerranGame();
+
+    virtual Race getRace(){return Race::TERRAN;};
 
 protected:
     virtual void invokeSpecial() override;
