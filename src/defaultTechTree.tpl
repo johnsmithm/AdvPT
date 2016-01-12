@@ -92,7 +92,7 @@ refinery,75,0,30,0,0,0,0,terran,scv , ,active, 1\n\
 engineering_bay,125,0,35,0,0,0,0,terran,scv , ,active, 1\n\
 missile_turret,100,0,25,0,0,0,0,terran,scv ,engineering_bay ,active, 1\n\
 sensor_tower,125,100,25,0,0,0,0,terran,scv ,engineering_bay ,active, 1\n\
-barracks,150,0,65,0,11,0,0,terran,scv ,supply_depot ,active, 1\n\
+barracks,150,0,65,0,0,0,0,terran,scv ,supply_depot ,active, 1\n\
 factory,150,100,60,0,0,0,0,terran,scv ,barracks/barracks_with_tech_lab/barracks_with_reactor ,active, 1\n\
 armory,150,100,65,0,0,0,0,terran,scv ,barracks/barracks_with_tech_lab/barracks_with_reactor ,active, 1\n\
 bunker,100,0,35,0,0,0,0,terran,scv ,barracks/barracks_with_tech_lab/barracks_with_reactor ,active, 1\n\
