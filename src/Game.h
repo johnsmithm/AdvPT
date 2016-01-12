@@ -123,6 +123,7 @@ protected:
     virtual void invokeSpecial() override;
 };
 
+
 class TerranGame : public Game {
 public:
     TerranGame();
@@ -133,6 +134,16 @@ protected:
     virtual void invokeSpecial() override;
 };
 
+
+class ZergGame : public Game {
+public:
+    ZergGame();
+
+    virtual Race getRace(){return Race::ZERG;};
+
+protected:
+    virtual void invokeSpecial() override;
+};
 
 /*class ZergGame : Game {
     Race currRace = ZERG;

@@ -166,6 +166,7 @@ bool Game::precheckBuildList() {
   unordered_set<string> existing;
   existing.insert(mainBuilding.getName());
   existing.insert(worker.getName());
+  existing.insert(GameObject::get("larva").getName());
 
   bool hasGeyserExploiter = false;
   for (auto item : buildList) {
@@ -331,13 +332,18 @@ void Game::generateResources() {
 }
 
 ProtosGame::ProtosGame()
-: Game(GameObject::get("nexus"), GameObject::get("probe"),
-GameObject::get("assimilator")) {
+    : Game(GameObject::get("nexus"), GameObject::get("probe"),
+      GameObject::get("assimilator")) {
 }
 
 TerranGame::TerranGame()
-: Game(GameObject::get("command_center"), GameObject::get("scv"),
-GameObject::get("refinery")) {
+    : Game(GameObject::get("command_center"), GameObject::get("scv"),
+      GameObject::get("refinery")) {
+}
+
+ZergGame::ZergGame()
+    : Game(GameObject::get("hatchery"), GameObject::get("drone"),
+      GameObject::get("extractor")) {
 }
 
 bool getNonBoostedBuildings(GameObjectInstance &goi) {
@@ -363,7 +369,7 @@ void ProtosGame::invokeSpecial() {
 
 }
 
-  void TerranGame::invokeSpecial() {
+void TerranGame::invokeSpecial() {
   for (GameObjectInstance& instance : GameObject::get("orbital_command").getAllInstances()) {
     if (instance.hasEnergy(50 * 10000)) {
 
@@ -379,3 +385,6 @@ void ProtosGame::invokeSpecial() {
   }
 }
 
+void ZergGame::invokeSpecial() {
+
+}
