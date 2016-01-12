@@ -77,12 +77,17 @@ bool Game::timeStep() {
 
   // invoke race specific special actions, if no build was triggered
   if(!triggeredBuild)
-    invokeSpecial();
-
-  generateResources();
+    invokeSpecial();  
 
   //if an action has created a new message, populate its global entries
   Json::Value& message = last(output["messages"]);
+  
+  // Reassign workers when we finish mining resources for a build item or
+  // We have a change in the workers business
+  if(finishTimeCurrentBuildItem == curTime || freeWorkers != worker.getFreeInstancesCount()){
+     generateResources();
+  }
+  
   if(message["time"] == getCurrentTime()){
     message["status"]["resources"]["minerals"] = getMineralAmount()/10000;
     message["status"]["resources"]["vespene"] = getGasAmount()/10000;
@@ -214,18 +219,44 @@ void Game::simulate() {
         output["buildlistValid"] = 0;
         throw SimulationException("BuildList invalid");
     }
-
+    output["messages"] = Json::Value(Json::arrayValue);
     output["buildlistValid"] = 1;
 
     for(auto goi : GameObject::getAll()){
         output["intialUnits"][goi->getType().getName()].append(goi->getID());
     }
 
-    getResourcesBuildListItem = currBuildListItem = buildList.begin();
+    currBuildListItem = buildList.begin();
 
   while (!timeStep()) {
   };
 }
+
+/**
+ * @brief Write an output just when the workAssignment is changed
+ * 
+ */
+void Game::updateMessagesForWorkersReassignment(){
+
+    if(output["messages"].size() == 0 || last(output["messages"])["time"] != curTime){
+        Json::Value newMessage(Json::objectValue);
+
+        newMessage["time"] = curTime;
+        newMessage["events"] = Json::Value(Json::arrayValue);
+
+        output["messages"].append(newMessage);
+    }
+
+    Json::Value& message = last(output["messages"]);
+    message["status"]["resources"]["minerals"] = getMineralAmount()/10000;
+    message["status"]["resources"]["vespene"] = getGasAmount()/10000;
+    message["status"]["resources"]["supply"] = getTotalSupplyAmount();
+    message["status"]["resources"]["supply-used"] = getUsedSupplyAmount();
+
+    message["status"]["workers"]["minerals"] = getMineralMiningWorkers();
+    message["status"]["workers"]["vespene"] = getGasMiningWorkers();
+}
+ 
 
 /**
  *@brief Calculate maximum time of harvesting.
@@ -299,7 +330,12 @@ int Game::ternarySearch(int left, int right, int neededGas, int neededMineral, i
 }
 
 void Game::generateResources() {
-  //ToDo assign-changes just at events
+  std::vector<std::shared_ptr<BuildAction>>::iterator getResourcesBuildListItem = currBuildListItem;
+  if(getResourcesBuildListItem == buildList.end()){
+    return;
+  }
+  //ToDo assign-changes just at events or write messages when reassign workers and 
+  // there are no events
   int gasDifference = (**getResourcesBuildListItem).getGasCost() - getGasAmount();
   int mineralDifference = (**getResourcesBuildListItem).getMineralCost() - getMineralAmount();
 
@@ -309,11 +345,18 @@ void Game::generateResources() {
     gasDifference += (**getResourcesBuildListItem).getGasCost();
     mineralDifference += (**getResourcesBuildListItem).getMineralCost();
   }
-
+  unsigned int oldGasMiningWorkers = gasMiningWorkers;
+  unsigned int oldMineralMiningWorkers = mineralMiningWorkers;
   gasMiningWorkers = 0;
   mineralMiningWorkers = 0;
-  unsigned int freeWorkers = worker.getFreeInstancesCount();
-
+  freeWorkers = worker.getFreeInstancesCount();  
+  
+  int neededGas = gasDifference < 0 ? 0 : gasDifference;
+  int neededMineral = mineralDifference < 0 ? 0 : mineralDifference;
+  
+  if(gasDifference <= 0 && mineralDifference <= 0){
+    mineralMiningWorkers = freeWorkers;
+  } else
   if (gasDifference > 0 && mineralDifference <= 0) {
     gasMiningWorkers = min(geyserExploiter.getInstancesCount() * 3, freeWorkers);
     mineralMiningWorkers = freeWorkers - gasMiningWorkers;
@@ -323,11 +366,22 @@ void Game::generateResources() {
     gasMiningWorkers = 0;
   } else {
     int MaxGasMiningWorkers = min(geyserExploiter.getInstancesCount() * 3, freeWorkers);
-    int neededGas = gasDifference < 0 ? 0 : gasDifference;
-    int neededMineral = mineralDifference < 0 ? 0 : mineralDifference;
     gasMiningWorkers = ternarySearch(0, MaxGasMiningWorkers, neededGas, neededMineral, freeWorkers);
     mineralMiningWorkers = freeWorkers - gasMiningWorkers;
   }
+  if(neededGas == 0 && neededMineral == 0){
+    finishTimeCurrentBuildItem = 1001;
+  }
+  else {
+    finishTimeCurrentBuildItem = curTime +
+            getMiningTime(gasMiningWorkers, mineralMiningWorkers, neededGas, neededMineral);
+  }
+    
+  // Write messages when we reassign workers and do not have events
+  Json::Value& message = last(output["messages"]);
+  if(message["time"] != getCurrentTime() && 
+          (mineralMiningWorkers != oldMineralMiningWorkers || gasMiningWorkers != oldGasMiningWorkers))
+    updateMessagesForWorkersReassignment();
 }
 
 ProtosGame::ProtosGame()

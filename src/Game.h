@@ -83,7 +83,7 @@ protected:
     virtual void invokeSpecial() = 0;
 
 private:
-    int curTime = 1;
+    unsigned int curTime = 1;
 
     unsigned int minerals = 50*1000;
     unsigned int gas = 0;
@@ -94,6 +94,9 @@ private:
     unsigned int mineralMiningWorkers = 6;
 
     unsigned int muleActions = 0;
+    unsigned int freeWorkers = 6;
+        
+    unsigned int finishTimeCurrentBuildItem = 1;
 
     const int mineralsRate = DEFAULT_MINERAL_INCREASE;
     const int gasRate = DEFAULT_GAS_INCREASE;
@@ -102,12 +105,12 @@ private:
     std::vector<std::shared_ptr<BuildAction>> buildList;
 
     std::vector<std::shared_ptr<BuildAction>>::iterator currBuildListItem;
-    std::vector<std::shared_ptr<BuildAction>>::iterator getResourcesBuildListItem;
 
     void readBuildList(std::istream &input);
     bool timeStep();
     void generateResources();
     bool finishBuildAction();
+    void updateMessagesForWorkersReassignment();
     int ternarySearch(int left, int right, int neededGas,int neededMineral, int freeWorkers);
     int getMiningTime(int gasMiningWorkers, int mineralMiningWorkers, int neededGas,int neededMineral);
 };
