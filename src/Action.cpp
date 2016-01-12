@@ -1,7 +1,7 @@
 #include "Action.h"
 #include "util.h"
 
-#include <iostream>
+#include <cmath>
 using namespace std;
 Json::Value& Action::updateMessage(){
     Json::Value& output = game.modifyOutput();
@@ -21,8 +21,8 @@ Json::Value& Action::updateMessage(){
     }
 
     Json::Value& message = last(output["messages"]);
-    message["status"]["resources"]["minerals"] = game.getMineralAmount();
-    message["status"]["resources"]["vespene"] = game.getGasAmount();
+    message["status"]["resources"]["minerals"] = game.getMineralAmount()/10000;
+    message["status"]["resources"]["vespene"] = game.getGasAmount()/10000;
     message["status"]["resources"]["supply"] = game.getTotalSupplyAmount();
     message["status"]["resources"]["supply-used"] = game.getUsedSupplyAmount();
 
