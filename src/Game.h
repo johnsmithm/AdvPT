@@ -47,7 +47,7 @@ public:
     void printOutput();
 
     bool precheckBuildList();
-    
+
     void setMuleAction(int value){muleActions += value;};
 
     void simulate();
@@ -82,14 +82,14 @@ protected:
 private:
     int curTime = 1;
 
-    unsigned int minerals = 0;
+    unsigned int minerals = 50*1000;
     unsigned int gas = 0;
     unsigned int usedSupply = 0;
     unsigned int totalSupply = 0;
 
     unsigned int gasMiningWorkers = 0;
     unsigned int mineralMiningWorkers = 6;
-    
+
     unsigned int muleActions = 0;
 
     const int mineralsRate = DEFAULT_MINERAL_INCREASE;
