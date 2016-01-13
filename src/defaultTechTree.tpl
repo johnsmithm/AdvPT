@@ -33,42 +33,6 @@ forge,150,0,45,0,0,0,0,protoss, probe ,nexus ,warp, 1\n\
 photon_cannon,150,0,40,0,0,0,0,protoss, probe ,forge ,warp, 1\n\
 #,,,,,,,,,, ,\n\
 ##########,,,,,,,,,, \n\
-#  Zerg  #,,,,,,,,,, \n\
-##########,,,,,,,,,, \n\
-overlord,100,0,25,0,8,0,0,zerg, larva , ,morph, 0\n\
-overseer,50,50,17,0,8,0,0,zerg, overlord ,lair/hive ,morph, 0\n\
-hydralisk,100,50,33,2,0,0,0,zerg, larva ,hydralisk_den ,morph, 0\n\
-drone,50,0,17,1,0,0,0,zerg, larva , ,morph, 0\n\
-queen,150,0,50,2,0,25,200,zerg, hatchery/lair/hive,spawning_pool ,active, 0\n\
-larva,0,0,0,0,0,0,0,zerg, hatchery/lair/hive, ,morph, 0\n\
-zergling,50,0,24,0.5,0,0,0,zerg, larva ,spawning_pool ,morph, 0\n\
-baneling,25,25,20,0.5,0,0,0,zerg, zergling ,baneling_nest ,morph, 0\n\
-roach,75,25,27,2,0,0,0,zerg, larva ,roach_warren ,morph, 0\n\
-infestor,100,150,50,2,0,0,0,zerg, larva ,infestation_pit ,morph, 0\n\
-nydus_worm,100,100,20,0,0,0,0,zerg, nydus_network , ,active, 0\n\
-ultralisk,300,200,55,6,0,0,0,zerg, larva ,ultralisk_cavern ,morph, 0\n\
-brood_lord,150,150,34,4,0,0,0,zerg, corruptor ,greater_spire ,morph, 0\n\
-corruptor,150,100,40,2,0,0,0,zerg, larva ,spire/greater_spire ,morph, 0\n\
-mutalisk,100,100,33,2,0,0,0,zerg, larva ,spire/greater_spire ,morph, 0\n\
-#buildings,,,,,,,,,, \n\
-hatchery,300,0,100,0,2,0,0,zerg,drone , ,morph, 1\n\
-evolution_chamber,75,0,35,0,0,0,0,zerg,drone ,hatchery ,morph, 1\n\
-spore_crawler,75,0,30,0,0,0,0,zerg,drone ,evolution_chamber ,morph, 1\n\
-lair,150,100,80,0,2,0,0,zerg,hatchery ,hatchery/spawning_pool ,morph, 1\n\
-spawning_pool,200,0,65,0,0,0,0,zerg,drone ,hatchery ,morph, 1\n\
-extractor,25,0,30,0,0,0,0,zerg,drone , ,morph, 1\n\
-spine_crawler,100,0,50,0,0,0,0,zerg,drone ,spawning_pool ,morph, 1\n\
-roach_warren,150,0,55,0,0,0,0,zerg,drone ,spawning_pool ,morph, 1\n\
-baneling_nest,100,50,60,0,0,0,0,zerg,drone ,spawning_pool ,morph, 1\n\
-hydralisk_den,100,100,40,0,0,0,0,zerg,drone ,lair ,morph, 1\n\
-infestation_pit,100,100,50,0,0,0,0,zerg,drone ,lair ,morph, 1\n\
-hive,200,150,100,0,2,0,0,zerg,lair ,infestation_pit ,morph, 1\n\
-nydus_network,150,200,50,0,0,0,0,zerg,drone ,lair ,morph, 1\n\
-ultralisk_cavern,150,200,65,0,0,0,0,zerg,drone ,hive ,morph, 1\n\
-greater_spire,100,150,100,0,0,0,0,zerg,spire ,hive ,morph, 1\n\
-spire,200,200,100,0,0,0,0,zerg,drone ,lair ,morph, 1\n\
-#,,,,,,,,,, \n\
-##########,,,,,,,,,, \n\
 # Terran #,,,,,,,,,, \n\
 ##########,,,,,,,,,, \n\
 scv,50,0,17,1,0,0,0,terran,command_center/orbital_command/planetary_fortress, ,active , 0\n\

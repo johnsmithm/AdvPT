@@ -129,12 +129,6 @@ void GameObject::parseStream(istream &inputStream) {
 
             tokens[0].find("_with_reactor") != std::string::npos? 2 : 1, //TODO: maxBusyness
 
-            //race, we don't need this (yet?)
-            // tokens[8] == "terran" ? Race::TERRAN :
-            //     (tokens[8] == "zerg" ? Race::ZERG :
-            //     (tokens[8] == "protoss" ? Race::PROTOSS :
-            //         throw TechTreeParsingException("Invalid race", linecounter))),
-
             producers,
             dependencies,
 

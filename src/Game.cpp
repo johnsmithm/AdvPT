@@ -171,7 +171,6 @@ bool Game::precheckBuildList() {
   unordered_set<string> existing;
   existing.insert(mainBuilding.getName());
   existing.insert(worker.getName());
-  existing.insert(GameObject::get("larva").getName());
 
   bool hasGeyserExploiter = false;
   for (auto item : buildList) {
@@ -220,7 +219,6 @@ void Game::simulate() {
 
   output["buildlistValid"] = 1;
   for (auto goi : GameObject::getAll()) {
-    if(goi->getType().getName() != "larva")
       output["initialUnits"][goi->getType().getName()].append(to_string(goi->getID()));
   }
 
@@ -400,20 +398,6 @@ TerranGame::TerranGame()
       GameObject::get("refinery")) {
 }
 
-ZergGame::ZergGame()
-    : Game(GameObject::get("hatchery"), GameObject::get("drone"),
-      GameObject::get("extractor")), larva(GameObject::get("larva")),
-      larvaProducerTypes{&GameObject::get("hatchery"), &GameObject::get("lair"), &GameObject::get("hive")} {
-    // Add overlord
-     GameObject::get("overlord").addNewInstance(*this);
-    // Add initial larvae
-    for (int i = 0; i < 3; ++i)
-        larva.addNewInstance(*this);
-    larvaProducerProperties.emplace_back();
-    larvaProducerProperties[0].occupiedSlots = 3;
-    previousLarvaCount = 3;
-}
-
 bool getNonBoostedBuildings(GameObjectInstance &goi) {
   return !goi.isBoostTarget() && goi.getBusyness() >= 0 && goi.getType().isBuilding();
 }
@@ -452,41 +436,3 @@ void TerranGame::invokeSpecial() {
     }
   }
 }
-
-void ZergGame::invokeSpecial() {
-    // Add recently built larva producers
-    unsigned int producerCount = 0;
-    unsigned int previousProducerCount = larvaProducerProperties.size();
-    for (GameObject* go : larvaProducerTypes)
-        producerCount += go->getInstancesCount();
-    for (unsigned int i = previousProducerCount; i < producerCount; ++i)
-        larvaProducerProperties.emplace_back();
-
-    // Get the larvae decrease between this and the previous execution
-    // TODO: this will have to be changed when the SpawnLarvaeAction is implemented
-    unsigned int larvaDecrease = previousLarvaCount - larva.getFreeInstancesCount();
-
-    // Subtract larvaDecrease and create new larvae
-    for (LarvaProducerProperties& properties : larvaProducerProperties) {
-        if (larvaDecrease >= properties.occupiedSlots) {
-            larvaDecrease -= properties.occupiedSlots;
-            properties.occupiedSlots = 0;
-        } else {
-            properties.occupiedSlots -= larvaDecrease;
-            larvaDecrease = 0;
-        }
-
-        --properties.timeTillSpawn;
-        if ((properties.occupiedSlots < 3) && (properties.timeTillSpawn == 0)) {
-            ++properties.occupiedSlots;
-            larva.addNewInstance(*this);
-        }
-
-        if (properties.timeTillSpawn == 0)
-            properties.timeTillSpawn = LARVA_SPAWN_TIME;
-    }
-
-    // Update the previous larvaCount - this must be set after calls to larva.addNewInstance!
-    previousLarvaCount = larva.getFreeInstancesCount();
-}
-
