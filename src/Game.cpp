@@ -79,9 +79,6 @@ bool Game::timeStep() {
   // invoke race specific special actions, if no build was triggered
   if(!triggeredBuild)
     invokeSpecial();  
-
-  //if an action has created a new message, populate its global entries
-  Json::Value& message = last(output["messages"]);
   
   // Reassign workers when we finish mining resources for a build item or
   // We have a change in the workers business
@@ -89,6 +86,8 @@ bool Game::timeStep() {
      generateResources();
   }
   
+  //if an action has created a new message, populate its global entries
+  Json::Value& message = last(output["messages"]);
   if(message["time"] == curTime || curTime == 1){
     message["status"]["resources"]["minerals"] = getMineralAmount()/10000;
     message["status"]["resources"]["vespene"] = getGasAmount()/10000;
@@ -212,28 +211,22 @@ void Game::printOutput(){
 void Game::simulate() {
   assert(buildList.size() != 0);
 
-  if (!precheckBuildList())
+  output["game"] = "sc2-hots-" + getRaceString();
+
+  if (!precheckBuildList()) {
+    output["buildlistValid"] = 0;
     throw SimulationException("BuildList invalid");
+  }
 
-    output["game"] = "sc2-hots-"+getRaceString();
+  output["buildlistValid"] = 1;
 
-  if (!precheckBuildList()){
-        output["buildlistValid"] = 0;
-        throw SimulationException("BuildList invalid");
-    }
-    output["messages"] = Json::Value(Json::arrayValue);
-    Json::Value newMessage(Json::objectValue);
-    newMessage["time"] = 1;
-    newMessage["events"] = Json::Value(Json::arrayValue);
-    output["messages"].append(newMessage);
-    
-    output["buildlistValid"] = 1;
+  for (auto goi : GameObject::getAll()) {
+    output["initialUnits"][goi->getType().getName()].append(to_string(goi->getID()));
+  }
 
-    for(auto goi : GameObject::getAll()){
-        output["initialUnits"][goi->getType().getName()].append(to_string(goi->getID()));
-    }
-
-    currBuildListItem = buildList.begin();
+  output["messages"] = Json::Value(Json::arrayValue);
+  
+  currBuildListItem = buildList.begin();
 
   while (!timeStep()) {
   };
@@ -383,12 +376,18 @@ void Game::generateResources() {
     finishTimeCurrentBuildItem = curTime +
             getMiningTime(gasMiningWorkers, mineralMiningWorkers, neededGas, neededMineral);
   }
-    
+
   // Write messages when we reassign workers and do not have events
-  Json::Value& message = last(output["messages"]);
-  if(message["time"] != getCurrentTime() && 
-          (mineralMiningWorkers != oldMineralMiningWorkers || gasMiningWorkers != oldGasMiningWorkers))
+  if (output["messages"].size() == 0 && curTime == 1) {
     updateMessagesForWorkersReassignment();
+  }
+  else {
+    Json::Value& message = last(output["messages"]);
+    if (message["time"] != getCurrentTime() &&
+            (mineralMiningWorkers != oldMineralMiningWorkers || gasMiningWorkers != oldGasMiningWorkers))
+      updateMessagesForWorkersReassignment();
+  }
+  
 }
 
 ProtossGame::ProtossGame()
