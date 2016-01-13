@@ -343,7 +343,8 @@ TerranGame::TerranGame()
 
 ZergGame::ZergGame()
     : Game(GameObject::get("hatchery"), GameObject::get("drone"),
-      GameObject::get("extractor")) {
+      GameObject::get("extractor")), larva(GameObject::get("larva")),
+      larvaProducerTypes{&GameObject::get("hatchery"), &GameObject::get("lair"), &GameObject::get("hive")} {
 }
 
 bool getNonBoostedBuildings(GameObjectInstance &goi) {
@@ -386,5 +387,39 @@ void TerranGame::invokeSpecial() {
 }
 
 void ZergGame::invokeSpecial() {
+    // Add recently built larva producers
+    unsigned int producerCount = 0;
+    unsigned int previousProducerCount = larvaProducerProperties.size();
+    for (GameObject* go : larvaProducerTypes)
+        producerCount += go->getInstancesCount();
+    for (unsigned int i = previousProducerCount; i < producerCount; ++i)
+        larvaProducerProperties.emplace_back();
 
+    // Get the larvae decrease between this and the previous execution
+    // TODO: this will have to be changed when the SpawnLarvaeAction is implemented
+    unsigned int larvaDecrease = previousLarvaCount - larva.getFreeInstancesCount();
+
+    // Subtract larvaDecrease and create new larvae
+    for (LarvaProducerProperties& properties : larvaProducerProperties) {
+        if (larvaDecrease >= properties.occupiedSlots) {
+            larvaDecrease -= properties.occupiedSlots;
+            properties.occupiedSlots = 0;
+        } else {
+            properties.occupiedSlots -= larvaDecrease;
+            larvaDecrease = 0;
+        }
+
+        --properties.timeTillSpawn;
+        if ((properties.occupiedSlots < 3) && (properties.timeTillSpawn == 0)) {
+            ++properties.occupiedSlots;
+            larva.addNewInstance(*this);
+        }
+
+        if (properties.timeTillSpawn == 0)
+            properties.timeTillSpawn = LARVA_SPAWN_TIME;
+    }
+
+    // Update the previous larvaCount - this must be set after calls to larva.addNewInstance!
+    previousLarvaCount = larva.getFreeInstancesCount();
 }
+
