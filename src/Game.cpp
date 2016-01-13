@@ -404,6 +404,13 @@ ZergGame::ZergGame()
     : Game(GameObject::get("hatchery"), GameObject::get("drone"),
       GameObject::get("extractor")), larva(GameObject::get("larva")),
       larvaProducerTypes{&GameObject::get("hatchery"), &GameObject::get("lair"), &GameObject::get("hive")} {
+
+    // Add initial larvae
+    for (int i = 0; i < 3; ++i)
+        larva.addNewInstance(*this);
+    larvaProducerProperties.emplace_back();
+    larvaProducerProperties[0].occupiedSlots = 3;
+    previousLarvaCount = 3;
 }
 
 bool getNonBoostedBuildings(GameObjectInstance &goi) {

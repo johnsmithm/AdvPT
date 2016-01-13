@@ -156,6 +156,7 @@ private:
 
     GameObject& larva;
     std::vector<GameObject*> larvaProducerTypes;
+
     std::vector<LarvaProducerProperties> larvaProducerProperties;
     unsigned int previousLarvaCount = 0;
 };
