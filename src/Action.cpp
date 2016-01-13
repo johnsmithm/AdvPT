@@ -2,7 +2,9 @@
 #include "util.h"
 #include <string> 
 #include <cmath>
+
 using namespace std;
+
 Json::Value& Action::updateMessage(){
     Json::Value& output = game.modifyOutput();
     unsigned int curTime = game.getCurrentTime();
@@ -21,6 +23,7 @@ Json::Value& Action::updateMessage(){
     return last(message["events"]);
 }
 
+
 /** @brief checks if an action can be executed
  *
  *  @return true if all dependencies for this action
@@ -33,6 +36,7 @@ bool BuildAction::canExecute() {
             objectToBuild.areDependenciesMet() &&
             objectToBuild.getPossibleProducer() != nullptr;
 }
+
 
 
 /** @brief starts the action
@@ -72,6 +76,7 @@ bool BuildAction::timeStep(){
     return timeLeft <= 0;
 }
 
+
 /** @brief finishs the action
  *  Saves the created instance, decreases the producing instance's busyness
  */
@@ -102,6 +107,7 @@ void BoostAction::start(){
     curEvent["targetBuilding"] = to_string(target.getID());
 }
 
+
 void MuleAction::start(){
     game.setMuleAction(1);
 
@@ -110,6 +116,7 @@ void MuleAction::start(){
     curEvent["name"] = "mule";
     curEvent["triggeredBy"] = to_string(source.getID());
 }
+
 
 void MuleAction::finish(){
     game.setMuleAction(-1);

@@ -9,12 +9,13 @@
 #include <istream>
 
 #include "GameObject.h"
-#include "Action.h"
 #include "json/json.h"
+
 
 //forward declare classes to fix cyclic dependencies
 class Action;
 class BuildAction;
+
 
 class SimulationException : public std::runtime_error {
 public:
@@ -135,5 +136,6 @@ public:
 protected:
     virtual void invokeSpecial() override;
 };
+
 
 #endif

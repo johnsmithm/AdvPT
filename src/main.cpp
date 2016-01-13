@@ -2,13 +2,13 @@
 #include "Config.h"
 #include "Game.h"
 
-
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
 using namespace std;
 
 #include "defaultTechTree.tpl"
+
 
 void printHelp(po::options_description visibleOpts){
         cout << "Usage: " << STR(BINARY_NAME) << " [options] <race> <build-list>" << endl;
@@ -17,9 +17,11 @@ void printHelp(po::options_description visibleOpts){
         cout << visibleOpts << endl;
 }
 
+
 void printVersion(){
     cout << STR(BINARY_NAME) << " v" << STR(VERSION_MAJOR) << "." << STR(VERSION_MINOR) << endl;
 }
+
 
 int main(int argc, char **argv){
     string buildListFilename;

@@ -10,11 +10,12 @@
 #include <fstream>
 #include <unordered_map>
 #include <vector>
-
 #include "Config.h"
+
 
 class GameObject;
 class Game;
+
 
 enum class BuildType {
     MORPH,
@@ -22,11 +23,13 @@ enum class BuildType {
     INSTANTIATE
 };
 
+
 enum class Race {
     TERRAN,
     PROTOSS,
     ZERG
 };
+
 
 class TechTreeParsingException : public std::runtime_error {
 public:

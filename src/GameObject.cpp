@@ -15,31 +15,34 @@ static const char DELIMETER    = ',';
 static const char SUBDELIMITER = '/';
 
 
-
 void GameObjectInstance::decreaseBusyness(){
     busyness--;
 }
+
 
 bool GameObjectInstance::isBusy() {
     return (busyness >= type.maxBusyness);
 }
 
+
 bool GameObjectInstance::hasEnergy(unsigned int val){
     return (val <= energy);
 }
+
 
 void GameObjectInstance::increaseBusyness(){
     busyness++;
 }
 
+
 void GameObjectInstance::setBusy(){
     busyness = type.maxBusyness;
 }
 
+
 void GameObjectInstance::updateEnergy(int val){ // val can be positive or negative
     energy += val;
 }
-
 
 
 std::ostream& operator<<(std::ostream &out, const GameObjectInstance &other){
@@ -53,6 +56,7 @@ void GameObject::addNewInstance(Game &game){
 
     game.setTotalSupplyAmount(game.getTotalSupplyAmount() + supplyProvided);
 }
+
 
 std::list<GameObjectInstance>& GameObject::getAllInstances(){
     return instances;
@@ -76,6 +80,7 @@ void GameObject::parseFile(string filename) {
     }
 }
 
+
 /** @brief builds the techtree from a string
  *
  * @throw TechTreeParsingException if the csv file could not be parsed
@@ -87,6 +92,7 @@ void GameObject::parseString(string input) {
 
     parseStream(is);
 }
+
 
 /** @brief builds the techtree from an input stream
  *
@@ -141,6 +147,7 @@ void GameObject::parseStream(istream &inputStream) {
     }
 }
 
+
 /** @brief removes an instance from the game, freeing its supply
  */
 void GameObject::removeInstance(GameObjectInstance instance, Game &game){
@@ -148,6 +155,7 @@ void GameObject::removeInstance(GameObjectInstance instance, Game &game){
     game.setTotalSupplyAmount(game.getTotalSupplyAmount() - instance.type.supplyProvided);
     instances.remove(instance);   
 }
+
 
 /** @brief gets a GameObject by its name
  *
@@ -157,12 +165,10 @@ void GameObject::removeInstance(GameObjectInstance instance, Game &game){
  *
  * @return a reference to the GameObject corresponding to this name
  */
- GameObject& GameObject::get(const string name){
+GameObject& GameObject::get(const string name){
     return *GameObject::gameObjects.at(name);
- }
+}
 
-
-// bool catchAll
 
 vector<GameObjectInstance*> GameObject::getAll(function<bool(GameObjectInstance&)> filter){
     vector<GameObjectInstance*> results;
@@ -176,6 +182,7 @@ vector<GameObjectInstance*> GameObject::getAll(function<bool(GameObjectInstance&
 
     return results;
 }
+
 
 /** @brief gets a possible producer instance for this GameObject type.
  *  The producer is guaranteed to be not too busy (i.e. it can produce this object)
@@ -196,6 +203,7 @@ GameObjectInstance* GameObject::getPossibleProducer(){
     return nullptr;
 }
 
+
 bool GameObject::areDependenciesMet(){
     if (dependencyNames.size() == 0) return true;
     for(string dependencyName : dependencyNames){
@@ -205,6 +213,7 @@ bool GameObject::areDependenciesMet(){
     }
     return false;
 }
+
 
 /** @brief gets the number of currently non busy instances of this GameObject
  *
@@ -217,6 +226,7 @@ unsigned int GameObject::getFreeInstancesCount() {
             ++free;
     return free;
 }
+
 
 void GameObject::increaseEnergy(int amount){
     for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects){
