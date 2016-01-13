@@ -94,7 +94,7 @@ private:
 
     unsigned int muleActions = 0;
     unsigned int freeWorkers = 6;
-        
+
     unsigned int finishTimeCurrentBuildItem = 1;
 
     const int mineralsRate = DEFAULT_MINERAL_INCREASE;
@@ -160,65 +160,5 @@ private:
     std::vector<LarvaProducerProperties> larvaProducerProperties;
     unsigned int previousLarvaCount = 0;
 };
-
-/*class ZergGame : Game {
-    Race currRace = ZERG;
-    GameObject & QueenType;
-    GameObject & HatcheryType;
-    void workersAsignment() {
-        super.workersAsignment();
-        for(GameObjectInstace Queen : QueenType.instanceID)//can be done with actions
-            for(GameObjectInstace Hatchery : HatcheryType)
-                if(Queen.hasEnergy() && !Hatchery.isFull()){
-                    CreateActionLarvaeEggs();
-                    Queen.updateEnergy(-somefixedval);
-                    Hatchery.UpdateEggNumber();
-                }
-    }
-    increaseEnergy(){
-         for(GameObjectInstace Queen : QueenType.instanceID)
-                Queen.increseEnergy(EnergyRate);
-    }
-};
-
-class ProtossGame : Game {
-    Race currRace = PROTOS;
-    GameObject & NexusType;
-    void workersAsignment() {
-        super.workersAsignment();
-        for(GameObjectInstace Nexus : NexusType.instanceID)//can be done with actions
-            if(Nexus.hasEnergy() && !runningBuildingActions.empty()){
-                CreateActionCronoBoost(MaxTimeBuildingActions.producer());
-                Nexus.updateEnergy(-Queen.getEggEnergyCost());//set manually
-                MaxTimeBuildingActions.producer.Actions.UpdateActionFinisingTime();
-                MaxTimeBuildingActions.producer.mark();
-            }
-    }
-    increaseEnergy() {
-        for(GameObjectInstace Nexus : NexusType.instanceID)
-            Nexus.increseEnergy(EnergyRate);
-    }
-};
-
-class TerranGame : Game {
-    Race currRace = TERRAN;
-    std::vector<GameObject& > EnergyBuildings; //OrbitaCommand , CenterCommand
-    void workersAsignment() {
-        super.workersAsignment();
-        for (GameObject Building : EnergyBuildings)//can be done with actions
-            for (GameObjectInstace Command : Building.instanceID)
-                if(Command.hasEnergy()) {
-                    CreateActionMULE();
-                    Command.updateEnergy(-MULE.getEnergy());//set manually
-                    MuleIncrese = 4*mineralRate;
-                }
-    }
-    increaseEnergy() {
-        for (GameObject Building : EnergyBuildings)
-            for (GameObjectInstace Command : Building.instanceID)
-                Command.increseEnergy(EnergyRate);
-    }
-};*/
-
 
 #endif
