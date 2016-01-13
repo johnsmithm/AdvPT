@@ -104,7 +104,7 @@ bool Game::timeStep() {
 
 //For testing
 void Game::debugOutput(shared_ptr<Action> action, bool start) {
-    cerr << "Time:" << curTime << "\n"
+  /*  cerr << "Time:" << curTime << "\n"
          << "resources{minerals :" << minerals / 10000
          << ", vespene :" << gas / 10000
          << ", supply-used :" << usedSupply
@@ -119,6 +119,7 @@ void Game::debugOutput(shared_ptr<Action> action, bool start) {
     }
 
     cerr << endl;
+   */
 }
 
 
@@ -203,20 +204,19 @@ void Game::printOutput(){
     cout << output;
 }
 
-
 void Game::simulate() {
-    assert(buildList.size() != 0);
+  assert(buildList.size() != 0);
 
-    output["game"] = "sc2-hots-" + getRaceString();
-
+  output["game"] = "sc2-hots-" + getRaceString();
+  try {
     if (!precheckBuildList()) {
-        output["buildlistValid"] = 0;
-        throw SimulationException("BuildList invalid");
+      output["buildlistValid"] = 0;
+      throw SimulationException("BuildList invalid");
     }
 
     output["buildlistValid"] = 1;
     for (auto goi : GameObject::getAll()) {
-        output["initialUnits"][goi->getType().getName()].append(to_string(goi->getID()));
+      output["initialUnits"][goi->getType().getName()].append(to_string(goi->getID()));
     }
 
     output["messages"] = Json::Value(Json::arrayValue);
@@ -224,6 +224,12 @@ void Game::simulate() {
     currBuildListItem = buildList.begin();
 
     while (!timeStep());
+  } catch (const SimulationException &e) {
+    output["messages"] = "";
+    output["buildlistValid"] = 0;
+    return;
+  }
+
 }
 
 
