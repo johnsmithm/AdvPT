@@ -7,10 +7,6 @@ Json::Value& Action::updateMessage(){
     Json::Value& output = game.modifyOutput();
     unsigned int curTime = game.getCurrentTime();
 
-    if(output["messages"] == Json::Value())
-        output["messages"] = Json::Value(Json::arrayValue);
-
-
     if(output["messages"].size() == 0 || last(output["messages"])["time"] != curTime){
         Json::Value newMessage(Json::objectValue);
 
