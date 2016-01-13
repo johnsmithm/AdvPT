@@ -210,7 +210,6 @@ void Game::simulate() {
   output["game"] = "sc2-hots-" + getRaceString();
   try {
     if (!precheckBuildList()) {
-      output["buildlistValid"] = 0;
       throw SimulationException("BuildList invalid");
     }
 
@@ -225,8 +224,10 @@ void Game::simulate() {
 
     while (!timeStep());
   } catch (const SimulationException &e) {
-    output["messages"] = "";
-    output["buildlistValid"] = 0;
+    Json::Value failBuildList(Json::objectValue);
+    failBuildList["game"] = "sc2-hots-" + getRaceString();
+    failBuildList["buildlistValid"] = 0;
+    output = failBuildList;
     return;
   }
 
