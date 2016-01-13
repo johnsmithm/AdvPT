@@ -89,7 +89,7 @@ bool Game::timeStep() {
      generateResources();
   }
   
-  if(message["time"] == getCurrentTime()){
+  if(message["time"] == curTime || curTime == 1){
     message["status"]["resources"]["minerals"] = getMineralAmount()/10000;
     message["status"]["resources"]["vespene"] = getGasAmount()/10000;
     message["status"]["resources"]["supply"] = getTotalSupplyAmount();
@@ -222,6 +222,11 @@ void Game::simulate() {
         throw SimulationException("BuildList invalid");
     }
     output["messages"] = Json::Value(Json::arrayValue);
+    Json::Value newMessage(Json::objectValue);
+    newMessage["time"] = 1;
+    newMessage["events"] = Json::Value(Json::arrayValue);
+    output["messages"].append(newMessage);
+    
     output["buildlistValid"] = 1;
 
     for(auto goi : GameObject::getAll()){

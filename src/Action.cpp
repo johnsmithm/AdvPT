@@ -6,7 +6,7 @@ using namespace std;
 Json::Value& Action::updateMessage(){
     Json::Value& output = game.modifyOutput();
     unsigned int curTime = game.getCurrentTime();
-
+    
     if(output["messages"].size() == 0 || last(output["messages"])["time"] != curTime){
         Json::Value newMessage(Json::objectValue);
 
