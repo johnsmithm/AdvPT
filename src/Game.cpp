@@ -215,7 +215,7 @@ void Game::simulate() {
 
     output["game"] = "sc2-hots-"+getRaceString();
 
-    if (!precheckBuildList()){
+  if (!precheckBuildList()){
         output["buildlistValid"] = 0;
         throw SimulationException("BuildList invalid");
     }
@@ -354,21 +354,21 @@ void Game::generateResources() {
   int neededGas = gasDifference < 0 ? 0 : gasDifference;
   int neededMineral = mineralDifference < 0 ? 0 : mineralDifference;
   
-  if(gasDifference <= 0 && mineralDifference <= 0){
+  if(neededGas == 0 && neededMineral == 0){
     mineralMiningWorkers = freeWorkers;
   } else
-  if (gasDifference > 0 && mineralDifference <= 0) {
+  if (neededMineral == 0) {
     gasMiningWorkers = min(geyserExploiter.getInstancesCount() * 3, freeWorkers);
     mineralMiningWorkers = freeWorkers - gasMiningWorkers;
 
-  } else if (mineralDifference > 0 && gasDifference <= 0) {
+  } else if (neededGas == 0) {
     mineralMiningWorkers = freeWorkers;
     gasMiningWorkers = 0;
   } else {
     int MaxGasMiningWorkers = min(geyserExploiter.getInstancesCount() * 3, freeWorkers);
     gasMiningWorkers = ternarySearch(0, MaxGasMiningWorkers, neededGas, neededMineral, freeWorkers);
     mineralMiningWorkers = freeWorkers - gasMiningWorkers;
-  }
+  }  
   if(neededGas == 0 && neededMineral == 0){
     finishTimeCurrentBuildItem = 1001;
   }
