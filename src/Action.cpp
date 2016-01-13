@@ -58,7 +58,7 @@ void BuildAction::start() {
     game.setMineralAmount(game.getMineralAmount() - objectToBuild.getMineralCost());
 
     Json::Value& curEvent = updateMessage();
-    curEvent["type"] = "build-event";
+    curEvent["type"] = "build-start";
     curEvent["name"] = objectToBuild.getName();
     curEvent["producerID"] = producingInstance->getID();
 }
