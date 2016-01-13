@@ -1,3 +1,5 @@
+scv
+scv
 refinery
 supply_depot
 barracks
