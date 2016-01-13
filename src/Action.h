@@ -51,6 +51,7 @@ public:
     GameObject& getObjectToBuild(){return objectToBuild;};
 
 private:
+    int producerID;
     GameObject& objectToBuild;
     GameObjectInstance* producingInstance = nullptr;
 

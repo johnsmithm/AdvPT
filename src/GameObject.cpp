@@ -150,9 +150,9 @@ void GameObject::parseStream(istream &inputStream) {
 /** @brief removes an instance from the game, freeing its supply
  */
 void GameObject::removeInstance(GameObjectInstance instance, Game &game){
-    instances.remove(instance);
-    game.setUsedSupplyAmount(game.getUsedSupplyAmount() + instance.type.supplyCost);
+    game.setUsedSupplyAmount(game.getUsedSupplyAmount() - instance.type.supplyCost);
     game.setTotalSupplyAmount(game.getTotalSupplyAmount() - instance.type.supplyProvided);
+    instances.remove(instance);   
 }
 
 /** @brief gets a GameObject by its name

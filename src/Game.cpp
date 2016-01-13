@@ -219,9 +219,9 @@ void Game::simulate() {
   }
 
   output["buildlistValid"] = 1;
-
   for (auto goi : GameObject::getAll()) {
-    output["initialUnits"][goi->getType().getName()].append(to_string(goi->getID()));
+    if(goi->getType().getName() != "larva")
+      output["initialUnits"][goi->getType().getName()].append(to_string(goi->getID()));
   }
 
   output["messages"] = Json::Value(Json::arrayValue);
@@ -404,7 +404,8 @@ ZergGame::ZergGame()
     : Game(GameObject::get("hatchery"), GameObject::get("drone"),
       GameObject::get("extractor")), larva(GameObject::get("larva")),
       larvaProducerTypes{&GameObject::get("hatchery"), &GameObject::get("lair"), &GameObject::get("hive")} {
-
+    // Add overlord
+     GameObject::get("overlord").addNewInstance(*this);
     // Add initial larvae
     for (int i = 0; i < 3; ++i)
         larva.addNewInstance(*this);

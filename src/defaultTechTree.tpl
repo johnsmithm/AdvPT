@@ -39,7 +39,7 @@ overlord,100,0,25,0,8,0,0,zerg, larva , ,morph, 0\n\
 overseer,50,50,17,0,8,0,0,zerg, overlord ,lair/hive ,morph, 0\n\
 hydralisk,100,50,33,2,0,0,0,zerg, larva ,hydralisk_den ,morph, 0\n\
 drone,50,0,17,1,0,0,0,zerg, larva , ,morph, 0\n\
-queen,150,0,50,2,0,25,200,zerg, hatchery/lair/hive,spawning_pool ,morph, 0\n\
+queen,150,0,50,2,0,25,200,zerg, hatchery/lair/hive,spawning_pool ,active, 0\n\
 larva,0,0,0,0,0,0,0,zerg, hatchery/lair/hive, ,morph, 0\n\
 zergling,50,0,24,0.5,0,0,0,zerg, larva ,spawning_pool ,morph, 0\n\
 baneling,25,25,20,0.5,0,0,0,zerg, zergling ,baneling_nest ,morph, 0\n\

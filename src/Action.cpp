@@ -41,9 +41,11 @@ bool BuildAction::canExecute() {
  */
 void BuildAction::start() {
     producingInstance = objectToBuild.getPossibleProducer();
-
+    assert(producingInstance != nullptr);
+    producerID = producingInstance->getID();
     if(objectToBuild.getBuildType() == BuildType::MORPH){
-        producingInstance->setBusy();
+        //producingInstance->setBusy();
+       producingInstance->getType().removeInstance(*producingInstance, game);
     }else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
         producingInstance->increaseBusyness();
     }
@@ -56,7 +58,7 @@ void BuildAction::start() {
     Json::Value& curEvent = updateMessage();
     curEvent["type"] = "build-start";
     curEvent["name"] = objectToBuild.getName();
-    curEvent["producerID"] = std::to_string(producingInstance->getID());
+    curEvent["producerID"] = std::to_string(producerID);
 }
 
 
@@ -75,9 +77,9 @@ bool BuildAction::timeStep(){
  */
 void BuildAction::finish(){
     objectToBuild.addNewInstance(game);
-    int producerID = producingInstance->getID();    
+    //int producerID = producingInstance->getID();    
     if(objectToBuild.getBuildType() == BuildType::MORPH){
-        producingInstance->getType().removeInstance(*producingInstance, game);
+       // producingInstance->getType().removeInstance(*producingInstance, game);
     }else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
         producingInstance->decreaseBusyness();
     }
