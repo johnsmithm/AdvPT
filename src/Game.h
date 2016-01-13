@@ -126,6 +126,7 @@ protected:
     virtual void invokeSpecial() override;
 };
 
+
 class TerranGame : public Game {
 public:
     TerranGame();
@@ -136,6 +137,29 @@ protected:
     virtual void invokeSpecial() override;
 };
 
+
+class ZergGame : public Game {
+public:
+    ZergGame();
+
+    virtual Race getRace(){return Race::ZERG;};
+
+protected:
+    virtual void invokeSpecial() override;
+
+private:
+    constexpr static unsigned int LARVA_SPAWN_TIME = 15;
+
+    struct LarvaProducerProperties {
+        unsigned int occupiedSlots = 0;
+        unsigned int timeTillSpawn = LARVA_SPAWN_TIME;
+    };
+
+    GameObject& larva;
+    std::vector<GameObject*> larvaProducerTypes;
+    std::vector<LarvaProducerProperties> larvaProducerProperties;
+    unsigned int previousLarvaCount = 0;
+};
 
 /*class ZergGame : Game {
     Race currRace = ZERG;

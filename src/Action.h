@@ -90,29 +90,7 @@ public:
 private:
     GameObjectInstance &source;
     unsigned int timeLeft = 90;
-    
 };
-
-/*
-class CreateLarvaeHatcharyAction {//from eggs or from hatcharies??
-private:
-    GameObjectInstance &Hatchary;
-    void finish(){
-       ++NrLarvaue;
-    }
-}
-
-
-class CreateLarvaeEggsAction {//from eggs or from hatcharies??
-private:
-    GameObjectInstance &Hatchary;
-    void finish(){
-       NrLarvaue += 4;
-    }
-}
-
-
-*/
 
 
 #endif

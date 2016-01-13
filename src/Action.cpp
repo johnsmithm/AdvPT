@@ -81,7 +81,7 @@ void BuildAction::finish(){
     objectToBuild.addNewInstance(game);
 
     if(objectToBuild.getBuildType() == BuildType::MORPH){
-        objectToBuild.removeInstance(*producingInstance, game);
+        producingInstance->getType().removeInstance(*producingInstance, game);
     }else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
         producingInstance->decreaseBusyness();
     }

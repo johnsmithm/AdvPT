@@ -92,8 +92,7 @@ int main(int argc, char **argv){
     if(race == "protoss"){
         g = new ProtosGame();
     }else if(race == "zerg"){
-        //g = new ZergGame();
-        throw SimulationException("Zerg game is not yet supported");
+        g = new ZergGame();
     }else{
         g = new TerranGame();
     }
