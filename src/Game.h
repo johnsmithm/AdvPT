@@ -27,7 +27,6 @@ class Game {
 public:
 
     virtual ~Game(){};
-
     unsigned int getMineralAmount(){return minerals;}
     unsigned int getMineralMiningWorkers(){return mineralMiningWorkers;}
     unsigned int getGasAmount(){return gas;}
@@ -59,7 +58,7 @@ public:
     std::string getRaceString(){
         switch(getRace()){
             case Race::PROTOSS:
-                return "protos";
+                return "protoss";
             case Race::ZERG:
                 return "zerg";
             case Race::TERRAN:
@@ -116,9 +115,9 @@ private:
 };
 
 
-class ProtosGame : public Game {
+class ProtossGame : public Game {
 public:
-    ProtosGame();
+    ProtossGame();
 
     virtual Race getRace(){return Race::PROTOSS;};
 
@@ -181,7 +180,7 @@ private:
     }
 };
 
-class ProtosGame : Game {
+class ProtossGame : Game {
     Race currRace = PROTOS;
     GameObject & NexusType;
     void workersAsignment() {

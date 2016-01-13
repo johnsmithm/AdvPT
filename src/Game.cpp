@@ -4,6 +4,7 @@
 #include <memory>
 #include <unordered_set>
 
+#include <string> 
 #include <stdlib.h>
 #include "Action.h"
 #include "Game.h"
@@ -224,7 +225,7 @@ void Game::simulate() {
     output["buildlistValid"] = 1;
 
     for(auto goi : GameObject::getAll()){
-        output["intialUnits"][goi->getType().getName()].append(goi->getID());
+        output["initialUnits"][goi->getType().getName()].append(to_string(goi->getID()));
     }
 
     currBuildListItem = buildList.begin();
@@ -385,7 +386,7 @@ void Game::generateResources() {
     updateMessagesForWorkersReassignment();
 }
 
-ProtosGame::ProtosGame()
+ProtossGame::ProtossGame()
     : Game(GameObject::get("nexus"), GameObject::get("probe"),
       GameObject::get("assimilator")) {
 }
@@ -405,7 +406,7 @@ bool getNonBoostedBuildings(GameObjectInstance &goi) {
   return !goi.isBoostTarget() && goi.getBusyness() >= 0 && goi.getType().isBuilding();
 }
 
-void ProtosGame::invokeSpecial() {
+void ProtossGame::invokeSpecial() {
   for (GameObjectInstance& instance : GameObject::get("nexus").getAllInstances()) {
     while (instance.hasEnergy(25 * 10000)) {
       vector<GameObjectInstance*> targets = GameObject::getAll(getNonBoostedBuildings);

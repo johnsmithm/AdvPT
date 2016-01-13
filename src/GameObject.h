@@ -50,6 +50,7 @@ public:
     GameObject& getType(){return type;};
     bool isBoostTarget(){return boostTarget;};
 
+    static int getLastId(){return (maxID - 1);};
     bool isBusy();
     unsigned int getBusyness(){return busyness;};
     unsigned int getEnergy(){ return energy; };
