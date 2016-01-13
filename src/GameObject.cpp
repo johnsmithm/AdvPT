@@ -115,13 +115,13 @@ void GameObject::parseStream(istream &inputStream) {
             producers.clear();
         if(dependencies[0] == "")
             dependencies.clear();
-
+          
         gameObjects[tokens[0]] = make_shared<GameObject>(GameObject(
             tokens[0], // name;
             stol(tokens[1])*10000, // mineralCost
             stol(tokens[2])*10000, // gasCost
             stol(tokens[3]), // buildTime
-            stol(tokens[4]), // supplyCost
+            stol(tokens[4]), // supplyCost //seems to be an error for barracks_with_tech_lab
             stol(tokens[5]), // supplyProvided
 
             stol(tokens[6])*10000, // startEnergy

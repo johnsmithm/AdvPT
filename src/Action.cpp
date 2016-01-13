@@ -1,15 +1,11 @@
 #include "Action.h"
 #include "util.h"
-
+#include <string> 
 #include <cmath>
 using namespace std;
 Json::Value& Action::updateMessage(){
     Json::Value& output = game.modifyOutput();
     unsigned int curTime = game.getCurrentTime();
-
-    if(output["messages"] == Json::Value())
-        output["messages"] = Json::Value(Json::arrayValue);
-
 
     if(output["messages"].size() == 0 || last(output["messages"])["time"] != curTime){
         Json::Value newMessage(Json::objectValue);
@@ -60,7 +56,7 @@ void BuildAction::start() {
     Json::Value& curEvent = updateMessage();
     curEvent["type"] = "build-start";
     curEvent["name"] = objectToBuild.getName();
-    curEvent["producerID"] = producingInstance->getID();
+    curEvent["producerID"] = std::to_string(producingInstance->getID());
 }
 
 
@@ -79,7 +75,7 @@ bool BuildAction::timeStep(){
  */
 void BuildAction::finish(){
     objectToBuild.addNewInstance(game);
-
+    int producerID = producingInstance->getID();    
     if(objectToBuild.getBuildType() == BuildType::MORPH){
         producingInstance->getType().removeInstance(*producingInstance, game);
     }else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
@@ -89,8 +85,8 @@ void BuildAction::finish(){
     Json::Value& curEvent = updateMessage();
     curEvent["type"] = "build-end";
     curEvent["name"] = objectToBuild.getName();
-    curEvent["producerID"] = producingInstance->getID();
-    curEvent["producedIDs"].append(producingInstance->getID());
+    curEvent["producerID"] = std::to_string(producerID);
+    curEvent["producedIDs"].append(std::to_string(GameObjectInstance::getLastId()));
 }
 
 
@@ -100,8 +96,8 @@ void BoostAction::start(){
     Json::Value& curEvent = updateMessage();
     curEvent["type"] = "special";
     curEvent["name"] = "chronoboost";
-    curEvent["triggeredBy"] = source.getID();
-    curEvent["targetBuilding"] = target.getID();
+    curEvent["triggeredBy"] = to_string(source.getID());
+    curEvent["targetBuilding"] = to_string(target.getID());
 }
 
 void MuleAction::start(){
@@ -110,7 +106,7 @@ void MuleAction::start(){
     Json::Value& curEvent = updateMessage();
     curEvent["type"] = "special";
     curEvent["name"] = "mule";
-    curEvent["triggeredBy"] = source.getID();
+    curEvent["triggeredBy"] = to_string(source.getID());
 }
 
 void MuleAction::finish(){

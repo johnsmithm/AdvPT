@@ -90,7 +90,7 @@ int main(int argc, char **argv){
     Game *g;
 
     if(race == "protoss"){
-        g = new ProtosGame();
+        g = new ProtossGame();
     }else if(race == "zerg"){
         g = new ZergGame();
     }else{

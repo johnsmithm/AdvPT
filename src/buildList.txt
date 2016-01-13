@@ -1,11 +1,4 @@
-scv
-scv
+refinery
 supply_depot
 barracks
-orbital_command
-marine
-marine
-marine
-marine
-marine
-marine
+barracks_with_tech_lab
