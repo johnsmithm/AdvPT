@@ -42,7 +42,6 @@ public:
 
 
 class GameObjectInstance {
-friend class GameObject;
 public:
     GameObjectInstance(unsigned int energy, GameObject &type)
       : ID(maxID++), type(type), energy(energy), business(0),
@@ -51,8 +50,10 @@ public:
     unsigned int getID() const {return ID;}
     GameObject& getType() const {return type;}
 
+    unsigned int getEnergy() const {return energy;}
+    void setEnergy(unsigned int value) {energy = value;}
     bool hasEnergy(unsigned int value) const {return (value <= energy);}
-    void updateEnergy(int val) {energy += val;}
+    void updateEnergy(int value) {energy += value;}
     
     unsigned int getBusiness() const {return business;}
     void increaseBusiness() {++business;}
@@ -72,7 +73,7 @@ private:
     static unsigned int maxID;
 
     const unsigned int ID;
-    GameObject &type;
+    GameObject& type;
 
     unsigned int energy;
     unsigned int business;
@@ -81,8 +82,6 @@ private:
 
 
 class GameObject {
-friend class GameObjectInstance;
-
 public:
     GameObject(std::string name,
                unsigned int mineralCost, unsigned int gasCost, unsigned int buildTime,
@@ -108,6 +107,7 @@ public:
     unsigned int getGasCost() const {return gasCost;}
     unsigned int getSupplyCost() const {return supplyCost;}
     unsigned int getBuildTime() const {return buildTime;}
+    unsigned int getMaxBusiness() const {return maxBusyness;}
     BuildType getBuildType() const {return buildType;}
     std::string getName() const {return name;}
     const std::vector<std::string>& getProducerNames() const {return producerNames;}

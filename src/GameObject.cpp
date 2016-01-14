@@ -16,12 +16,12 @@ unordered_map<string, shared_ptr<GameObject>> GameObject::gameObjects;
 
 
 bool GameObjectInstance::isBusy() const {
-    return (business >= type.maxBusyness);
+    return (business >= type.getMaxBusiness());
 }
 
 
 void GameObjectInstance::setBusy() {
-    business = type.maxBusyness;
+    business = type.getMaxBusiness();
 }
 
 
@@ -144,8 +144,8 @@ void GameObject::parseStream(istream &inputStream) {
 /** @brief removes an instance from the game, freeing its supply
  */
 void GameObject::removeInstance(GameObjectInstance instance, Game &game) {
-    game.setUsedSupplyAmount(game.getUsedSupplyAmount() - instance.type.supplyCost);
-    game.setTotalSupplyAmount(game.getTotalSupplyAmount() - instance.type.supplyProvided);
+    game.setUsedSupplyAmount(game.getUsedSupplyAmount() - instance.getType().supplyCost);
+    game.setTotalSupplyAmount(game.getTotalSupplyAmount() - instance.getType().supplyProvided);
     instances.remove(instance);   
 }
 
@@ -234,9 +234,9 @@ GameObject::InstancesIter GameObject::end() {
 void GameObject::increaseEnergy(int amount){
     for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects){
         for(GameObjectInstance& goi : objectPointer.second->instances){
-            goi.energy += amount;
-            if(goi.energy > goi.type.maxEnergy)
-                goi.energy = goi.type.maxEnergy;
+            goi.updateEnergy(amount);
+            if(goi.getEnergy() > objectPointer.second->maxEnergy)
+                goi.setEnergy(objectPointer.second->maxEnergy);
         }
     }
 }
