@@ -2,12 +2,14 @@
 #include "util.h"
 #include <string> 
 #include <cmath>
+
 using namespace std;
-Json::Value& Action::updateMessage(){
+
+Json::Value& Action::updateMessage() {
     Json::Value& output = game.modifyOutput();
     unsigned int curTime = game.getCurrentTime();
     
-    if(output["messages"].size() == 0 || last(output["messages"])["time"] != curTime){
+    if (output["messages"].size() == 0 || last(output["messages"])["time"] != curTime) {
         Json::Value newMessage(Json::objectValue);
 
         newMessage["time"] = curTime;
@@ -20,6 +22,7 @@ Json::Value& Action::updateMessage(){
     message["events"].append(Json::Value(Json::objectValue));
     return last(message["events"]);
 }
+
 
 /** @brief checks if an action can be executed
  *
@@ -43,10 +46,10 @@ void BuildAction::start() {
     producingInstance = objectToBuild.getPossibleProducer();
     assert(producingInstance != nullptr);
     producerID = producingInstance->getID();
-    if(objectToBuild.getBuildType() == BuildType::MORPH){
+    if(objectToBuild.getBuildType() == BuildType::MORPH) {
         producingInstance->setBusy();
         //producingInstance->getType().removeInstance(*producingInstance, game);
-    }else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
+    } else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD) {
         producingInstance->increaseBusiness();
     }
 
@@ -66,19 +69,20 @@ void BuildAction::start() {
  *
  *  @return true if the action is finished, false if it still needs time
  */
-bool BuildAction::timeStep(){
+bool BuildAction::timeStep() {
     timeLeft -= producingInstance->isBoostTarget() ? 15 : 10;
 
     return timeLeft <= 0;
 }
 
+
 /** @brief finishs the action
  *  Saves the created instance, decreases the producing instance's busyness
  */
-void BuildAction::finish(){
+void BuildAction::finish() {
     auto instance = objectToBuild.addNewInstance(game);
     //int producerID = producingInstance->getID();    
-    if(objectToBuild.getBuildType() == BuildType::MORPH){
+    if(objectToBuild.getBuildType() == BuildType::MORPH) {
         producingInstance->getType().removeInstance(*producingInstance, game);
     }else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
         producingInstance->decreaseBusiness();
@@ -92,7 +96,7 @@ void BuildAction::finish(){
 }
 
 
-void BoostAction::start(){
+void BoostAction::start() {
     target.setBoostTarget(true);
 
     Json::Value& curEvent = updateMessage();
@@ -102,7 +106,8 @@ void BoostAction::start(){
     curEvent["targetBuilding"] = to_string(target.getID());
 }
 
-void MuleAction::start(){
+
+void MuleAction::start() {
     game.setMuleAction(1);
 
     Json::Value& curEvent = updateMessage();
@@ -111,6 +116,7 @@ void MuleAction::start(){
     curEvent["triggeredBy"] = to_string(source.getID());
 }
 
-void MuleAction::finish(){
+
+void MuleAction::finish() {
     game.setMuleAction(-1);
 }

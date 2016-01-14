@@ -72,6 +72,7 @@ private:
     unsigned int timeLeft = 20;
 };
 
+
 class MuleAction : public Action {
 public:
 
