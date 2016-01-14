@@ -415,7 +415,7 @@ ZergGame::ZergGame()
 }
 
 bool getNonBoostedBuildings(GameObjectInstance &goi) {
-  return !goi.isBoostTarget() && goi.getBusyness() >= 0 && goi.getType().isBuilding();
+  return !goi.isBoostTarget() && goi.getBusiness() >= 0 && goi.getType().isBuilding();
 }
 
 void ProtossGame::invokeSpecial() {

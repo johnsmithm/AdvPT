@@ -16,11 +16,13 @@
 class GameObject;
 class Game;
 
+
 enum class BuildType {
     MORPH,
     ACTIVE_BUILD,
     INSTANTIATE
 };
+
 
 enum class Race {
     TERRAN,
@@ -28,13 +30,14 @@ enum class Race {
     ZERG
 };
 
+
 class TechTreeParsingException : public std::runtime_error {
 public:
     TechTreeParsingException(const std::string &msg)
-        : std::runtime_error(msg){};
+        : std::runtime_error(msg) {}
 
     TechTreeParsingException(const std::string &msg, int line)
-        : std::runtime_error(msg + " on line " + std::to_string(line)){};
+        : std::runtime_error(msg + " on line " + std::to_string(line)) {}
 };
 
 
@@ -42,32 +45,26 @@ class GameObjectInstance {
 friend class GameObject;
 public:
     GameObjectInstance(unsigned int energy, GameObject &type)
-      : ID(maxID++), energy(energy), busyness(0),
-        boostTarget (false), type(type) {};
+      : ID(maxID++), type(type), energy(energy), business(0),
+        boostTarget (false) {};
 
-    void decreaseBusyness();
-    bool hasEnergy(unsigned int val);
-    GameObject& getType(){return type;};
-    bool isBoostTarget(){return boostTarget;};
+    unsigned int getID() const {return ID;}
+    GameObject& getType() const {return type;}
 
-    static int getLastId(){return (maxID - 1);};
-    bool isBusy();
-    unsigned int getBusyness(){return busyness;};
-    unsigned int getEnergy(){ return energy; };
-    unsigned int getID(){ return ID; };
-    void increaseEnergy();
-    void increaseBusyness();
+    bool hasEnergy(unsigned int value) const {return (value <= energy);}
+    void updateEnergy(int val) {energy += val;}
+    
+    unsigned int getBusiness() const {return business;}
+    void increaseBusiness() {++business;}
+    void decreaseBusiness() {--business;}
+    bool isBusy() const;
     void setBusy();
-    void updateEnergy(int val);
-
-    void setBoostTarget(bool isBoostTarget){
-        boostTarget = isBoostTarget;
-    }
+    
+    bool isBoostTarget() const {return boostTarget;}
+    void setBoostTarget(bool value) {boostTarget = value;}
 
     //TODO: ask at the chair, why the fuck?!
-    bool operator==(const GameObjectInstance &other){
-        return ID==other.ID;
-    }
+    bool operator==(const GameObjectInstance& other) const {return ID==other.ID;}
 
     friend std::ostream& operator<<(std::ostream &out, const GameObjectInstance &other);
 
@@ -75,12 +72,13 @@ private:
     static unsigned int maxID;
 
     const unsigned int ID;
-    unsigned int energy;
-    unsigned int busyness = 0;
-    bool boostTarget;
-
     GameObject &type;
+
+    unsigned int energy;
+    unsigned int business;
+    bool boostTarget;
 };
+
 
 class GameObject {
 friend class GameObjectInstance;
@@ -102,15 +100,15 @@ public:
           producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType),
           _isBuilding(isBuilding) {}
 
-    void addNewInstance(Game &game);
+    GameObjectInstance& addNewInstance(Game &game);
     void removeInstance(const GameObjectInstance instance, Game &game);
-
-    void resolveNames();
 
     bool areDependenciesMet();
     GameObjectInstance* getPossibleProducer();
+    
+    unsigned int getInstancesCount() {return instances.size();}
     unsigned int getFreeInstancesCount();
-    unsigned int getInstancesCount(){return instances.size();}
+    
     std::list<GameObjectInstance>& getAllInstances();
 
     unsigned int getMineralCost(){return mineralCost;}

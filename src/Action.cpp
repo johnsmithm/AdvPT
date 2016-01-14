@@ -44,10 +44,10 @@ void BuildAction::start() {
     assert(producingInstance != nullptr);
     producerID = producingInstance->getID();
     if(objectToBuild.getBuildType() == BuildType::MORPH){
-        //producingInstance->setBusy();
-       producingInstance->getType().removeInstance(*producingInstance, game);
+        producingInstance->setBusy();
+        //producingInstance->getType().removeInstance(*producingInstance, game);
     }else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
-        producingInstance->increaseBusyness();
+        producingInstance->increaseBusiness();
     }
 
     timeLeft = objectToBuild.getBuildTime()*10;//timeLeft is thenths of a second, buildTime is seconds
@@ -76,19 +76,19 @@ bool BuildAction::timeStep(){
  *  Saves the created instance, decreases the producing instance's busyness
  */
 void BuildAction::finish(){
-    objectToBuild.addNewInstance(game);
+    auto instance = objectToBuild.addNewInstance(game);
     //int producerID = producingInstance->getID();    
     if(objectToBuild.getBuildType() == BuildType::MORPH){
-       // producingInstance->getType().removeInstance(*producingInstance, game);
+        producingInstance->getType().removeInstance(*producingInstance, game);
     }else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
-        producingInstance->decreaseBusyness();
+        producingInstance->decreaseBusiness();
     }
 
     Json::Value& curEvent = updateMessage();
     curEvent["type"] = "build-end";
     curEvent["name"] = objectToBuild.getName();
     curEvent["producerID"] = std::to_string(producerID);
-    curEvent["producedIDs"].append(std::to_string(GameObjectInstance::getLastId()));
+    curEvent["producedIDs"].append(std::to_string(instance.getID()));
 }
 
 

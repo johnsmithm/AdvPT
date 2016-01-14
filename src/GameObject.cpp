@@ -15,31 +15,14 @@ static const char DELIMETER    = ',';
 static const char SUBDELIMITER = '/';
 
 
-
-void GameObjectInstance::decreaseBusyness(){
-    busyness--;
+bool GameObjectInstance::isBusy() const {
+    return (business >= type.maxBusyness);
 }
 
-bool GameObjectInstance::isBusy() {
-    return (busyness >= type.maxBusyness);
-}
 
-bool GameObjectInstance::hasEnergy(unsigned int val){
-    return (val <= energy);
+void GameObjectInstance::setBusy() {
+    business = type.maxBusyness;
 }
-
-void GameObjectInstance::increaseBusyness(){
-    busyness++;
-}
-
-void GameObjectInstance::setBusy(){
-    busyness = type.maxBusyness;
-}
-
-void GameObjectInstance::updateEnergy(int val){ // val can be positive or negative
-    energy += val;
-}
-
 
 
 std::ostream& operator<<(std::ostream &out, const GameObjectInstance &other){
@@ -48,11 +31,12 @@ std::ostream& operator<<(std::ostream &out, const GameObjectInstance &other){
 }
 
 
-void GameObject::addNewInstance(Game &game){
-    instances.push_back(GameObjectInstance(startEnergy, *this));
-
+GameObjectInstance& GameObject::addNewInstance(Game &game){
+    instances.emplace_back(startEnergy, *this);
     game.setTotalSupplyAmount(game.getTotalSupplyAmount() + supplyProvided);
+    return instances.back();
 }
+
 
 std::list<GameObjectInstance>& GameObject::getAllInstances(){
     return instances;
