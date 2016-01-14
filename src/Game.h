@@ -19,33 +19,33 @@ class BuildAction;
 class SimulationException : public std::runtime_error {
 public:
     SimulationException(const std::string &msg)
-        : std::runtime_error(msg){};
+        : std::runtime_error(msg) {};
 };
 
 
 class Game {
 public:
 
-    virtual ~Game(){};
-    unsigned int getMineralAmount(){return minerals;}
-    unsigned int getMineralMiningWorkers(){return mineralMiningWorkers;}
-    unsigned int getGasAmount(){return gas;}
-    unsigned int getGasMiningWorkers(){return gasMiningWorkers;}
-    unsigned int getUsedSupplyAmount(){return usedSupply;}
-    unsigned int getTotalSupplyAmount(){return totalSupply;}
-    unsigned int getAvailableSupplyAmount(){return totalSupply-usedSupply;}
-    unsigned int getCurrentTime(){return curTime;};
+    virtual ~Game() {};
+    unsigned int getMineralAmount() {return minerals;}
+    unsigned int getMineralMiningWorkers() {return mineralMiningWorkers;}
+    unsigned int getGasAmount() {return gas;}
+    unsigned int getGasMiningWorkers() {return gasMiningWorkers;}
+    unsigned int getUsedSupplyAmount() {return usedSupply;}
+    unsigned int getTotalSupplyAmount() {return totalSupply;}
+    unsigned int getAvailableSupplyAmount() {return totalSupply-usedSupply;}
+    unsigned int getCurrentTime() {return curTime;};
 
-    void setMineralAmount(int amount){minerals = amount;}
-    void setGasAmount(int amount){gas = amount;}
-    void setUsedSupplyAmount(int amount){usedSupply = amount;}
-    void setTotalSupplyAmount(int amount){totalSupply = amount;}
+    void setMineralAmount(int amount) {minerals = amount;}
+    void setGasAmount(int amount) {gas = amount;}
+    void setUsedSupplyAmount(int amount) {usedSupply = amount;}
+    void setTotalSupplyAmount(int amount) {totalSupply = amount;}
 
     void readConfiguration();
 
     void readBuildList(std::string filename);
 
-    Json::Value& modifyOutput(){return output;}
+    Json::Value& modifyOutput() {return output;}
     void printOutput();
 
     bool precheckBuildList();
@@ -55,28 +55,18 @@ public:
     void simulate();
 
     virtual Race getRace() = 0;
-    std::string getRaceString(){
-        switch(getRace()){
-            case Race::PROTOSS:
-                return "protoss";
-            case Race::ZERG:
-                return "zerg";
-            case Race::TERRAN:
-                return "terran";
-            default:
-                return "unknown";
-        }
-    }
+    std::string getRaceString();
 
 protected:
+    Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
+
     GameObject& mainBuilding;
     GameObject& worker;
     GameObject& geyserExploiter;
+    
     std::list<std::shared_ptr<Action>> runningActions;
 
     Json::Value output;
-
-    Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
 
     void debugOutput(std::shared_ptr<Action> action, bool start);
     virtual void invokeSpecial() = 0;
