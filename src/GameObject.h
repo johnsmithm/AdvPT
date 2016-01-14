@@ -85,20 +85,11 @@ friend class GameObjectInstance;
 
 public:
     GameObject(std::string name,
-               unsigned int mineralCost, unsigned int gasCost,
-               unsigned int buildTime,
-               unsigned int supplyCost, unsigned int supplyProvided,
-               unsigned int startEnergy, unsigned int maxEnergy,
-               unsigned int maxBusyness,
-               std::vector<std::string> producerNames,
-               std::vector<std::string> dependencyNames,
-               BuildType buildType,
-               bool isBuilding)
-        : name(name), mineralCost(mineralCost), gasCost(gasCost), buildTime(buildTime),
-          supplyCost(supplyCost), supplyProvided(supplyProvided),
-          startEnergy(startEnergy), maxEnergy(maxEnergy), maxBusyness(maxBusyness),
-          producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType),
-          building(isBuilding) {}
+               unsigned int mineralCost, unsigned int gasCost, unsigned int buildTime,
+               unsigned int supplyCost, unsigned int supplyProvided, unsigned int startEnergy,
+               unsigned int maxEnergy, unsigned int maxBusyness,
+               std::vector<std::string> producerNames, std::vector<std::string> dependencyNames,
+               BuildType buildType, bool isBuilding);
 
     GameObjectInstance& addNewInstance(Game &game);
     void removeInstance(const GameObjectInstance instance, Game &game);
@@ -113,15 +104,15 @@ public:
     InstancesIter begin();
     InstancesIter end();
 
-    unsigned int getMineralCost(){return mineralCost;}
-    unsigned int getGasCost(){return gasCost;}
-    unsigned int getSupplyCost(){return supplyCost;}
-    unsigned int getBuildTime(){return buildTime;};
-    BuildType getBuildType(){return buildType;};
-    std::string getName(){return name;};
-    const std::vector<std::string>& getProducerNames(){return producerNames;}
-    const std::vector<std::string>& getDependencyNames(){return dependencyNames;}
-    bool isBuilding(){return building;};
+    unsigned int getMineralCost() const {return mineralCost;}
+    unsigned int getGasCost() const {return gasCost;}
+    unsigned int getSupplyCost() const {return supplyCost;}
+    unsigned int getBuildTime() const {return buildTime;}
+    BuildType getBuildType() const {return buildType;}
+    std::string getName() const {return name;}
+    const std::vector<std::string>& getProducerNames() const {return producerNames;}
+    const std::vector<std::string>& getDependencyNames() const {return dependencyNames;}
+    bool isBuilding() const {return building;}
 
     static void parseFile(std::string filename);
     static void parseString(std::string input);
@@ -131,7 +122,6 @@ public:
     static std::vector<GameObjectInstance*> getAll(std::function<bool(GameObjectInstance&)> filter=[](GameObjectInstance &goi){return true;});
 
     static void increaseEnergy(int amount=DEFAULT_ENERGY_INCREASE);
-
 
 private:
     std::string name;
@@ -149,8 +139,6 @@ private:
 
     BuildType buildType;
     bool building;
-
-    //unsigned int blockedInstaces;//will block Instances from left to right
 
     std::list<GameObjectInstance> instances;
 

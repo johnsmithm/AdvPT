@@ -8,11 +8,11 @@
 
 using namespace std;
 
-unsigned int GameObjectInstance::maxID = 0;
-unordered_map<string, shared_ptr<GameObject>> GameObject::gameObjects;
-
 static const char DELIMETER    = ',';
 static const char SUBDELIMITER = '/';
+
+unsigned int GameObjectInstance::maxID = 0;
+unordered_map<string, shared_ptr<GameObject>> GameObject::gameObjects;
 
 
 bool GameObjectInstance::isBusy() const {
@@ -25,13 +25,26 @@ void GameObjectInstance::setBusy() {
 }
 
 
-std::ostream& operator<<(std::ostream &out, const GameObjectInstance &other){
+std::ostream& operator<<(std::ostream &out, const GameObjectInstance &other) {
     out << "GameObject " << other.type.getName() << " with ID " << other.ID;
     return out;
 }
 
 
-GameObjectInstance& GameObject::addNewInstance(Game &game){
+GameObject::GameObject(std::string name,
+                       unsigned int mineralCost, unsigned int gasCost, unsigned int buildTime,
+                       unsigned int supplyCost, unsigned int supplyProvided, unsigned int startEnergy,
+                       unsigned int maxEnergy, unsigned int maxBusyness,
+                       std::vector<std::string> producerNames, std::vector<std::string> dependencyNames,
+                       BuildType buildType, bool isBuilding)
+    : name(name), mineralCost(mineralCost), gasCost(gasCost), buildTime(buildTime),
+      supplyCost(supplyCost), supplyProvided(supplyProvided),
+      startEnergy(startEnergy), maxEnergy(maxEnergy), maxBusyness(maxBusyness),
+      producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType),
+      building(isBuilding) {}
+
+
+GameObjectInstance& GameObject::addNewInstance(Game &game) {
     instances.emplace_back(startEnergy, *this);
     game.setTotalSupplyAmount(game.getTotalSupplyAmount() + supplyProvided);
     return instances.back();
@@ -66,6 +79,7 @@ void GameObject::parseString(string input) {
 
     parseStream(is);
 }
+
 
 /** @brief builds the techtree from an input stream
  *
@@ -126,13 +140,15 @@ void GameObject::parseStream(istream &inputStream) {
     }
 }
 
+
 /** @brief removes an instance from the game, freeing its supply
  */
-void GameObject::removeInstance(GameObjectInstance instance, Game &game){
+void GameObject::removeInstance(GameObjectInstance instance, Game &game) {
     game.setUsedSupplyAmount(game.getUsedSupplyAmount() - instance.type.supplyCost);
     game.setTotalSupplyAmount(game.getTotalSupplyAmount() - instance.type.supplyProvided);
     instances.remove(instance);   
 }
+
 
 /** @brief gets a GameObject by its name
  *
@@ -142,18 +158,16 @@ void GameObject::removeInstance(GameObjectInstance instance, Game &game){
  *
  * @return a reference to the GameObject corresponding to this name
  */
- GameObject& GameObject::get(const string name){
+GameObject& GameObject::get(const string name) {
     return *GameObject::gameObjects.at(name);
- }
+}
 
 
-// bool catchAll
-
-vector<GameObjectInstance*> GameObject::getAll(function<bool(GameObjectInstance&)> filter){
+vector<GameObjectInstance*> GameObject::getAll(function<bool(GameObjectInstance&)> filter) {
     vector<GameObjectInstance*> results;
 
-    for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects){
-        for(GameObjectInstance& goi : objectPointer.second->instances){
+    for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects) {
+        for(GameObjectInstance& goi : objectPointer.second->instances) {
             if(filter(goi))
                 results.push_back(&goi);
         }
@@ -161,6 +175,7 @@ vector<GameObjectInstance*> GameObject::getAll(function<bool(GameObjectInstance&
 
     return results;
 }
+
 
 /** @brief gets a possible producer instance for this GameObject type.
  *  The producer is guaranteed to be not too busy (i.e. it can produce this object)
@@ -181,6 +196,7 @@ GameObjectInstance* GameObject::getPossibleProducer(){
     return nullptr;
 }
 
+
 bool GameObject::areDependenciesMet(){
     if (dependencyNames.size() == 0) return true;
     for(string dependencyName : dependencyNames){
@@ -190,6 +206,7 @@ bool GameObject::areDependenciesMet(){
     }
     return false;
 }
+
 
 /** @brief gets the number of currently non busy instances of this GameObject
  *
