@@ -38,11 +38,6 @@ GameObjectInstance& GameObject::addNewInstance(Game &game){
 }
 
 
-std::list<GameObjectInstance>& GameObject::getAllInstances(){
-    return instances;
-}
-
-
 /** @brief builds the techtree from a CSV file
  *
  * @throw TechTreeParsingException if the csv file could not be parsed
@@ -207,6 +202,17 @@ unsigned int GameObject::getFreeInstancesCount() {
             ++free;
     return free;
 }
+
+
+GameObject::InstancesIter GameObject::begin() {
+    return instances.begin();
+}
+
+
+GameObject::InstancesIter GameObject::end() {
+    return instances.end();
+}
+
 
 void GameObject::increaseEnergy(int amount){
     for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects){

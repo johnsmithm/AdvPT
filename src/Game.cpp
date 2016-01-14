@@ -419,7 +419,7 @@ bool getNonBoostedBuildings(GameObjectInstance &goi) {
 }
 
 void ProtossGame::invokeSpecial() {
-  for (GameObjectInstance& instance : GameObject::get("nexus").getAllInstances()) {
+  for (GameObjectInstance& instance : GameObject::get("nexus")) {
     while (instance.hasEnergy(25 * 10000)) {
       vector<GameObjectInstance*> targets = GameObject::getAll(getNonBoostedBuildings);
       
@@ -438,7 +438,7 @@ void ProtossGame::invokeSpecial() {
 }
 
 void TerranGame::invokeSpecial() {
-  for (GameObjectInstance& instance : GameObject::get("orbital_command").getAllInstances()) {
+  for (GameObjectInstance& instance : GameObject::get("orbital_command")) {
     if (instance.hasEnergy(50 * 10000)) {
 
         shared_ptr<MuleAction> action = make_shared<MuleAction>(MuleAction(*this, instance));

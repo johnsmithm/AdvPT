@@ -98,7 +98,7 @@ public:
           supplyCost(supplyCost), supplyProvided(supplyProvided),
           startEnergy(startEnergy), maxEnergy(maxEnergy), maxBusyness(maxBusyness),
           producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType),
-          _isBuilding(isBuilding) {}
+          building(isBuilding) {}
 
     GameObjectInstance& addNewInstance(Game &game);
     void removeInstance(const GameObjectInstance instance, Game &game);
@@ -109,7 +109,9 @@ public:
     unsigned int getInstancesCount() {return instances.size();}
     unsigned int getFreeInstancesCount();
     
-    std::list<GameObjectInstance>& getAllInstances();
+    using InstancesIter = std::list<GameObjectInstance>::iterator;
+    InstancesIter begin();
+    InstancesIter end();
 
     unsigned int getMineralCost(){return mineralCost;}
     unsigned int getGasCost(){return gasCost;}
@@ -119,7 +121,7 @@ public:
     std::string getName(){return name;};
     const std::vector<std::string>& getProducerNames(){return producerNames;}
     const std::vector<std::string>& getDependencyNames(){return dependencyNames;}
-    bool isBuilding(){return _isBuilding;};
+    bool isBuilding(){return building;};
 
     static void parseFile(std::string filename);
     static void parseString(std::string input);
@@ -146,7 +148,7 @@ private:
     std::vector<std::string> dependencyNames;
 
     BuildType buildType;
-    bool _isBuilding;
+    bool building;
 
     //unsigned int blockedInstaces;//will block Instances from left to right
 
