@@ -2,10 +2,6 @@
 #define _ACTION_H_
 
 #include <memory>
-
-//forward declare classes to fix cyclic dependencies
-class Game;
-
 #include "Game.h"
 #include "GameObject.h"
 #include "json/json.h"
