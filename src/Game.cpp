@@ -43,7 +43,7 @@ bool Game::timeStep() {
     gas += gasMiningWorkers * gasRate;
 
     //increase energy on all buildings
-    GameObject::increaseEnergy(energyRate);
+    GameObject::increaseInstancesEnergy(energyRate);
 
     // check runningAction
     std::list<std::shared_ptr < Action>> toRemove;

@@ -34,12 +34,12 @@ std::ostream& operator<<(std::ostream &out, const GameObjectInstance &other) {
 GameObject::GameObject(std::string name,
                        unsigned int mineralCost, unsigned int gasCost, unsigned int buildTime,
                        unsigned int supplyCost, unsigned int supplyProvided, unsigned int startEnergy,
-                       unsigned int maxEnergy, unsigned int maxBusyness,
+                       unsigned int maxEnergy, unsigned int maxBusiness,
                        std::vector<std::string> producerNames, std::vector<std::string> dependencyNames,
                        BuildType buildType, bool isBuilding)
     : name(name), mineralCost(mineralCost), gasCost(gasCost), buildTime(buildTime),
       supplyCost(supplyCost), supplyProvided(supplyProvided),
-      startEnergy(startEnergy), maxEnergy(maxEnergy), maxBusyness(maxBusyness),
+      startEnergy(startEnergy), maxEnergy(maxEnergy), maxBusiness(maxBusiness),
       producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType),
       building(isBuilding) {}
 
@@ -109,7 +109,7 @@ void GameObject::parseStream(istream &inputStream) {
         if(dependencies[0] == "")
             dependencies.clear();
           
-        gameObjects[tokens[0]] = make_shared<GameObject>(GameObject(
+        gameObjects[tokens[0]] = make_shared<GameObject>(
             tokens[0], // name;
             stol(tokens[1])*10000, // mineralCost
             stol(tokens[2])*10000, // gasCost
@@ -120,7 +120,7 @@ void GameObject::parseStream(istream &inputStream) {
             stol(tokens[6])*10000, // startEnergy
             stol(tokens[7])*10000, // maxEnergy
 
-            tokens[0].find("_with_reactor") != std::string::npos? 2 : 1, //TODO: maxBusyness
+            tokens[0].find("_with_reactor") != std::string::npos? 2 : 1, //TODO: maxBusiness
 
             //race, we don't need this (yet?)
             // tokens[8] == "terran" ? Race::TERRAN :
@@ -136,7 +136,7 @@ void GameObject::parseStream(istream &inputStream) {
                 (tokens[11] == "warp" ? BuildType::INSTANTIATE :
                     throw TechTreeParsingException("Invalid build type", linecounter))),
             tokens[12][0] == '1' //isBuilding
-            ));
+            );
     }
 }
 
@@ -188,7 +188,7 @@ GameObjectInstance* GameObject::getPossibleProducer(){
         GameObject& producer = get(producerName);
         for(GameObjectInstance& goi : producer.instances){
             if(!goi.isBusy()){
-              //cout<<goi.busyness<<" "<<goi.type.maxBusyness<<"\n";
+              //cout<<goi.business<<" "<<goi.type.maxBusiness<<"\n";
                 return &goi;
             }
         }
@@ -231,10 +231,10 @@ GameObject::InstancesIter GameObject::end() {
 }
 
 
-void GameObject::increaseEnergy(int amount){
+void GameObject::increaseInstancesEnergy(int value) {
     for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects){
         for(GameObjectInstance& goi : objectPointer.second->instances){
-            goi.updateEnergy(amount);
+            goi.updateEnergy(value);
             if(goi.getEnergy() > objectPointer.second->maxEnergy)
                 goi.setEnergy(objectPointer.second->maxEnergy);
         }
