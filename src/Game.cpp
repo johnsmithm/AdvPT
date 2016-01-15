@@ -433,7 +433,9 @@ ZergGame::ZergGame()
 
 
 bool getNonBoostedBuildings(GameObjectInstance &goi) {
-    return !goi.isBoostTarget() && goi.getBusiness() >= 0 && goi.getType().isBuilding();
+    // Note: Would not work properly with buildings that have 2 production lines
+    //       but this is not the case in protoss race (where boost action is relevant)
+    return (!goi.isBoostTarget()) && (goi.getFreeProductionLines() == 0) && goi.getType().isBuilding();
 }
 
 
@@ -442,15 +444,16 @@ void ProtossGame::invokeSpecial() {
         while (instance.hasEnergy(25 * 10000)) {
             vector<GameObjectInstance*> targets = GameObject::getAll(getNonBoostedBuildings);
 
-            if (targets.size() > 0) {
-                shared_ptr<BoostAction> action = make_shared<BoostAction>(BoostAction(*this, *targets[0], instance));
-                Game::debugOutput(action, true);
+            if (targets.size() == 0)
+                break;
 
-                action->start();
-                instance.updateEnergy(-25 * 10000);
+            shared_ptr<BoostAction> action = make_shared<BoostAction>(BoostAction(*this, *targets[0], instance));
+            Game::debugOutput(action, true);
 
-                runningActions.push_back(action);
-            }
+            action->start();
+            instance.updateEnergy(-25 * 10000);
+
+            runningActions.push_back(action);
         }
     }
 

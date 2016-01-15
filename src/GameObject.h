@@ -43,9 +43,9 @@ public:
 
 class GameObjectInstance {
 public:
-    GameObjectInstance(unsigned int energy, GameObject &type)
-      : ID(maxID++), type(type), energy(energy), business(0),
-        boostTarget (false) {};
+    GameObjectInstance(GameObject &type, unsigned int energy, unsigned int productionLines)
+      : ID(maxID++), type(type), energy(energy), freeProductionLines(productionLines),
+        dead(false), boostTarget (false) {};
 
     unsigned int getID() const {return ID;}
     GameObject& getType() const {return type;}
@@ -55,19 +55,18 @@ public:
     bool hasEnergy(unsigned int value) const {return (value <= energy);}
     void updateEnergy(int value) {energy += value;}
     
-    unsigned int getBusiness() const {return business;}
-    void increaseBusiness() {++business;}
-    void decreaseBusiness() {--business;}
-    bool isBusy() const;
-    void setBusy();
-    
+    unsigned int getFreeProductionLines() const {return freeProductionLines;}
+    void increaseBusiness() {--freeProductionLines;}
+    void decreaseBusiness() {++freeProductionLines;}
+
+    bool isDead() {return dead;}
+    void setDead() {dead = true;}
+
     bool isBoostTarget() const {return boostTarget;}
     void setBoostTarget(bool value) {boostTarget = value;}
 
     //TODO: ask at the chair, why the fuck?!
     bool operator==(const GameObjectInstance& other) const {return ID==other.ID;}
-
-    friend std::ostream& operator<<(std::ostream &out, const GameObjectInstance &other);
 
 private:
     static unsigned int maxID;
@@ -76,7 +75,8 @@ private:
     GameObject& type;
 
     unsigned int energy;
-    unsigned int business;
+    unsigned int freeProductionLines;
+    bool dead;
     bool boostTarget;
 };
 
@@ -86,7 +86,7 @@ public:
     GameObject(std::string name,
                unsigned int mineralCost, unsigned int gasCost, unsigned int buildTime,
                unsigned int supplyCost, unsigned int supplyProvided, unsigned int startEnergy,
-               unsigned int maxEnergy, unsigned int maxBusiness,
+               unsigned int maxEnergy, unsigned int productionLines,
                std::vector<std::string> producerNames, std::vector<std::string> dependencyNames,
                BuildType buildType, bool isBuilding);
 
@@ -94,7 +94,7 @@ public:
     unsigned int getGasCost() const {return gasCost;}
     unsigned int getSupplyCost() const {return supplyCost;}
     unsigned int getBuildTime() const {return buildTime;}
-    unsigned int getMaxBusiness() const {return maxBusiness;}
+    unsigned int getProductionLines() const {return productionLines;}
     BuildType getBuildType() const {return buildType;}
     std::string getName() const {return name;}
     const std::vector<std::string>& getProducerNames() const {return producerNames;}
@@ -132,7 +132,7 @@ private:
     unsigned int supplyProvided;
     unsigned int startEnergy;
     unsigned int maxEnergy;
-    unsigned int maxBusiness = 1;
+    unsigned int productionLines = 1;
 
     std::vector<std::string> producerNames;
     std::vector<std::string> dependencyNames;

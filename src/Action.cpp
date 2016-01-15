@@ -47,8 +47,7 @@ void BuildAction::start() {
     assert(producingInstance != nullptr);
     producerID = producingInstance->getID();
     if(objectToBuild.getBuildType() == BuildType::MORPH) {
-        producingInstance->setBusy();
-        //producingInstance->getType().removeInstance(*producingInstance, game);
+        producingInstance->setDead();
     } else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD) {
         producingInstance->increaseBusiness();
     }

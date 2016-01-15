@@ -15,37 +15,21 @@ unsigned int GameObjectInstance::maxID = 0;
 unordered_map<string, shared_ptr<GameObject>> GameObject::gameObjects;
 
 
-bool GameObjectInstance::isBusy() const {
-    return (business >= type.getMaxBusiness());
-}
-
-
-void GameObjectInstance::setBusy() {
-    business = type.getMaxBusiness();
-}
-
-
-std::ostream& operator<<(std::ostream &out, const GameObjectInstance &other) {
-    out << "GameObject " << other.type.getName() << " with ID " << other.ID;
-    return out;
-}
-
-
 GameObject::GameObject(std::string name,
                        unsigned int mineralCost, unsigned int gasCost, unsigned int buildTime,
                        unsigned int supplyCost, unsigned int supplyProvided, unsigned int startEnergy,
-                       unsigned int maxEnergy, unsigned int maxBusiness,
+                       unsigned int maxEnergy, unsigned int productionLines,
                        std::vector<std::string> producerNames, std::vector<std::string> dependencyNames,
                        BuildType buildType, bool isBuilding)
     : name(name), mineralCost(mineralCost), gasCost(gasCost), buildTime(buildTime),
       supplyCost(supplyCost), supplyProvided(supplyProvided),
-      startEnergy(startEnergy), maxEnergy(maxEnergy), maxBusiness(maxBusiness),
+      startEnergy(startEnergy), maxEnergy(maxEnergy), productionLines(productionLines),
       producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType),
       building(isBuilding) {}
 
 
 GameObjectInstance& GameObject::addNewInstance(Game &game) {
-    instances.emplace_back(startEnergy, *this);
+    instances.emplace_back(*this, startEnergy, productionLines);
     game.setTotalSupplyAmount(game.getTotalSupplyAmount() + supplyProvided);
     return instances.back();
 }
@@ -120,7 +104,7 @@ void GameObject::parseStream(istream &inputStream) {
             stol(tokens[6])*10000, // startEnergy
             stol(tokens[7])*10000, // maxEnergy
 
-            tokens[0].find("_with_reactor") != std::string::npos? 2 : 1, //TODO: maxBusiness
+            tokens[0].find("_with_reactor") != std::string::npos? 2 : 1, //TODO: freeProductionLines
 
             //race, we don't need this (yet?)
             // tokens[8] == "terran" ? Race::TERRAN :
@@ -183,14 +167,22 @@ vector<GameObjectInstance*> GameObject::getAll(function<bool(GameObjectInstance&
  *
  *  @return a pointer to the producer or nullptr if there is no available producer
  */
-GameObjectInstance* GameObject::getPossibleProducer(){
+GameObjectInstance* GameObject::getPossibleProducer() {
     for(string producerName : producerNames){
         GameObject& producer = get(producerName);
-        for(GameObjectInstance& goi : producer.instances){
-            if(!goi.isBusy()){
-              //cout<<goi.business<<" "<<goi.type.maxBusiness<<"\n";
-                return &goi;
-            }
+
+        if (buildType == BuildType::MORPH) {
+            auto predicate = [](GameObjectInstance& inst) {
+                // When mophing all production lines must be free
+                return (!inst.isDead()) && (inst.getFreeProductionLines() == inst.getType().getProductionLines());
+            };
+            return findFirstIf(producer, predicate);
+
+        } else {
+            auto predicate = [](GameObjectInstance& inst) {
+                return (!inst.isDead()) && (inst.getFreeProductionLines() > 0);
+            };
+            return findFirstIf(producer, predicate);
         }
     }
     return nullptr;
@@ -214,8 +206,8 @@ bool GameObject::areDependenciesMet(){
  */
 unsigned int GameObject::getFreeInstancesCount() {
     unsigned int free = 0;
-    for(auto unit : instances)
-        if(!unit.isBusy())
+    for (auto unit : instances)
+        if ((!unit.isDead()) && (unit.getFreeProductionLines() > 0))
             ++free;
     return free;
 }
