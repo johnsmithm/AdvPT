@@ -21,6 +21,7 @@ public:
     virtual void start() = 0;
     virtual void finish() = 0;
     virtual bool timeStep() = 0;
+    virtual bool isBuildAction() {return false;}
     virtual std::string getName(){return "Generic Action";};
 };
 
@@ -32,12 +33,10 @@ public:
         : Action(game), objectToBuild(objectToBuild) {}
 
     bool canExecute();
-
     void start();
-
     void finish();
-
     bool timeStep();
+    bool isBuildAction() {return true;}
 
     unsigned int getGasCost(){return objectToBuild.getGasCost();};
     unsigned int getSupplyCost(){return objectToBuild.getSupplyCost();};

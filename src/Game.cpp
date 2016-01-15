@@ -25,18 +25,18 @@ Game::Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExplo
 }
 
 
-bool Game::finishBuildAction() {
-    for (shared_ptr<Action> item : runningActions) {
-        if(item->getName() != "BoostAction" && item->getName() != "MuleAction") {
-            return false;
-        }
-    }
-    return true;
+bool Game::allBuildActionFinished() {
+    auto predicate = [](shared_ptr<Action> a) {
+        return a->isBuildAction();
+    };
+    if (findFirstIf(runningActions, predicate) == nullptr)
+        return true;
+    return false;
 }
 
 
 bool Game::timeStep() {
-    if (currBuildListItem == buildList.end() && finishBuildAction()) {
+    if (currBuildListItem == buildList.end() && allBuildActionFinished()) {
         return true;
     }
     minerals += mineralMiningWorkers * mineralsRate + muleActions * 4 * mineralsRate;
