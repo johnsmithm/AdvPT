@@ -189,10 +189,10 @@ GameObjectInstance* GameObject::getPossibleProducer() {
 }
 
 
-bool GameObject::areDependenciesMet(){
+bool GameObject::areDependenciesMet() const {
     if (dependencyNames.size() == 0) return true;
-    for(string dependencyName : dependencyNames){
-        if(get(dependencyName).instances.size() > 0){
+    for(string dependencyName : dependencyNames) {
+        if(get(dependencyName).instances.size() > 0) {
             return true;
         }
     }
@@ -204,7 +204,7 @@ bool GameObject::areDependenciesMet(){
  *
  *  @return the number of the currently free instances
  */
-unsigned int GameObject::getFreeInstancesCount() {
+unsigned int GameObject::getFreeInstancesCount() const {
     unsigned int free = 0;
     for (auto unit : instances)
         if ((!unit.isDead()) && (unit.getFreeProductionLines() > 0))

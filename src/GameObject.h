@@ -90,22 +90,22 @@ public:
                std::vector<std::string> producerNames, std::vector<std::string> dependencyNames,
                BuildType buildType, bool isBuilding);
 
+    std::string getName() const {return name;}
     unsigned int getMineralCost() const {return mineralCost;}
     unsigned int getGasCost() const {return gasCost;}
-    unsigned int getSupplyCost() const {return supplyCost;}
     unsigned int getBuildTime() const {return buildTime;}
+    unsigned int getSupplyCost() const {return supplyCost;}
     unsigned int getProductionLines() const {return productionLines;}
-    BuildType getBuildType() const {return buildType;}
-    std::string getName() const {return name;}
     const std::vector<std::string>& getProducerNames() const {return producerNames;}
     const std::vector<std::string>& getDependencyNames() const {return dependencyNames;}
+    BuildType getBuildType() const {return buildType;}
     bool isBuilding() const {return building;}
 
-    bool areDependenciesMet();
+    bool areDependenciesMet() const;
     GameObjectInstance* getPossibleProducer();
 
-    unsigned int getInstancesCount() {return instances.size();}
-    unsigned int getFreeInstancesCount();
+    unsigned int getInstancesCount() const {return instances.size();}
+    unsigned int getFreeInstancesCount() const;
 
     GameObjectInstance& addNewInstance(Game &game);
     void removeInstance(const GameObjectInstance instance, Game &game);
@@ -132,7 +132,7 @@ private:
     unsigned int supplyProvided;
     unsigned int startEnergy;
     unsigned int maxEnergy;
-    unsigned int productionLines = 1;
+    unsigned int productionLines;
 
     std::vector<std::string> producerNames;
     std::vector<std::string> dependencyNames;
