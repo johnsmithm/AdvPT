@@ -27,35 +27,33 @@ class Game {
 public:
 
     virtual ~Game() {};
-    unsigned int getMineralAmount() {return minerals;}
-    unsigned int getMineralMiningWorkers() {return mineralMiningWorkers;}
-    unsigned int getGasAmount() {return gas;}
-    unsigned int getGasMiningWorkers() {return gasMiningWorkers;}
-    unsigned int getUsedSupplyAmount() {return usedSupply;}
-    unsigned int getTotalSupplyAmount() {return totalSupply;}
-    unsigned int getAvailableSupplyAmount() {return totalSupply-usedSupply;}
-    unsigned int getCurrentTime() {return curTime;};
+    unsigned int getMineralAmount() const {return minerals;}
+    unsigned int getMineralMiningWorkers() const {return mineralMiningWorkers;}
+    unsigned int getGasAmount() const {return gas;}
+    unsigned int getGasMiningWorkers() const {return gasMiningWorkers;}
+    unsigned int getUsedSupplyAmount() const {return usedSupply;}
+    unsigned int getTotalSupplyAmount() const {return totalSupply;}
+    unsigned int getAvailableSupplyAmount() const {return totalSupply-usedSupply;}
+    unsigned int getCurrentTime() const {return curTime;};
 
     void setMineralAmount(int amount) {minerals = amount;}
     void setGasAmount(int amount) {gas = amount;}
     void setUsedSupplyAmount(int amount) {usedSupply = amount;}
     void setTotalSupplyAmount(int amount) {totalSupply = amount;}
 
-    void readConfiguration();
-
     void readBuildList(std::string filename);
 
     Json::Value& modifyOutput() {return output;}
     void printOutput();
 
-    bool precheckBuildList();
+    bool precheckBuildList() const;
 
-    void setMuleAction(int value){muleActions += value;};
+    void setMuleAction(int value) {muleActions += value;};
 
     void simulate();
 
-    virtual Race getRace() = 0;
-    std::string getRaceString();
+    virtual Race getRace() const = 0;
+    std::string getRaceString() const;
 
 protected:
     Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
@@ -109,7 +107,7 @@ class ProtossGame : public Game {
 public:
     ProtossGame();
 
-    virtual Race getRace(){return Race::PROTOSS;};
+    virtual Race getRace() const {return Race::PROTOSS;}
 
 protected:
     virtual void invokeSpecial() override;
@@ -120,7 +118,7 @@ class TerranGame : public Game {
 public:
     TerranGame();
 
-    virtual Race getRace(){return Race::TERRAN;};
+    virtual Race getRace() const {return Race::TERRAN;}
 
 protected:
     virtual void invokeSpecial() override;
@@ -131,7 +129,7 @@ class ZergGame : public Game {
 public:
     ZergGame();
 
-    virtual Race getRace(){return Race::ZERG;};
+    virtual Race getRace() const {return Race::ZERG;}
 
 protected:
     virtual void invokeSpecial() override;

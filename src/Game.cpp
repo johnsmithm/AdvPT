@@ -161,7 +161,7 @@ void Game::readBuildList(istream &input) {
  *
  *  @return true if the buildList is valid
  */
-bool Game::precheckBuildList() {
+bool Game::precheckBuildList() const {
     unordered_set<string> existing;
     existing.insert(mainBuilding.getName());
     existing.insert(worker.getName());
@@ -391,7 +391,7 @@ void Game::generateResources() {
 }
 
 
-std::string Game::getRaceString() {
+std::string Game::getRaceString() const {
     switch(getRace()) {
     case Race::PROTOSS:
         return "protoss";
