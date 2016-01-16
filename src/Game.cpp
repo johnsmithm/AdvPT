@@ -83,17 +83,8 @@ bool Game::timeStep() {
         generateResources();
     }
 
-    //if an action has created a new message, populate its global entries
-    Json::Value& message = last(output["messages"]);
-    if(message["time"] == curTime || curTime == 1){
-        message["status"]["resources"]["minerals"] = getMineralAmount()/10000;
-        message["status"]["resources"]["vespene"] = getGasAmount()/10000;
-        message["status"]["resources"]["supply"] = getTotalSupplyAmount();
-        message["status"]["resources"]["supply-used"] = getUsedSupplyAmount();
-
-        message["status"]["workers"]["minerals"] = getMineralMiningWorkers();
-        message["status"]["workers"]["vespene"] = getGasMiningWorkers();
-    }
+    // If a new message was created, populate its global entries.
+    output.addGameGlobals(*this);
 
     if (++curTime > 1000)
         throw SimulationException("Maximum timesteps exceeded");
@@ -201,58 +192,23 @@ bool Game::precheckBuildList() const {
 }
 
 
-void Game::printOutput(){
-    cout << output;
-}
-
-
 void Game::simulate() {
     assert(buildList.size() != 0);
 
-    output["game"] = "sc2-hots-" + getRaceString();
+    output.gameInformation(getRace());
 
     if (!precheckBuildList()) {
-        output["buildlistValid"] = 0;
+        output.buildListPrecheck(false);
         throw SimulationException("BuildList invalid");
     }
 
-    output["buildlistValid"] = 1;
-    for (auto goi : GameObject::getAll()) {
-        if(goi->getType().getName() != "larva")
-            output["initialUnits"][goi->getType().getName()].append(to_string(goi->getID()));
-    }
+    output.buildListPrecheck(true);
 
-    output["messages"] = Json::Value(Json::arrayValue);
+    output.initSimulation();
 
     currBuildListItem = buildList.begin();
 
     while (!timeStep());
-}
-
-
-/**
- * @brief Write an output just when the workAssignment is changed
- *
- */
-void Game::updateMessagesForWorkersReassignment(){
-
-    if(output["messages"].size() == 0 || last(output["messages"])["time"] != curTime){
-        Json::Value newMessage(Json::objectValue);
-
-        newMessage["time"] = curTime;
-        newMessage["events"] = Json::Value(Json::arrayValue);
-
-        output["messages"].append(newMessage);
-    }
-
-    Json::Value& message = last(output["messages"]);
-    message["status"]["resources"]["minerals"] = getMineralAmount()/10000;
-    message["status"]["resources"]["vespene"] = getGasAmount()/10000;
-    message["status"]["resources"]["supply"] = getTotalSupplyAmount();
-    message["status"]["resources"]["supply-used"] = getUsedSupplyAmount();
-
-    message["status"]["workers"]["minerals"] = getMineralMiningWorkers();
-    message["status"]["workers"]["vespene"] = getGasMiningWorkers();
 }
 
 
@@ -379,29 +335,8 @@ void Game::generateResources() {
     }
 
     // Write messages when we reassign workers and do not have events
-    if (output["messages"].size() == 0 && curTime == 1) {
-        updateMessagesForWorkersReassignment();
-    }
-    else {
-        Json::Value& message = last(output["messages"]);
-        if (message["time"] != getCurrentTime() &&
-            (mineralMiningWorkers != oldMineralMiningWorkers || gasMiningWorkers != oldGasMiningWorkers))
-            updateMessagesForWorkersReassignment();
-    }
-}
-
-
-std::string Game::getRaceString() const {
-    switch(getRace()) {
-    case Race::PROTOSS:
-        return "protoss";
-    case Race::ZERG:
-        return "zerg";
-    case Race::TERRAN:
-        return "terran";
-    default:
-        return "unknown";
-    }
+    if (mineralMiningWorkers != oldMineralMiningWorkers || gasMiningWorkers != oldGasMiningWorkers)
+        output.emptyMessage(*this);
 }
 
 

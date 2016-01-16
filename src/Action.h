@@ -12,8 +12,6 @@ protected:
     Game& game;
     unsigned int finishTime;
 
-    Json::Value& updateMessage();
-
 public:
     Action(Game& game)
         : game(game){};
@@ -67,9 +65,12 @@ public:
     virtual bool timeStep(){return --timeLeft == 0;};
     virtual std::string getName(){return "BoostAction";};
 
+    GameObjectInstance& getTarget() {return target;}
+    GameObjectInstance& getSource() {return source;}
+
 private:
-    GameObjectInstance &target;
-    GameObjectInstance &source;
+    GameObjectInstance& target;
+    GameObjectInstance& source;
     unsigned int timeLeft = 20;
 };
 
@@ -86,8 +87,10 @@ public:
     virtual bool timeStep(){return --timeLeft == 0;};
     virtual std::string getName(){return "MuleAction";};
 
+    GameObjectInstance& getSource() {return source;}
+
 private:
-    GameObjectInstance &source;
+    GameObjectInstance& source;
     unsigned int timeLeft = 90;
 };
 

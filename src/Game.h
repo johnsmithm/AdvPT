@@ -8,7 +8,7 @@
 #include <memory>
 #include <istream>
 #include "GameObject.h"
-#include "json/json.h"
+#include "JsonOutput.h"
 
 
 //forward declare classes to fix cyclic dependencies
@@ -43,17 +43,15 @@ public:
 
     void readBuildList(std::string filename);
 
-    Json::Value& modifyOutput() {return output;}
-    void printOutput();
-
     bool precheckBuildList() const;
 
     void setMuleAction(int value) {muleActions += value;};
 
     void simulate();
 
+    JsonOutput& getOutput() {return output;}
+
     virtual Race getRace() const = 0;
-    std::string getRaceString() const;
 
 protected:
     Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
@@ -63,8 +61,6 @@ protected:
     GameObject& geyserExploiter;
     
     std::list<std::shared_ptr<Action>> runningActions;
-
-    Json::Value output;
 
     void debugOutput(std::shared_ptr<Action> action, bool start);
     virtual void invokeSpecial() = 0;
@@ -92,6 +88,8 @@ private:
     std::vector<std::shared_ptr<BuildAction>> buildList;
 
     std::vector<std::shared_ptr<BuildAction>>::iterator currBuildListItem;
+
+    JsonOutput output;
 
     void readBuildList(std::istream &input);
     bool timeStep();

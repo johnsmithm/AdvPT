@@ -5,24 +5,6 @@
 
 using namespace std;
 
-Json::Value& Action::updateMessage() {
-    Json::Value& output = game.modifyOutput();
-    unsigned int curTime = game.getCurrentTime();
-    
-    if (output["messages"].size() == 0 || last(output["messages"])["time"] != curTime) {
-        Json::Value newMessage(Json::objectValue);
-
-        newMessage["time"] = curTime;
-        newMessage["events"] = Json::Value(Json::arrayValue);
-
-        output["messages"].append(newMessage);
-    }
-
-    Json::Value& message = last(output["messages"]);
-    message["events"].append(Json::Value(Json::objectValue));
-    return last(message["events"]);
-}
-
 
 /** @brief checks if an action can be executed
  *
@@ -57,10 +39,7 @@ void BuildAction::start() {
     game.setGasAmount(game.getGasAmount() - objectToBuild.getGasCost());
     game.setMineralAmount(game.getMineralAmount() - objectToBuild.getMineralCost());
 
-    Json::Value& curEvent = updateMessage();
-    curEvent["type"] = "build-start";
-    curEvent["name"] = objectToBuild.getName();
-    curEvent["producerID"] = std::to_string(producerID);
+    game.getOutput().event(*this);
 }
 
 
@@ -87,32 +66,21 @@ void BuildAction::finish() {
         producingInstance->decreaseBusiness();
     }
 
-    Json::Value& curEvent = updateMessage();
-    curEvent["type"] = "build-end";
-    curEvent["name"] = objectToBuild.getName();
-    curEvent["producerID"] = std::to_string(producerID);
-    curEvent["producedIDs"].append(std::to_string(instance.getID()));
+    game.getOutput().event(*this, instance.getID());
 }
 
 
 void BoostAction::start() {
     target.setBoostTarget(true);
 
-    Json::Value& curEvent = updateMessage();
-    curEvent["type"] = "special";
-    curEvent["name"] = "chronoboost";
-    curEvent["triggeredBy"] = to_string(source.getID());
-    curEvent["targetBuilding"] = to_string(target.getID());
+    game.getOutput().event(*this);
 }
 
 
 void MuleAction::start() {
     game.setMuleAction(1);
 
-    Json::Value& curEvent = updateMessage();
-    curEvent["type"] = "special";
-    curEvent["name"] = "mule";
-    curEvent["triggeredBy"] = to_string(source.getID());
+    game.getOutput().event(*this);
 }
 
 

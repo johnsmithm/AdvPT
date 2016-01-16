@@ -105,7 +105,7 @@ int main(int argc, char **argv){
     }
 
     g->simulate();
-    g->printOutput();
+    g->getOutput().print();
 
     delete g;
 }
