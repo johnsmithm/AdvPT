@@ -22,7 +22,8 @@ public:
     virtual void finish() = 0;
     virtual bool timeStep() = 0;
     virtual bool isBuildAction() {return false;}
-    virtual std::string getName(){return "Generic Action";};
+    virtual std::string getName() {return "Generic Action";}
+    Game& getGame() {return game;}
 };
 
 
@@ -38,12 +39,13 @@ public:
     bool timeStep();
     bool isBuildAction() {return true;}
 
-    unsigned int getGasCost(){return objectToBuild.getGasCost();};
-    unsigned int getSupplyCost(){return objectToBuild.getSupplyCost();};
-    unsigned int getMineralCost(){return objectToBuild.getMineralCost();};
+    unsigned int getGasCost() const {return objectToBuild.getGasCost();}
+    unsigned int getSupplyCost() const  {return objectToBuild.getSupplyCost();}
+    unsigned int getMineralCost() const {return objectToBuild.getMineralCost();}
 
-    std::string getName(){return objectToBuild.getName();};
-    GameObject& getObjectToBuild(){return objectToBuild;};
+    const std::string getName() const {return objectToBuild.getName();}
+    GameObject& getObjectToBuild() {return objectToBuild;}
+    unsigned int getProducerID() const {return producerID;}
 
 private:
     int producerID;

@@ -48,7 +48,7 @@ public:
         dead(false), boostTarget (false) {};
 
     unsigned int getID() const {return ID;}
-    GameObject& getType() const {return type;}
+    GameObject& getType() {return type;}
 
     unsigned int getEnergy() const {return energy;}
     void setEnergy(unsigned int value) {energy = value;}
@@ -90,7 +90,7 @@ public:
                std::vector<std::string> producerNames, std::vector<std::string> dependencyNames,
                BuildType buildType, bool isBuilding);
 
-    std::string getName() const {return name;}
+    const std::string getName() const {return name;}
     unsigned int getMineralCost() const {return mineralCost;}
     unsigned int getGasCost() const {return gasCost;}
     unsigned int getBuildTime() const {return buildTime;}
