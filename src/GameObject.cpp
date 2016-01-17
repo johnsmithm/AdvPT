@@ -95,14 +95,14 @@ void GameObject::parseStream(istream &inputStream) {
           
         gameObjects[tokens[0]] = make_shared<GameObject>(
             tokens[0], // name;
-            stol(tokens[1])*10000, // mineralCost
-            stol(tokens[2])*10000, // gasCost
+            stol(tokens[1]) * FP_FACTOR, // mineralCost
+            stol(tokens[2]) * FP_FACTOR, // gasCost
             stol(tokens[3]), // buildTime
             stol(tokens[4]), // supplyCost //seems to be an error for barracks_with_tech_lab
             stol(tokens[5]), // supplyProvided
 
-            stol(tokens[6])*10000, // startEnergy
-            stol(tokens[7])*10000, // maxEnergy
+            stol(tokens[6]) * FP_FACTOR, // startEnergy
+            stol(tokens[7]) * FP_FACTOR, // maxEnergy
 
             tokens[0].find("_with_reactor") != std::string::npos? 2 : 1, //TODO: freeProductionLines
 

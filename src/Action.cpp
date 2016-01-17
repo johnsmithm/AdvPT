@@ -6,6 +6,11 @@
 using namespace std;
 
 
+// Factor for build time. This is because of chronoboost
+const int FP_BUILDTIME_FACTOR = 10;
+const int FP_BUILDTIME_BOOST_FACTOR = 15;
+
+
 /** @brief checks if an action can be executed
  *
  *  @return true if all dependencies for this action
@@ -34,7 +39,8 @@ void BuildAction::start() {
         producingInstance->increaseBusiness();
     }
 
-    timeLeft = objectToBuild.getBuildTime()*10;//timeLeft is thenths of a second, buildTime is seconds
+    // timeLeft is thenths of a second, buildTime is seconds
+    timeLeft = objectToBuild.getBuildTime() * FP_BUILDTIME_FACTOR;
     game.setUsedSupplyAmount(game.getUsedSupplyAmount() + objectToBuild.getSupplyCost());
     game.setGasAmount(game.getGasAmount() - objectToBuild.getGasCost());
     game.setMineralAmount(game.getMineralAmount() - objectToBuild.getMineralCost());
@@ -48,7 +54,7 @@ void BuildAction::start() {
  *  @return true if the action is finished, false if it still needs time
  */
 bool BuildAction::timeStep() {
-    timeLeft -= producingInstance->isBoostTarget() ? 15 : 10;
+    timeLeft -= producingInstance->isBoostTarget() ? FP_BUILDTIME_BOOST_FACTOR : FP_BUILDTIME_FACTOR;
 
     return timeLeft <= 0;
 }

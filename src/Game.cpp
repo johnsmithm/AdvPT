@@ -15,17 +15,18 @@ using namespace std;
 Game::Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter)
     : mainBuilding(mainBuilding), worker(worker), geyserExploiter(geyserExploiter) {
 
-    setMineralAmount(50 * 10000);
-    for (int i = 0; i < 6; ++i)
+    setMineralAmount(INITIAL_MINERAL_AMOUNT);
+    
+    // create initial workers and main building
+    for (int i = 0; i < INITIAL_WORKER_COUNT; ++i) {
         worker.addNewInstance(*this);
-
+        ++usedSupply;
+    }
     mainBuilding.addNewInstance(*this);
-
-    setUsedSupplyAmount(6);
 }
 
 
-bool Game::allBuildActionFinished() {
+bool Game::allBuildActionsFinished() {
     auto predicate = [](shared_ptr<Action> a) {
         return a->isBuildAction();
     };
@@ -36,23 +37,24 @@ bool Game::allBuildActionFinished() {
 
 
 bool Game::timeStep() {
-    if (currBuildListItem == buildList.end() && allBuildActionFinished()) {
+    if (currBuildListItem == buildList.end() && allBuildActionsFinished()) {
         return true;
     }
-    minerals += mineralMiningWorkers * mineralsRate + muleActions * 4 * mineralsRate;
+
+    minerals += mineralMiningWorkers * mineralsRate;
+    minerals += muleActions * MULE_MINING_POWER * mineralsRate;
     gas += gasMiningWorkers * gasRate;
 
     //increase energy on all buildings
     GameObject::increaseInstancesEnergy(energyRate);
 
     // check runningAction
-    std::list<std::shared_ptr < Action>> toRemove;
+    std::list<std::shared_ptr<Action>> toRemove;
     for (shared_ptr<Action> item : runningActions) {
         if (item->timeStep()) {
 
             item->finish();
             debugOutput(item, false);
-            //runningActions.remove(item);
             toRemove.push_back(item);
         }
     }
@@ -96,8 +98,8 @@ bool Game::timeStep() {
 //For testing
 void Game::debugOutput(shared_ptr<Action> action, bool start) {
     cerr << "Time:" << curTime << "\n"
-         << "resources{minerals :" << minerals / 10000
-         << ", vespene :" << gas / 10000
+         << "resources{minerals :" << minerals / FP_FACTOR
+         << ", vespene :" << gas / FP_FACTOR
          << ", supply-used :" << usedSupply
          << ", supply :" << totalSupply << "}\n"
          << "workers{minerals :" << mineralMiningWorkers
@@ -367,17 +369,16 @@ ZergGame::ZergGame()
 }
 
 
-bool getNonBoostedBuildings(GameObjectInstance &goi) {
-    // Note: Would not work properly with buildings that have 2 production lines
-    //       but this is not the case in protoss race (where boost action is relevant)
-    return (!goi.isBoostTarget()) && (goi.getFreeProductionLines() == 0) && goi.getType().isBuilding();
-}
-
-
 void ProtossGame::invokeSpecial() {
+    auto isPotentialBoostTarget = [] (GameObjectInstance &goi) {
+        // Note: Would not work properly with buildings that have 2 production lines
+        //       but this is not the case in protoss race (where boost action is relevant)
+        return (!goi.isBoostTarget()) && (goi.getFreeProductionLines() == 0) && goi.getType().isBuilding();
+    };
+
     for (GameObjectInstance& instance : GameObject::get("nexus")) {
-        while (instance.hasEnergy(25 * 10000)) {
-            vector<GameObjectInstance*> targets = GameObject::getAll(getNonBoostedBuildings);
+        while (instance.hasEnergy(BOOST_REQUIRED_ENERGY)) {
+            vector<GameObjectInstance*> targets = GameObject::getAll(isPotentialBoostTarget);
 
             if (targets.size() == 0)
                 break;
@@ -386,7 +387,7 @@ void ProtossGame::invokeSpecial() {
             Game::debugOutput(action, true);
 
             action->start();
-            instance.updateEnergy(-25 * 10000);
+            instance.updateEnergy(-BOOST_REQUIRED_ENERGY);
 
             runningActions.push_back(action);
         }
@@ -397,13 +398,13 @@ void ProtossGame::invokeSpecial() {
 
 void TerranGame::invokeSpecial() {
     for (GameObjectInstance& instance : GameObject::get("orbital_command")) {
-        if (instance.hasEnergy(50 * 10000)) {
+        if (instance.hasEnergy(MULE_REQUIRED_ENERGY)) {
 
             shared_ptr<MuleAction> action = make_shared<MuleAction>(MuleAction(*this, instance));
             Game::debugOutput(action, true);
 
             action->start();
-            instance.updateEnergy(-50 * 10000);
+            instance.updateEnergy(-MULE_REQUIRED_ENERGY);
 
             runningActions.push_back(action);
 
@@ -436,7 +437,7 @@ void ZergGame::invokeSpecial() {
         }
 
         --properties.timeTillSpawn;
-        if ((properties.occupiedSlots < 3) && (properties.timeTillSpawn == 0)) {
+        if ((properties.occupiedSlots < LARVA_SLOTS) && (properties.timeTillSpawn == 0)) {
             ++properties.occupiedSlots;
             larva.addNewInstance(*this);
         }

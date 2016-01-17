@@ -71,7 +71,7 @@ public:
 private:
     GameObjectInstance& target;
     GameObjectInstance& source;
-    unsigned int timeLeft = 20;
+    unsigned int timeLeft = BOOST_ACTION_TIME;
 };
 
 
@@ -91,7 +91,7 @@ public:
 
 private:
     GameObjectInstance& source;
-    unsigned int timeLeft = 90;
+    unsigned int timeLeft = MULE_ACTION_TIME;
 };
 
 

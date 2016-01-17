@@ -4,6 +4,7 @@
 #include "util.h"
 #include "Game.h"
 #include "Action.h"
+#include "Const.h"
 
 
 using namespace std;
@@ -145,8 +146,8 @@ void JsonOutput::event(MuleAction& action) {
 void JsonOutput::addGameGlobals(Game& game) {
     Json::Value& message = last(json["messages"]);
     if (message["time"] == game.getCurrentTime() || game.getCurrentTime() == 1) {
-        message["status"]["resources"]["minerals"] = game.getMineralAmount()/10000;
-        message["status"]["resources"]["vespene"] = game.getGasAmount()/10000;
+        message["status"]["resources"]["minerals"] = game.getMineralAmount() / FP_FACTOR;
+        message["status"]["resources"]["vespene"] = game.getGasAmount() / FP_FACTOR;
         message["status"]["resources"]["supply"] = game.getTotalSupplyAmount();
         message["status"]["resources"]["supply-used"] = game.getUsedSupplyAmount();
 

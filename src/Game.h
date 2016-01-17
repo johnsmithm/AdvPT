@@ -9,6 +9,7 @@
 #include <istream>
 #include "GameObject.h"
 #include "JsonOutput.h"
+#include "Const.h"
 
 
 //forward declare classes to fix cyclic dependencies
@@ -68,7 +69,7 @@ protected:
 private:
     unsigned int curTime = 1;
 
-    unsigned int minerals = 50*1000;
+    unsigned int minerals = 0;
     unsigned int gas = 0;
     unsigned int usedSupply = 0;
     unsigned int totalSupply = 0;
@@ -81,8 +82,8 @@ private:
 
     unsigned int finishTimeCurrentBuildItem = 1;
 
-    const int mineralsRate = DEFAULT_MINERAL_INCREASE;
-    const int gasRate = DEFAULT_GAS_INCREASE;
+    const int mineralsRate = DEFAULT_WORKER_MINERAL_INCREASE;
+    const int gasRate = DEFAULT_WORKER_GAS_INCREASE;
     const int energyRate = DEFAULT_ENERGY_INCREASE;
 
     std::vector<std::shared_ptr<BuildAction>> buildList;
@@ -94,7 +95,7 @@ private:
     void readBuildList(std::istream &input);
     bool timeStep();
     void generateResources();
-    bool allBuildActionFinished();
+    bool allBuildActionsFinished();
     void updateMessagesForWorkersReassignment();
     int ternarySearch(int left, int right, int neededGas,int neededMineral, int freeWorkers);
     int getMiningTime(int gasMiningWorkers, int mineralMiningWorkers, int neededGas,int neededMineral);
@@ -133,8 +134,6 @@ protected:
     virtual void invokeSpecial() override;
 
 private:
-    constexpr static unsigned int LARVA_SPAWN_TIME = 15;
-
     struct LarvaProducerProperties {
         unsigned int occupiedSlots = 0;
         unsigned int timeTillSpawn = LARVA_SPAWN_TIME;

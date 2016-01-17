@@ -10,7 +10,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <vector>
-#include "Config.h"
+#include "Const.h"
 
 
 class GameObject;
@@ -83,6 +83,9 @@ private:
 
 class GameObject {
 public:
+    // Iterator type; allows to iterate through GameObjectInstances (see begin(), end())
+    using InstancesIter = std::list<GameObjectInstance>::iterator;
+
     GameObject(std::string name,
                unsigned int mineralCost, unsigned int gasCost, unsigned int buildTime,
                unsigned int supplyCost, unsigned int supplyProvided, unsigned int startEnergy,
@@ -110,7 +113,6 @@ public:
     GameObjectInstance& addNewInstance(Game &game);
     void removeInstance(const GameObjectInstance instance, Game &game);
 
-    using InstancesIter = std::list<GameObjectInstance>::iterator;
     InstancesIter begin();
     InstancesIter end();
 
