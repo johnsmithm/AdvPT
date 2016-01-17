@@ -120,6 +120,8 @@ public:
     virtual Race getRace() const {return Race::TERRAN;}
 
 protected:
+    GameObject& orbitalCommand;
+
     virtual void invokeSpecial() override;
 };
 

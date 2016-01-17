@@ -344,14 +344,12 @@ void Game::generateResources() {
 
 ProtossGame::ProtossGame()
     : Game(GameObject::get("nexus"), GameObject::get("probe"),
-           GameObject::get("assimilator")) {
-}
+           GameObject::get("assimilator")) {}
 
 
 TerranGame::TerranGame()
     : Game(GameObject::get("command_center"), GameObject::get("scv"),
-           GameObject::get("refinery")) {
-}
+           GameObject::get("refinery")), orbitalCommand(GameObject::get("orbital_command")) {}
 
 
 ZergGame::ZergGame()
@@ -376,7 +374,7 @@ void ProtossGame::invokeSpecial() {
         return (!goi.isBoostTarget()) && (goi.getFreeProductionLines() == 0) && goi.getType().isBuilding();
     };
 
-    for (GameObjectInstance& instance : GameObject::get("nexus")) {
+    for (GameObjectInstance& instance : mainBuilding) {
         while (instance.hasEnergy(BOOST_REQUIRED_ENERGY)) {
             vector<GameObjectInstance*> targets = GameObject::getAll(isPotentialBoostTarget);
 
@@ -397,7 +395,7 @@ void ProtossGame::invokeSpecial() {
 
 
 void TerranGame::invokeSpecial() {
-    for (GameObjectInstance& instance : GameObject::get("orbital_command")) {
+    for (GameObjectInstance& instance : orbitalCommand) {
         if (instance.hasEnergy(MULE_REQUIRED_ENERGY)) {
 
             shared_ptr<MuleAction> action = make_shared<MuleAction>(MuleAction(*this, instance));
