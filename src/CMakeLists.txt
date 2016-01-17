@@ -20,9 +20,9 @@ configure_file (
 # so that we will find Config.h
 include_directories("${PROJECT_BINARY_DIR}")
 
-file(GLOB source_files
-    "*.h"
+file(GLOB SOURCE_FILES
     "*.cpp"
+    "json/*.cpp"
 )
 
 #resolve dependencies
@@ -30,6 +30,6 @@ find_package( Boost REQUIRED COMPONENTS program_options )
 
 include_directories(${Boost_INCLUDE_DIRS})
 
-add_executable(${BINARY_NAME} ${source_files})
+add_executable(${BINARY_NAME} ${SOURCE_FILES})
 target_link_libraries(${BINARY_NAME} ${Boost_LIBRARIES})
 
