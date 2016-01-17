@@ -1,5 +1,5 @@
-#ifndef _CONST_H
-#define _CONST_H
+#ifndef _CONST_H_
+#define _CONST_H_
 
 /** @brief  factor for fixed point numbers */
 const int FP_FACTOR = 10000;
