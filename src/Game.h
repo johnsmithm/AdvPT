@@ -64,7 +64,8 @@ protected:
     std::list<std::shared_ptr<Action>> runningActions;
 
     void debugOutput(std::shared_ptr<Action> action, bool start);
-    virtual void invokeSpecial() = 0;
+
+    virtual void invokeRaceActions(bool buildTriggered) = 0;
 
 private:
     unsigned int curTime = 1;
@@ -109,7 +110,7 @@ public:
     virtual Race getRace() const {return Race::PROTOSS;}
 
 protected:
-    virtual void invokeSpecial() override;
+    virtual void invokeRaceActions(bool buildTriggered) override;
 };
 
 
@@ -122,7 +123,7 @@ public:
 protected:
     GameObject& orbitalCommand;
 
-    virtual void invokeSpecial() override;
+    virtual void invokeRaceActions(bool buildTriggered) override;
 };
 
 
@@ -133,7 +134,7 @@ public:
     virtual Race getRace() const {return Race::ZERG;}
 
 protected:
-    virtual void invokeSpecial() override;
+    virtual void invokeRaceActions(bool buildTriggered) override;
 
 private:
     struct LarvaProducerProperties {

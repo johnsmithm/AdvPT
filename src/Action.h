@@ -31,11 +31,12 @@ public:
     BuildAction(Game& game, GameObject& objectToBuild)
         : Action(game), objectToBuild(objectToBuild) {}
 
-    bool canExecute();
-    void start();
-    void finish();
-    bool timeStep();
-    bool isBuildAction() {return true;}
+    virtual bool canExecute() override;
+    virtual void start() override;
+    virtual void finish() override;
+    virtual bool timeStep() override;
+    virtual bool isBuildAction() override {return true;}
+    virtual std::string getName() override {return objectToBuild.getName();}
 
     unsigned int getGasCost() const {return objectToBuild.getGasCost();}
     unsigned int getSupplyCost() const  {return objectToBuild.getSupplyCost();}
@@ -59,11 +60,11 @@ public:
     BoostAction(Game& game, GameObjectInstance& target, GameObjectInstance& source)
         : Action(game), target(target), source(source) {}
 
-    virtual bool canExecute(){return true;};
-    virtual void start();
-    virtual void finish(){target.setBoostTarget(false);}
-    virtual bool timeStep(){return --timeLeft == 0;};
-    virtual std::string getName(){return "BoostAction";};
+    virtual bool canExecute() override {return true;}
+    virtual void start() override;
+    virtual void finish() override {target.setBoostTarget(false);}
+    virtual bool timeStep() override {return --timeLeft == 0;};
+    virtual std::string getName() override {return "BoostAction";}
 
     GameObjectInstance& getTarget() {return target;}
     GameObjectInstance& getSource() {return source;}
@@ -81,11 +82,11 @@ public:
     MuleAction(Game& game, GameObjectInstance& source)
         : Action(game), source(source) {}
 
-    virtual bool canExecute(){return true;};
-    virtual void start();
-    virtual void finish();
-    virtual bool timeStep(){return --timeLeft == 0;};
-    virtual std::string getName(){return "MuleAction";};
+    virtual bool canExecute() override {return true;}
+    virtual void start() override;
+    virtual void finish() override;
+    virtual bool timeStep() override {return --timeLeft == 0;}
+    virtual std::string getName() override {return "MuleAction";}
 
     GameObjectInstance& getSource() {return source;}
 

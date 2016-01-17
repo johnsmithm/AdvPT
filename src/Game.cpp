@@ -66,7 +66,6 @@ bool Game::timeStep() {
     bool triggeredBuild = false;
     if (currBuildListItem != buildList.end()) {
         if ((**currBuildListItem).canExecute()) {
-
             (**currBuildListItem).start();
             triggeredBuild = true;
             debugOutput(*currBuildListItem, true);
@@ -76,8 +75,7 @@ bool Game::timeStep() {
     }
 
     // invoke race specific special actions, if no build was triggered
-    if(!triggeredBuild)
-        invokeSpecial();
+    invokeRaceActions(triggeredBuild);
 
     // Reassign workers when we finish mining resources for a build item or
     // We have a change in the workers business
@@ -367,51 +365,55 @@ ZergGame::ZergGame()
 }
 
 
-void ProtossGame::invokeSpecial() {
-    auto isPotentialBoostTarget = [] (GameObjectInstance &goi) {
-        // Note: Would not work properly with buildings that have 2 production lines
-        //       but this is not the case in protoss race (where boost action is relevant)
-        return (!goi.isBoostTarget()) && (goi.getFreeProductionLines() == 0) && goi.getType().isBuilding();
-    };
+void ProtossGame::invokeRaceActions(bool buildTriggered) {
+    if (!buildTriggered) {
+        auto isPotentialBoostTarget = [] (GameObjectInstance &goi) {
+            // Note: Would not work properly with buildings that have 2 production lines
+            //       but this is not the case in protoss race (where boost action is relevant)
+            return (!goi.isBoostTarget()) && (goi.getFreeProductionLines() == 0)
+                   && goi.getType().isBuilding();
+        };
 
-    for (GameObjectInstance& instance : mainBuilding) {
-        while (instance.hasEnergy(BOOST_REQUIRED_ENERGY)) {
-            vector<GameObjectInstance*> targets = GameObject::getAll(isPotentialBoostTarget);
+        for (GameObjectInstance& instance : mainBuilding) {
+            while (instance.hasEnergy(BOOST_REQUIRED_ENERGY)) {
+                vector<GameObjectInstance*> targets = GameObject::getAll(isPotentialBoostTarget);
 
-            if (targets.size() == 0)
-                break;
+                if (targets.size() == 0)
+                    break;
 
-            shared_ptr<BoostAction> action = make_shared<BoostAction>(BoostAction(*this, *targets[0], instance));
-            Game::debugOutput(action, true);
+                auto action = make_shared<BoostAction>(BoostAction(*this, *targets[0], instance));
+                Game::debugOutput(action, true);
 
-            action->start();
-            instance.updateEnergy(-BOOST_REQUIRED_ENERGY);
+                action->start();
+                instance.updateEnergy(-BOOST_REQUIRED_ENERGY);
 
-            runningActions.push_back(action);
-        }
-    }
-
-}
-
-
-void TerranGame::invokeSpecial() {
-    for (GameObjectInstance& instance : orbitalCommand) {
-        if (instance.hasEnergy(MULE_REQUIRED_ENERGY)) {
-
-            shared_ptr<MuleAction> action = make_shared<MuleAction>(MuleAction(*this, instance));
-            Game::debugOutput(action, true);
-
-            action->start();
-            instance.updateEnergy(-MULE_REQUIRED_ENERGY);
-
-            runningActions.push_back(action);
-
+                runningActions.push_back(action);
+            }
         }
     }
 }
 
 
-void ZergGame::invokeSpecial() {
+void TerranGame::invokeRaceActions(bool buildTriggered) {
+    if (!buildTriggered) {
+        for (GameObjectInstance& instance : orbitalCommand) {
+            if (instance.hasEnergy(MULE_REQUIRED_ENERGY)) {
+
+                auto action = make_shared<MuleAction>(MuleAction(*this, instance));
+                Game::debugOutput(action, true);
+
+                action->start();
+                instance.updateEnergy(-MULE_REQUIRED_ENERGY);
+
+                runningActions.push_back(action);
+
+            }
+        }
+    }
+}
+
+
+void ZergGame::invokeRaceActions(bool buildTriggered) {
     // Add recently built larva producers
     unsigned int producerCount = 0;
     unsigned int previousProducerCount = larvaProducerProperties.size();
@@ -434,10 +436,11 @@ void ZergGame::invokeSpecial() {
             larvaDecrease = 0;
         }
 
-        --properties.timeTillSpawn;
-        if ((properties.occupiedSlots < LARVA_SLOTS) && (properties.timeTillSpawn == 0)) {
+        if ((properties.occupiedSlots < LARVA_SLOTS) && (--properties.timeTillSpawn == 0)) {
             ++properties.occupiedSlots;
             larva.addNewInstance(*this);
+            if (properties.occupiedSlots == LARVA_SLOTS)
+                properties.timeTillSpawn = LARVA_SPAWN_TIME;
         }
 
         if (properties.timeTillSpawn == 0)
