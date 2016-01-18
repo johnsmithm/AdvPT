@@ -31,10 +31,11 @@ bool BuildAction::canExecute() {
  */
 void BuildAction::start() {
     producingInstance = objectToBuild.getPossibleProducer();
+
     assert(producingInstance != nullptr);
-    producerID = producingInstance->getID();
+
     if(objectToBuild.getBuildType() == BuildType::MORPH) {
-        producingInstance->setDead();
+        producingInstance->setDead(true);
     } else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD) {
         producingInstance->increaseBusiness();
     }
@@ -64,15 +65,22 @@ bool BuildAction::timeStep() {
  *  Saves the created instance, decreases the producing instance's busyness
  */
 void BuildAction::finish() {
-    auto instance = objectToBuild.addNewInstance(game);
-    //int producerID = producingInstance->getID();    
-    if(objectToBuild.getBuildType() == BuildType::MORPH) {
-        producingInstance->getType().removeInstance(*producingInstance, game);
-    }else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD){
-        producingInstance->decreaseBusiness();
+    GameObjectInstance* instance;
+    if (objectToBuild.getBuildType() == BuildType::MORPH) {
+        objectToBuild.morphInstance(game, *producingInstance);
+        instance = producingInstance;
+    } else {
+        instance = &objectToBuild.addNewInstance(game);
+        if (objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD)
+            producingInstance->decreaseBusiness();
     }
 
-    game.getOutput().event(*this, instance.getID());
+    game.getOutput().event(*this, instance->getID());
+}
+
+
+int BuildAction::getProducerID() const {
+    return (producingInstance == nullptr) ? -1 : producingInstance->getID();
 }
 
 
@@ -84,12 +92,12 @@ void BoostAction::start() {
 
 
 void MuleAction::start() {
-    game.setMuleAction(1);
+    game.updateMuleAction(1);
 
     game.getOutput().event(*this);
 }
 
 
 void MuleAction::finish() {
-    game.setMuleAction(-1);
+    game.updateMuleAction(-1);
 }

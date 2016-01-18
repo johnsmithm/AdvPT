@@ -414,6 +414,11 @@ void TerranGame::invokeRaceActions(bool buildTriggered) {
 
 
 void ZergGame::invokeRaceActions(bool buildTriggered) {
+    // Invoke QueenAction
+    if (!buildTriggered) {
+        
+    }
+
     // Add recently built larva producers
     unsigned int producerCount = 0;
     unsigned int previousProducerCount = larvaProducerProperties.size();
@@ -423,7 +428,6 @@ void ZergGame::invokeRaceActions(bool buildTriggered) {
         larvaProducerProperties.emplace_back();
 
     // Get the larvae decrease between this and the previous execution
-    // TODO: this will have to be changed when the SpawnLarvaeAction is implemented
     unsigned int larvaDecrease = previousLarvaCount - larva.getFreeInstancesCount();
 
     // Subtract larvaDecrease and create new larvae

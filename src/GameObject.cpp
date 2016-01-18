@@ -1,7 +1,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
+#include <algorithm>
+#include <cassert>
 #include "GameObject.h"
 #include "Game.h"
 #include "util.h"
@@ -11,7 +12,6 @@ using namespace std;
 static const char DELIMETER    = ',';
 static const char SUBDELIMITER = '/';
 
-unsigned int GameObjectInstance::maxID = 0;
 unordered_map<string, shared_ptr<GameObject>> GameObject::gameObjects;
 
 
@@ -28,10 +28,29 @@ GameObject::GameObject(std::string name,
       building(isBuilding) {}
 
 
-GameObjectInstance& GameObject::addNewInstance(Game &game) {
-    instances.emplace_back(*this, startEnergy, productionLines);
+GameObjectInstance& GameObject::addNewInstance(Game& game) {
+    instances.emplace_back(*this, game.newInstanceID(), startEnergy, productionLines);
     game.setTotalSupplyAmount(game.getTotalSupplyAmount() + supplyProvided);
     return instances.back();
+}
+
+
+void GameObject::morphInstance(Game& game, GameObjectInstance& source) {
+    auto& sourceType = source.getType();
+    auto& sourceInstances = sourceType.instances;
+    auto it = find(sourceInstances.begin(), sourceInstances.end(), source);
+
+    assert(it != sourceInstances.end());
+
+    game.setUsedSupplyAmount(game.getUsedSupplyAmount() - sourceType.supplyCost);
+    game.setTotalSupplyAmount(game.getTotalSupplyAmount() - sourceType.supplyProvided + supplyProvided);
+
+    source.setType(*this);
+    source.setDead(false);
+    source.setEnergy(startEnergy);
+    source.setFreeProductionLines(productionLines);
+
+    instances.splice(instances.end(), sourceInstances, it);
 }
 
 
@@ -122,15 +141,6 @@ void GameObject::parseStream(istream &inputStream) {
             tokens[12][0] == '1' //isBuilding
             );
     }
-}
-
-
-/** @brief removes an instance from the game, freeing its supply
- */
-void GameObject::removeInstance(GameObjectInstance instance, Game &game) {
-    game.setUsedSupplyAmount(game.getUsedSupplyAmount() - instance.getType().supplyCost);
-    game.setTotalSupplyAmount(game.getTotalSupplyAmount() - instance.getType().supplyProvided);
-    instances.remove(instance);   
 }
 
 

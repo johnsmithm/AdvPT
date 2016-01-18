@@ -43,12 +43,13 @@ public:
 
 class GameObjectInstance {
 public:
-    GameObjectInstance(GameObject &type, unsigned int energy, unsigned int productionLines)
-      : ID(maxID++), type(type), energy(energy), freeProductionLines(productionLines),
+    GameObjectInstance(GameObject &type, unsigned int id, unsigned int energy, unsigned int productionLines)
+      : id(id), type(&type), energy(energy), freeProductionLines(productionLines),
         dead(false), boostTarget (false) {};
 
-    unsigned int getID() const {return ID;}
-    GameObject& getType() {return type;}
+    unsigned int getID() const {return id;}
+    GameObject& getType() {return *type;}
+    void setType(GameObject& type) {this->type = &type;}
 
     unsigned int getEnergy() const {return energy;}
     void setEnergy(unsigned int value) {energy = value;}
@@ -56,23 +57,22 @@ public:
     void updateEnergy(int value) {energy += value;}
     
     unsigned int getFreeProductionLines() const {return freeProductionLines;}
+    void setFreeProductionLines(unsigned int value) {freeProductionLines = value;}
     void increaseBusiness() {--freeProductionLines;}
     void decreaseBusiness() {++freeProductionLines;}
 
     bool isDead() {return dead;}
-    void setDead() {dead = true;}
+    void setDead(bool dead) {this->dead = dead;}
 
     bool isBoostTarget() const {return boostTarget;}
     void setBoostTarget(bool value) {boostTarget = value;}
 
     //TODO: ask at the chair, why the fuck?!
-    bool operator==(const GameObjectInstance& other) const {return ID==other.ID;}
+    bool operator==(const GameObjectInstance& other) const {return id == other.id;}
 
 private:
-    static unsigned int maxID;
-
-    const unsigned int ID;
-    GameObject& type;
+    const unsigned int id;
+    GameObject* type;
 
     unsigned int energy;
     unsigned int freeProductionLines;
@@ -110,8 +110,8 @@ public:
     unsigned int getInstancesCount() const {return instances.size();}
     unsigned int getFreeInstancesCount() const;
 
-    GameObjectInstance& addNewInstance(Game &game);
-    void removeInstance(const GameObjectInstance instance, Game &game);
+    GameObjectInstance& addNewInstance(Game& game);
+    void morphInstance(Game& game, GameObjectInstance& source);
 
     InstancesIter begin();
     InstancesIter end();

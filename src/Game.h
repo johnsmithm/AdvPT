@@ -42,11 +42,15 @@ public:
     void setUsedSupplyAmount(int amount) {usedSupply = amount;}
     void setTotalSupplyAmount(int amount) {totalSupply = amount;}
 
+    unsigned int newInstanceID() {return nextInstanceID++;}
+
     void readBuildList(std::string filename);
 
     bool precheckBuildList() const;
 
-    void setMuleAction(int value) {muleActions += value;};
+    void updateMuleAction(int value) {muleActions += value;}
+
+    void updateEggSpawns(int value) {eggSpawns += value;}
 
     void simulate();
 
@@ -81,7 +85,11 @@ private:
     unsigned int muleActions = 0;
     unsigned int freeWorkers = 6;
 
+    unsigned int eggSpawns = 0;
+
     unsigned int finishTimeCurrentBuildItem = 1;
+
+    unsigned int nextInstanceID = 0;
 
     const int mineralsRate = DEFAULT_WORKER_MINERAL_INCREASE;
     const int gasRate = DEFAULT_WORKER_GAS_INCREASE;
@@ -138,6 +146,7 @@ protected:
 
 private:
     struct LarvaProducerProperties {
+        unsigned int id;
         unsigned int occupiedSlots = 0;
         unsigned int timeTillSpawn = LARVA_SPAWN_TIME;
     };

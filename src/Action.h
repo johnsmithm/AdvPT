@@ -44,7 +44,7 @@ public:
 
     const std::string getName() const {return objectToBuild.getName();}
     GameObject& getObjectToBuild() {return objectToBuild;}
-    unsigned int getProducerID() const {return producerID;}
+    int getProducerID() const;
 
 private:
     int producerID;
@@ -93,6 +93,26 @@ public:
 private:
     GameObjectInstance& source;
     unsigned int timeLeft = MULE_ACTION_TIME;
+};
+
+
+class QueenAction : public Action {
+public:
+
+    QueenAction(Game& game, GameObjectInstance& target)
+        : Action(game), target(target) {}
+
+    virtual bool canExecute() override {return true;}
+    virtual void start() override;
+    virtual void finish() override;
+    virtual bool timeStep() override {return --timeLeft == 0;}
+    virtual std::string getName() override {return "QueenAction";}
+
+    GameObjectInstance& getTarget() {return target;}
+
+private:
+    GameObjectInstance& target;
+    unsigned int timeLeft = QUEEN_EGGS_SPAWN_TIME;
 };
 
 

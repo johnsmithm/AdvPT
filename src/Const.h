@@ -43,4 +43,10 @@ const int LARVA_SLOTS = 3;
 /** @brief  number of timesteps a larva needs to spawn */
 const int LARVA_SPAWN_TIME = 15;
 
+/** @brief  Time till larvae spawn from eggs */
+const int QUEEN_EGGS_SPAWN_TIME = 40;
+
+/** @brief  Amount of QueenAction's eggs/larvae */
+const int QUEEN_EGGS_AMOUNT = 4;
+
 #endif
