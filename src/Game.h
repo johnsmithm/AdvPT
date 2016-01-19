@@ -145,16 +145,8 @@ protected:
     virtual void invokeRaceActions(bool buildTriggered) override;
 
 private:
-    struct LarvaProducerProperties {
-        unsigned int id;
-        unsigned int occupiedSlots = 0;
-        unsigned int timeTillSpawn = LARVA_SPAWN_TIME;
-    };
-
     GameObject& larva;
     std::vector<GameObject*> larvaProducerTypes;
-
-    std::vector<LarvaProducerProperties> larvaProducerProperties;
     unsigned int previousLarvaCount = 0;
 };
 

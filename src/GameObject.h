@@ -44,8 +44,7 @@ public:
 class GameObjectInstance {
 public:
     GameObjectInstance(GameObject &type, unsigned int id, unsigned int energy, unsigned int productionLines)
-      : id(id), type(&type), energy(energy), freeProductionLines(productionLines),
-        dead(false), boostTarget (false) {};
+      : id(id), type(&type), energy(energy), freeProductionLines(productionLines) {};
 
     unsigned int getID() const {return id;}
     GameObject& getType() {return *type;}
@@ -61,13 +60,17 @@ public:
     void increaseBusiness() {--freeProductionLines;}
     void decreaseBusiness() {++freeProductionLines;}
 
-    bool isDead() {return dead;}
-    void setDead(bool dead) {this->dead = dead;}
+    unsigned int getOccupiedLarvaSlots() const {return occupiedLavaSlots;}
+    void setOccupiedLarvaSlots(unsigned int value) {occupiedLavaSlots = value;}
+    unsigned int decreaseTimeTillLarvaSpawn() {return --timeTillLarvaSpawn;}
+    void resetTimeTillLarvaSpawn() {timeTillLarvaSpawn = LARVA_SPAWN_TIME;}
 
     bool isBoostTarget() const {return boostTarget;}
     void setBoostTarget(bool value) {boostTarget = value;}
 
-    //TODO: ask at the chair, why the fuck?!
+    bool isDead() {return dead;}
+    void setDead(bool dead) {this->dead = dead;}
+
     bool operator==(const GameObjectInstance& other) const {return id == other.id;}
 
 private:
@@ -76,8 +79,10 @@ private:
 
     unsigned int energy;
     unsigned int freeProductionLines;
-    bool dead;
-    bool boostTarget;
+    unsigned int occupiedLavaSlots = 0;
+    unsigned int timeTillLarvaSpawn = LARVA_SPAWN_TIME;
+    bool boostTarget = false;
+    bool dead = false;
 };
 
 

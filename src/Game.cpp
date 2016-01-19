@@ -3,7 +3,7 @@
 #include <fstream>
 #include <memory>
 #include <unordered_set>
-
+#include <cassert>
 #include <string>
 #include <stdlib.h>
 #include "Action.h"
@@ -359,8 +359,8 @@ ZergGame::ZergGame()
     // Add initial larvae
     for (int i = 0; i < 3; ++i)
         larva.addNewInstance(*this);
-    larvaProducerProperties.emplace_back();
-    larvaProducerProperties[0].occupiedSlots = 3;
+    assert(mainBuilding.begin() != mainBuilding.end());
+    mainBuilding.begin()->setOccupiedLarvaSlots(3);
     previousLarvaCount = 3;
 }
 
@@ -419,38 +419,35 @@ void ZergGame::invokeRaceActions(bool buildTriggered) {
         
     }
 
-    // Add recently built larva producers
-    unsigned int producerCount = 0;
-    unsigned int previousProducerCount = larvaProducerProperties.size();
-    for (GameObject* go : larvaProducerTypes)
-        producerCount += go->getInstancesCount();
-    for (unsigned int i = previousProducerCount; i < producerCount; ++i)
-        larvaProducerProperties.emplace_back();
-
     // Get the larvae decrease between this and the previous execution
     unsigned int larvaDecrease = previousLarvaCount - larva.getFreeInstancesCount();
 
-    // Subtract larvaDecrease and create new larvae
-    for (LarvaProducerProperties& properties : larvaProducerProperties) {
-        if (larvaDecrease >= properties.occupiedSlots) {
-            larvaDecrease -= properties.occupiedSlots;
-            properties.occupiedSlots = 0;
-        } else {
-            properties.occupiedSlots -= larvaDecrease;
-            larvaDecrease = 0;
-        }
+    for (GameObject* go : larvaProducerTypes) {
+        for (GameObjectInstance& instance : *go) {
+            if (larvaDecrease >= instance.getOccupiedLarvaSlots()) {
+                larvaDecrease -= instance.getOccupiedLarvaSlots();
+                instance.setOccupiedLarvaSlots(0);
+            } else {
+                instance.setOccupiedLarvaSlots(instance.getOccupiedLarvaSlots() - larvaDecrease);
+                larvaDecrease = 0;
+            }
 
-        if ((properties.occupiedSlots < LARVA_SLOTS) && (--properties.timeTillSpawn == 0)) {
-            ++properties.occupiedSlots;
-            larva.addNewInstance(*this);
-            if (properties.occupiedSlots == LARVA_SLOTS)
-                properties.timeTillSpawn = LARVA_SPAWN_TIME;
-        }
+            if (instance.getOccupiedLarvaSlots() < LARVA_SLOTS) {
+                if (instance.decreaseTimeTillLarvaSpawn() == 0) {
+                    instance.setOccupiedLarvaSlots(instance.getOccupiedLarvaSlots() + 1);
+                    larva.addNewInstance(*this);
+                    instance.resetTimeTillLarvaSpawn();
+                }
+            }
 
-        if (properties.timeTillSpawn == 0)
-            properties.timeTillSpawn = LARVA_SPAWN_TIME;
+            // Not a else block, because occupiedLavaSlots can be changed in the previous if block
+            if (instance.getOccupiedLarvaSlots() >= LARVA_SLOTS) {
+                instance.resetTimeTillLarvaSpawn();
+            }
+        }
     }
 
-    // Update the previous larvaCount - this must be set after calls to larva.addNewInstance!
+    // Update the previous larvaCount
     previousLarvaCount = larva.getFreeInstancesCount();
+
 }
