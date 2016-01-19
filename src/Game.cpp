@@ -160,19 +160,19 @@ bool Game::precheckBuildList() const {
     existing.insert(GameObject::get("larva").getName());
 
     bool hasGeyserExploiter = false;
-    for (auto item : buildList) {
-        auto obj = item->getObjectToBuild();
+    for (auto& item : buildList) {
+        auto& obj = item->getObjectToBuild();
 
         // check if producer and dependencies are existant
         bool depErr = (obj.getDependencyNames().size() > 0);
         bool prodErr = (obj.getProducerNames().size() > 0);
-        for (auto dep : obj.getDependencyNames()) {
+        for (auto& dep : obj.getDependencyNames()) {
             if (existing.count(dep)) {
                 depErr = false;
                 break;
             }
         }
-        for (auto prod : obj.getProducerNames()) {
+        for (auto& prod : obj.getProducerNames()) {
             if (existing.count(prod)) {
                 prodErr = false;
                 break;
@@ -356,9 +356,12 @@ ZergGame::ZergGame()
            GameObject::get("extractor")),
       larva(GameObject::get("larva")), queen(GameObject::get("queen")),
       larvaProducerTypes{&GameObject::get("hatchery"), &GameObject::get("lair"), &GameObject::get("hive")} {
+
     // Add overlord
-    GameObject::get("overlord").addNewInstance(*this);
-    setTotalSupplyAmount(getTotalSupplyAmount() + GameObject::get("overlord").getSupplyProvided());
+    auto& overlord = GameObject::get("overlord");
+    overlord.addNewInstance(*this);
+    setTotalSupplyAmount(getTotalSupplyAmount() + overlord.getSupplyProvided());
+
     // Add initial larvae
     for (int i = 0; i < 3; ++i)
         larva.addNewInstance(*this);
