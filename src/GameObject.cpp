@@ -30,20 +30,16 @@ GameObject::GameObject(std::string name,
 
 GameObjectInstance& GameObject::addNewInstance(Game& game) {
     instances.emplace_back(*this, game.newInstanceID(), startEnergy, productionLines);
-    game.setTotalSupplyAmount(game.getTotalSupplyAmount() + supplyProvided);
     return instances.back();
 }
 
 
-void GameObject::morphInstance(Game& game, GameObjectInstance& source) {
+void GameObject::morphInstance(GameObjectInstance& source) {
     auto& sourceType = source.getType();
     auto& sourceInstances = sourceType.instances;
     auto it = find(sourceInstances.begin(), sourceInstances.end(), source);
 
     assert(it != sourceInstances.end());
-
-    game.setUsedSupplyAmount(game.getUsedSupplyAmount() + sourceType.supplyCost);
-    game.setTotalSupplyAmount(game.getTotalSupplyAmount() - sourceType.supplyProvided + supplyProvided);
 
     source.setType(*this);
     source.setDead(false);

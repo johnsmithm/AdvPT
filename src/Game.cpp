@@ -23,6 +23,7 @@ Game::Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExplo
         usedSupply += FP_FACTOR;
     }
     mainBuilding.addNewInstance(*this);
+    totalSupply += mainBuilding.getSupplyProvided();
 }
 
 

@@ -106,6 +106,7 @@ public:
     unsigned int getGasCost() const {return gasCost;}
     unsigned int getBuildTime() const {return buildTime;}
     unsigned int getSupplyCost() const {return supplyCost;}
+    unsigned int getSupplyProvided() const {return supplyProvided;}
     unsigned int getProductionLines() const {return productionLines;}
     const std::vector<std::string>& getProducerNames() const {return producerNames;}
     const std::vector<std::string>& getDependencyNames() const {return dependencyNames;}
@@ -119,7 +120,7 @@ public:
     unsigned int getFreeInstancesCount() const;
 
     GameObjectInstance& addNewInstance(Game& game);
-    void morphInstance(Game& game, GameObjectInstance& source);
+    void morphInstance(GameObjectInstance& source);
 
     InstancesIter begin();
     InstancesIter end();

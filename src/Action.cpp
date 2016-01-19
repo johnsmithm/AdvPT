@@ -34,15 +34,20 @@ void BuildAction::start() {
 
     assert(producingInstance != nullptr);
 
-    if(objectToBuild.getBuildType() == BuildType::MORPH) {
+    switch (objectToBuild.getBuildType()) {
+    case BuildType::MORPH:
         producingInstance->setDead(true);
-    } else if(objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD) {
+        break;
+    case BuildType::ACTIVE_BUILD:
         producingInstance->increaseBusiness();
+        // NO BREAK - intended fallthrough
+    case BuildType::INSTANTIATE:
+        game.setUsedSupplyAmount(game.getUsedSupplyAmount() + objectToBuild.getSupplyCost());
+        break;
     }
 
     // timeLeft is thenths of a second, buildTime is seconds
     timeLeft = objectToBuild.getBuildTime() * FP_BUILDTIME_FACTOR;
-    game.setUsedSupplyAmount(game.getUsedSupplyAmount() + objectToBuild.getSupplyCost());
     game.setGasAmount(game.getGasAmount() - objectToBuild.getGasCost());
     game.setMineralAmount(game.getMineralAmount() - objectToBuild.getMineralCost());
 
@@ -65,15 +70,26 @@ bool BuildAction::timeStep() {
  *  Saves the created instance, decreases the producing instance's busyness
  */
 void BuildAction::finish() {
+    GameObject& producingType = producingInstance->getType();
     GameObjectInstance* instance;
-    if (objectToBuild.getBuildType() == BuildType::MORPH) {
-        objectToBuild.morphInstance(game, *producingInstance);
+
+    switch (objectToBuild.getBuildType()) {
+    case BuildType::MORPH:
+        objectToBuild.morphInstance(*producingInstance);
         instance = producingInstance;
-    } else {
+        game.setUsedSupplyAmount(game.getUsedSupplyAmount() + objectToBuild.getSupplyCost()
+                                 - producingType.getSupplyCost());
+        game.setTotalSupplyAmount(game.getTotalSupplyAmount() - producingType.getSupplyProvided());
+        break;
+    case BuildType::ACTIVE_BUILD:
+        producingInstance->decreaseBusiness();
+        // NO BREAK - intended fallthrough
+    case BuildType::INSTANTIATE:
         instance = &objectToBuild.addNewInstance(game);
-        if (objectToBuild.getBuildType() == BuildType::ACTIVE_BUILD)
-            producingInstance->decreaseBusiness();
+        break;
     }
+
+    game.setTotalSupplyAmount(game.getTotalSupplyAmount() + objectToBuild.getSupplyProvided());
 
     game.getOutput().event(*this, instance->getID());
 }
