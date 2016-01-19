@@ -422,7 +422,7 @@ void ZergGame::invokeRaceActions(bool buildTriggered) {
 
                 auto findTarget = [&]() {
                     GameObjectInstance* possibleTarget = nullptr; 
-                    unsigned int lowest = MAX_LARVA_SLOTS - QUEEN_EGGS_AMOUNT;
+                    unsigned int lowest = MAX_LARVA_SLOTS;
                     for (GameObject* go : larvaProducerTypes) {
                         for (GameObjectInstance& goi : *go) {
                             unsigned int occupied = goi.getOccupiedLarvaSlots() + goi.getInjectedLarvaeEggs();

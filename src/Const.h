@@ -44,7 +44,7 @@ const int LARVA_SLOTS = 3;
 const int LARVA_SPAWN_TIME = 15;
 
 /** @brief  Amount of energy required for queen larva spawn */
-const int QUEEN_EGGS_REQUIRED_ENERGY = 25;
+const int QUEEN_EGGS_REQUIRED_ENERGY = 25 * FP_FACTOR;
 
 /** @brief  Time till larvae spawn from eggs */
 const int QUEEN_EGGS_SPAWN_TIME = 40;

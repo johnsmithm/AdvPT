@@ -139,6 +139,8 @@ public:
     ZergGame();
 
     virtual Race getRace() const {return Race::ZERG;}
+    unsigned int getPreviousLarvaCount() {return previousLarvaCount;}
+    void setPreviousLarvaCount(unsigned int value) {previousLarvaCount = value;}
 
 protected:
     virtual void invokeRaceActions(bool buildTriggered) override;
