@@ -161,8 +161,8 @@ void JsonOutput::addGameGlobals(Game& game) {
     if (message["time"] == game.getCurrentTime() || game.getCurrentTime() == 1) {
         message["status"]["resources"]["minerals"] = game.getMineralAmount() / FP_FACTOR;
         message["status"]["resources"]["vespene"] = game.getGasAmount() / FP_FACTOR;
-        message["status"]["resources"]["supply"] = game.getTotalSupplyAmount();
-        message["status"]["resources"]["supply-used"] = game.getUsedSupplyAmount();
+        message["status"]["resources"]["supply"] = game.getTotalSupplyAmount() / FP_FACTOR;
+        message["status"]["resources"]["supply-used"] = game.getUsedSupplyAmount() / FP_FACTOR;
 
         message["status"]["workers"]["minerals"] = game.getMineralMiningWorkers();
         message["status"]["workers"]["vespene"] = game.getGasMiningWorkers();

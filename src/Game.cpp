@@ -20,7 +20,7 @@ Game::Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExplo
     // create initial workers and main building
     for (int i = 0; i < INITIAL_WORKER_COUNT; ++i) {
         worker.addNewInstance(*this);
-        ++usedSupply;
+        usedSupply += FP_FACTOR;
     }
     mainBuilding.addNewInstance(*this);
 }
@@ -98,8 +98,8 @@ void Game::debugOutput(shared_ptr<Action> action, bool start) {
     cerr << "Time:" << curTime << "\n"
          << "resources{minerals :" << minerals / FP_FACTOR
          << ", vespene :" << gas / FP_FACTOR
-         << ", supply-used :" << usedSupply
-         << ", supply :" << totalSupply << "}\n"
+         << ", supply-used :" << usedSupply / FP_FACTOR
+         << ", supply :" << totalSupply / FP_FACTOR << "}\n"
          << "workers{minerals :" << mineralMiningWorkers
          << ", vespene :" << gasMiningWorkers << "}\n";
 

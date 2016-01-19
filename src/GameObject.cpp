@@ -116,9 +116,9 @@ void GameObject::parseStream(istream &inputStream) {
             tokens[0], // name;
             stol(tokens[1]) * FP_FACTOR, // mineralCost
             stol(tokens[2]) * FP_FACTOR, // gasCost
-            stol(tokens[3]), // buildTime
-            stol(tokens[4]), // supplyCost //seems to be an error for barracks_with_tech_lab
-            stol(tokens[5]), // supplyProvided
+            stol(tokens[3]),             // buildTime
+            stod(tokens[4]) * FP_FACTOR, // supplyCost (uses stod becaue it can be 0.5)
+            stod(tokens[5]) * FP_FACTOR, // supplyProvided (uses stod becaue it can be 0.5)
 
             stol(tokens[6]) * FP_FACTOR, // startEnergy
             stol(tokens[7]) * FP_FACTOR, // maxEnergy
