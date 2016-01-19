@@ -42,7 +42,7 @@ void GameObject::morphInstance(Game& game, GameObjectInstance& source) {
 
     assert(it != sourceInstances.end());
 
-    game.setUsedSupplyAmount(game.getUsedSupplyAmount() - sourceType.supplyCost);
+    game.setUsedSupplyAmount(game.getUsedSupplyAmount() + sourceType.supplyCost);
     game.setTotalSupplyAmount(game.getTotalSupplyAmount() - sourceType.supplyProvided + supplyProvided);
 
     source.setType(*this);
