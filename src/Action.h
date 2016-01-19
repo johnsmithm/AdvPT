@@ -14,8 +14,8 @@ protected:
 
 public:
     Action(Game& game)
-        : game(game){};
-    virtual bool canExecute() = 0;
+        : game(game) {}
+
     virtual void start() = 0;
     virtual void finish() = 0;
     virtual bool timeStep() = 0;
@@ -27,11 +27,10 @@ public:
 
 class BuildAction : public Action {
 public:
-
     BuildAction(Game& game, GameObject& objectToBuild)
         : Action(game), objectToBuild(objectToBuild) {}
 
-    virtual bool canExecute() override;
+    bool canExecute();
     virtual void start() override;
     virtual void finish() override;
     virtual bool timeStep() override;
@@ -60,7 +59,6 @@ public:
     BoostAction(Game& game, GameObjectInstance& target, GameObjectInstance& source)
         : Action(game), target(target), source(source) {}
 
-    virtual bool canExecute() override {return true;}
     virtual void start() override;
     virtual void finish() override {target.setBoostTarget(false);}
     virtual bool timeStep() override {return --timeLeft == 0;};
@@ -82,7 +80,6 @@ public:
     MuleAction(Game& game, GameObjectInstance& source)
         : Action(game), source(source) {}
 
-    virtual bool canExecute() override {return true;}
     virtual void start() override;
     virtual void finish() override;
     virtual bool timeStep() override {return --timeLeft == 0;}
@@ -102,7 +99,6 @@ public:
     QueenAction(Game& game, GameObjectInstance& source, GameObjectInstance& target)
         : Action(game), source(source), target(target) {}
 
-    virtual bool canExecute() override {return true;}
     virtual void start() override;
     virtual void finish() override;
     virtual bool timeStep() override {return --timeLeft == 0;}
