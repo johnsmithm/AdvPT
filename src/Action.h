@@ -8,27 +8,23 @@
 
 
 class Action {
-protected:
-    Game& game;
-    unsigned int finishTime;
-
 public:
-    Action(Game& game)
-        : game(game) {}
-
     virtual void start() = 0;
     virtual void finish() = 0;
     virtual bool timeStep() = 0;
     virtual bool isBuildAction() {return false;}
     virtual std::string getName() {return "Generic Action";}
-    Game& getGame() {return game;}
+    virtual Game& getGame() = 0;
+
+protected:
+    unsigned int finishTime;
 };
 
 
 class BuildAction : public Action {
 public:
     BuildAction(Game& game, GameObject& objectToBuild)
-        : Action(game), objectToBuild(objectToBuild) {}
+        : game(game), objectToBuild(objectToBuild) {}
 
     bool canExecute();
     virtual void start() override;
@@ -36,6 +32,7 @@ public:
     virtual bool timeStep() override;
     virtual bool isBuildAction() override {return true;}
     virtual std::string getName() override {return objectToBuild.getName();}
+    virtual Game& getGame() {return game;}
 
     unsigned int getGasCost() const {return objectToBuild.getGasCost();}
     unsigned int getSupplyCost() const  {return objectToBuild.getSupplyCost();}
@@ -46,6 +43,7 @@ public:
     int getProducerID() const;
 
 private:
+    Game& game;
     int producerID;
     GameObject& objectToBuild;
     GameObjectInstance* producingInstance = nullptr;
@@ -56,18 +54,20 @@ private:
 
 class BoostAction : public Action{
 public:
-    BoostAction(Game& game, GameObjectInstance& target, GameObjectInstance& source)
-        : Action(game), target(target), source(source) {}
+    BoostAction(ProtossGame& game, GameObjectInstance& target, GameObjectInstance& source)
+        : game(game), target(target), source(source) {}
 
     virtual void start() override;
     virtual void finish() override {target.setBoostTarget(false);}
     virtual bool timeStep() override {return --timeLeft == 0;};
     virtual std::string getName() override {return "BoostAction";}
+    virtual Game& getGame() {return game;}
 
     GameObjectInstance& getTarget() {return target;}
     GameObjectInstance& getSource() {return source;}
 
 private:
+    ProtossGame& game;
     GameObjectInstance& target;
     GameObjectInstance& source;
     unsigned int timeLeft = BOOST_ACTION_TIME;
@@ -77,17 +77,19 @@ private:
 class MuleAction : public Action {
 public:
 
-    MuleAction(Game& game, GameObjectInstance& source)
-        : Action(game), source(source) {}
+    MuleAction(TerranGame& game, GameObjectInstance& source)
+        : game(game), source(source) {}
 
     virtual void start() override;
     virtual void finish() override;
     virtual bool timeStep() override {return --timeLeft == 0;}
     virtual std::string getName() override {return "MuleAction";}
+    virtual Game& getGame() {return game;}
 
     GameObjectInstance& getSource() {return source;}
 
 private:
+    TerranGame& game;
     GameObjectInstance& source;
     unsigned int timeLeft = MULE_ACTION_TIME;
 };
@@ -96,18 +98,20 @@ private:
 class QueenAction : public Action {
 public:
 
-    QueenAction(Game& game, GameObjectInstance& source, GameObjectInstance& target)
-        : Action(game), source(source), target(target) {}
+    QueenAction(ZergGame& game, GameObjectInstance& source, GameObjectInstance& target)
+        : game(game), source(source), target(target) {}
 
     virtual void start() override;
     virtual void finish() override;
     virtual bool timeStep() override {return --timeLeft == 0;}
     virtual std::string getName() override {return "QueenAction";}
+    virtual Game& getGame() {return game;}
 
     GameObjectInstance& getSource() {return source;}
     GameObjectInstance& getTarget() {return target;}
 
 private:
+    ZergGame& game;
     GameObjectInstance& source;
     GameObjectInstance& target;
     unsigned int timeLeft = QUEEN_EGGS_SPAWN_TIME;

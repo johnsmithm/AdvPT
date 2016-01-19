@@ -133,6 +133,9 @@ protected:
 
 class ZergGame : public Game {
 public:
+    GameObject& larva;
+    GameObject& queen;    
+
     ZergGame();
 
     virtual Race getRace() const {return Race::ZERG;}
@@ -141,8 +144,6 @@ protected:
     virtual void invokeRaceActions(bool buildTriggered) override;
 
 private:
-    GameObject& larva;
-    GameObject& queen;
     std::vector<GameObject*> larvaProducerTypes;
     unsigned int previousLarvaCount = 0;
 };
