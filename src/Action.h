@@ -99,8 +99,8 @@ private:
 class QueenAction : public Action {
 public:
 
-    QueenAction(Game& game, GameObjectInstance& target)
-        : Action(game), target(target) {}
+    QueenAction(Game& game, GameObjectInstance& source, GameObjectInstance& target)
+        : Action(game), source(source), target(target) {}
 
     virtual bool canExecute() override {return true;}
     virtual void start() override;
@@ -108,9 +108,11 @@ public:
     virtual bool timeStep() override {return --timeLeft == 0;}
     virtual std::string getName() override {return "QueenAction";}
 
+    GameObjectInstance& getSource() {return source;}
     GameObjectInstance& getTarget() {return target;}
 
 private:
+    GameObjectInstance& source;
     GameObjectInstance& target;
     unsigned int timeLeft = QUEEN_EGGS_SPAWN_TIME;
 };

@@ -62,6 +62,8 @@ public:
 
     unsigned int getOccupiedLarvaSlots() const {return occupiedLavaSlots;}
     void setOccupiedLarvaSlots(unsigned int value) {occupiedLavaSlots = value;}
+    unsigned int getInjectedLarvaeEggs() const {return injectedLarvaEggs;}
+    void setInjectedLarvaeEggs(unsigned int value) {injectedLarvaEggs = value;}
     unsigned int decreaseTimeTillLarvaSpawn() {return --timeTillLarvaSpawn;}
     void resetTimeTillLarvaSpawn() {timeTillLarvaSpawn = LARVA_SPAWN_TIME;}
 
@@ -80,6 +82,7 @@ private:
     unsigned int energy;
     unsigned int freeProductionLines;
     unsigned int occupiedLavaSlots = 0;
+    unsigned int injectedLarvaEggs = 0;
     unsigned int timeTillLarvaSpawn = LARVA_SPAWN_TIME;
     bool boostTarget = false;
     bool dead = false;

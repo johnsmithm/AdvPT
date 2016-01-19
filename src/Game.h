@@ -50,8 +50,6 @@ public:
 
     void updateMuleAction(int value) {muleActions += value;}
 
-    void updateEggSpawns(int value) {eggSpawns += value;}
-
     void simulate();
 
     JsonOutput& getOutput() {return output;}
@@ -84,8 +82,6 @@ private:
 
     unsigned int muleActions = 0;
     unsigned int freeWorkers = 6;
-
-    unsigned int eggSpawns = 0;
 
     unsigned int finishTimeCurrentBuildItem = 1;
 
@@ -146,6 +142,7 @@ protected:
 
 private:
     GameObject& larva;
+    GameObject& queen;
     std::vector<GameObject*> larvaProducerTypes;
     unsigned int previousLarvaCount = 0;
 };

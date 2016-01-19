@@ -137,6 +137,19 @@ void JsonOutput::event(MuleAction& action) {
 }
 
 
+/** @brief Adds a new queen inject larvae action start event.
+ *
+ *  @param action the current mule action
+ */
+void JsonOutput::event(QueenAction& action) {
+    Json::Value& e = basicEvent(action.getGame());
+    e["type"] = "special";
+    e["name"] = "injectlarvae";
+    e["targetBuilding"] = to_string(action.getTarget().getID());
+    e["triggeredBy"] = to_string(action.getSource().getID());
+}
+
+
 /** @brief Adds game global values to the current message if (and only if) there
  *  exists a message at the current timestep. This should be called after all events
  *  at this timestep are produced.

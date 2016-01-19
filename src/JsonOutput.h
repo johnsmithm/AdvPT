@@ -8,6 +8,7 @@ class Action;
 class BuildAction;
 class BoostAction;
 class MuleAction;
+class QueenAction;
 class Game;
 
 
@@ -28,6 +29,8 @@ public:
     void event(BoostAction& action);
 
     void event(MuleAction& action);
+
+    void event(QueenAction& action);
 
     void addGameGlobals(Game& game);
 

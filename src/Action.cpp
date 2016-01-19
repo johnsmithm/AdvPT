@@ -101,3 +101,16 @@ void MuleAction::start() {
 void MuleAction::finish() {
     game.updateMuleAction(-1);
 }
+
+
+void QueenAction::start() {
+    game.getOutput().event(*this);
+}
+
+
+void QueenAction::finish() {
+    target.setInjectedLarvaeEggs(target.getInjectedLarvaeEggs() - QUEEN_EGGS_AMOUNT);
+    target.setOccupiedLarvaSlots(target.getOccupiedLarvaSlots() + QUEEN_EGGS_AMOUNT);
+    for (int i = 0; i < QUEEN_EGGS_AMOUNT; ++i)
+        GameObject::get("larva").addNewInstance(game);
+}

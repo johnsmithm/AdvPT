@@ -352,7 +352,8 @@ TerranGame::TerranGame()
 
 ZergGame::ZergGame()
     : Game(GameObject::get("hatchery"), GameObject::get("drone"),
-           GameObject::get("extractor")), larva(GameObject::get("larva")),
+           GameObject::get("extractor")),
+      larva(GameObject::get("larva")), queen(GameObject::get("queen")),
       larvaProducerTypes{&GameObject::get("hatchery"), &GameObject::get("lair"), &GameObject::get("hive")} {
     // Add overlord
     GameObject::get("overlord").addNewInstance(*this);
@@ -416,7 +417,40 @@ void TerranGame::invokeRaceActions(bool buildTriggered) {
 void ZergGame::invokeRaceActions(bool buildTriggered) {
     // Invoke QueenAction
     if (!buildTriggered) {
-        
+        for (GameObjectInstance& instance : queen) {
+            if (instance.hasEnergy(QUEEN_EGGS_REQUIRED_ENERGY)) {
+
+                auto findTarget = [&]() {
+                    GameObjectInstance* possibleTarget = nullptr; 
+                    unsigned int lowest = MAX_LARVA_SLOTS - QUEEN_EGGS_AMOUNT;
+                    for (GameObject* go : larvaProducerTypes) {
+                        for (GameObjectInstance& goi : *go) {
+                            unsigned int occupied = goi.getOccupiedLarvaSlots() + goi.getInjectedLarvaeEggs();
+                            if (occupied < 3) {
+                                return &goi;
+                            } else if (occupied < lowest) {
+                                occupied = lowest;
+                                possibleTarget = &goi;
+                            }
+                        }
+                    }
+                    return possibleTarget;
+                };
+
+                GameObjectInstance* target = findTarget();
+
+                if (target != nullptr) {
+                    auto action = make_shared<QueenAction>(QueenAction(*this, instance, *target));
+                    Game::debugOutput(action, true);
+
+                    action->start();
+                    instance.updateEnergy(-QUEEN_EGGS_REQUIRED_ENERGY);
+                    target->setInjectedLarvaeEggs(target->getInjectedLarvaeEggs() + QUEEN_EGGS_AMOUNT);
+
+                    runningActions.push_back(action);
+                }
+            }
+        }
     }
 
     // Get the larvae decrease between this and the previous execution
@@ -438,11 +472,6 @@ void ZergGame::invokeRaceActions(bool buildTriggered) {
                     larva.addNewInstance(*this);
                     instance.resetTimeTillLarvaSpawn();
                 }
-            }
-
-            // Not a else block, because occupiedLavaSlots can be changed in the previous if block
-            if (instance.getOccupiedLarvaSlots() >= LARVA_SLOTS) {
-                instance.resetTimeTillLarvaSpawn();
             }
         }
     }
