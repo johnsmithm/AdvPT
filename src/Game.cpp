@@ -358,6 +358,7 @@ ZergGame::ZergGame()
       larvaProducerTypes{&GameObject::get("hatchery"), &GameObject::get("lair"), &GameObject::get("hive")} {
     // Add overlord
     GameObject::get("overlord").addNewInstance(*this);
+    setTotalSupplyAmount(getTotalSupplyAmount() + GameObject::get("overlord").getSupplyProvided());
     // Add initial larvae
     for (int i = 0; i < 3; ++i)
         larva.addNewInstance(*this);
