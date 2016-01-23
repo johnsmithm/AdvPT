@@ -19,6 +19,7 @@ class Game;
 
 enum class BuildType {
     MORPH,
+    PAIRMORPH,
     ACTIVE_BUILD,
     INSTANTIATE
 };

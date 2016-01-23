@@ -66,8 +66,7 @@ bool Game::timeStep() {
     //check buildList
     bool triggeredBuild = false;
     if (currBuildListItem != buildList.end()) {
-        if ((**currBuildListItem).canExecute()) {
-            (**currBuildListItem).start();
+        if ((**currBuildListItem).tryToStart()) {
             triggeredBuild = true;
             debugOutput(*currBuildListItem, true);
             runningActions.push_back(*currBuildListItem);
