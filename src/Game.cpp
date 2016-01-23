@@ -208,6 +208,7 @@ void Game::simulate() {
     if (!precheckBuildList()) {
         output.buildListPrecheck(false);
         output.setTime(1000);
+        return;
         //throw SimulationException("BuildList invalid");
     }
 
@@ -223,6 +224,7 @@ void Game::simulate() {
     }catch(const SimulationException &e){
       output.buildListPrecheck(false);
       output.setTime(1000);
+      return;
     }       
     output.setTime(curTime);
 }

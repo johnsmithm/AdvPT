@@ -42,6 +42,10 @@ public:
     void setUsedSupplyAmount(int amount) {usedSupply = amount;}
     void setTotalSupplyAmount(int amount) {totalSupply = amount;}
 
+    static int ternarySearch(int left, int right, int neededGas,int neededMineral, int freeWorkers);
+    static int getMiningTime(int gasMiningWorkers, int mineralMiningWorkers, int neededGas,int neededMineral);
+
+
     unsigned int newInstanceID() {return nextInstanceID++;}
 
     void readBuildList(std::string filename);
@@ -90,9 +94,9 @@ private:
 
     unsigned int nextInstanceID = 0;
 
-    const int mineralsRate = DEFAULT_WORKER_MINERAL_INCREASE;
-    const int gasRate = DEFAULT_WORKER_GAS_INCREASE;
-    const int energyRate = DEFAULT_ENERGY_INCREASE;
+    static const int mineralsRate = DEFAULT_WORKER_MINERAL_INCREASE;
+    static const int gasRate = DEFAULT_WORKER_GAS_INCREASE;
+    static const int energyRate = DEFAULT_ENERGY_INCREASE;
 
     std::vector<std::shared_ptr<BuildAction>> buildList;
 
@@ -105,8 +109,6 @@ private:
     void generateResources();
     bool allBuildActionsFinished();
     void updateMessagesForWorkersReassignment();
-    int ternarySearch(int left, int right, int neededGas,int neededMineral, int freeWorkers);
-    int getMiningTime(int gasMiningWorkers, int mineralMiningWorkers, int neededGas,int neededMineral);
 };
 
 
