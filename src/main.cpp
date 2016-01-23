@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Config.h"
 #include "Game.h"
+#include "Genetic.h"
 
 
 #include <boost/program_options.hpp>
@@ -87,7 +88,7 @@ int main(int argc, char **argv){
         GameObject::parseString(defaultTechTree);
     }
 
-    Game *g;
+    /*Game *g;
 
     if(race == "protoss"){
         g = new ProtossGame();
@@ -103,9 +104,12 @@ int main(int argc, char **argv){
         cerr << e.what() << endl;
         exit(1);
     }
+    */
+    //g->simulate();
+    //g->getOutput().print();
 
-    g->simulate();
-    g->getOutput().print();
-
-    delete g;
+    Genetic s("protoss","rush","colossus");
+    s.findBuildList();
+    s.printBest();
+    //delete g;
 }

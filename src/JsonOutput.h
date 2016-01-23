@@ -36,6 +36,10 @@ public:
 
     void print(); // TODO replace with << operator
 
+    Json::Value getJson();
+
+    void setTime(int value);
+
 private:
     Json::Value json;
 

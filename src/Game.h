@@ -52,10 +52,13 @@ public:
 
     void simulate();
 
+    void deleteInstanaces();
+
     JsonOutput& getOutput() {return output;}
 
     virtual Race getRace() const = 0;
 
+    void readBuildList(std::vector<std::string> v);
 protected:
     Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
 

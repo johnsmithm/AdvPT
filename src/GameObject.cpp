@@ -238,3 +238,7 @@ void GameObject::increaseInstancesEnergy(int value) {
         }
     }
 }
+
+void GameObject::deleteInstances(){
+    instances.clear();
+}

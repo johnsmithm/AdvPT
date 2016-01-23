@@ -119,6 +119,8 @@ public:
     unsigned int getInstancesCount() const {return instances.size();}
     unsigned int getFreeInstancesCount() const;
 
+    void deleteInstances();
+
     GameObjectInstance& addNewInstance(Game& game);
     void morphInstance(GameObjectInstance& source);
 
@@ -133,7 +135,7 @@ public:
     static std::vector<GameObjectInstance*> getAll(std::function<bool(GameObjectInstance&)> filter=[](GameObjectInstance &goi){return true;});
 
     static void increaseInstancesEnergy(int value=DEFAULT_ENERGY_INCREASE);
-
+   
 private:
     std::string name;
     unsigned int mineralCost;

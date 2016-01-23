@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <cassert>
 #include <string>
+#include <vector>
 #include <stdlib.h>
 #include "Action.h"
 #include "Game.h"
@@ -87,7 +88,7 @@ bool Game::timeStep() {
     // If a new message was created, populate its global entries.
     output.addGameGlobals(*this);
 
-    if (++curTime > 1000)
+    if (++curTime > 500)
         throw SimulationException("Maximum timesteps exceeded");
 
     return false;
@@ -96,7 +97,7 @@ bool Game::timeStep() {
 
 //For testing
 void Game::debugOutput(shared_ptr<Action> action, bool start) {
-    cerr << "Time:" << curTime << "\n"
+  /*  cerr << "Time:" << curTime << "\n"
          << "resources{minerals :" << minerals / FP_FACTOR
          << ", vespene :" << gas / FP_FACTOR
          << ", supply-used :" << usedSupply / FP_FACTOR
@@ -110,7 +111,7 @@ void Game::debugOutput(shared_ptr<Action> action, bool start) {
         cerr << "finish " << action->getName() << "\n";
     }
 
-    cerr << endl;
+    cerr << endl;*/
 }
 
 
@@ -142,6 +143,12 @@ void Game::readBuildList(istream &input) {
             throw SimulationException("Invalid build list: Unknown unit \"" + line + "\" on line " + to_string(linecounter));
         }
     }
+}
+
+void Game::readBuildList(std::vector<std::string> v) {
+   for(auto item : v){
+      buildList.push_back(make_shared<BuildAction>(BuildAction(*this, GameObject::get(item))));
+   }
 }
 
 
@@ -200,16 +207,24 @@ void Game::simulate() {
 
     if (!precheckBuildList()) {
         output.buildListPrecheck(false);
-        throw SimulationException("BuildList invalid");
+        output.setTime(1000);
+        //throw SimulationException("BuildList invalid");
     }
 
     output.buildListPrecheck(true);
 
     output.initSimulation();
 
-    currBuildListItem = buildList.begin();
 
-    while (!timeStep());
+
+    currBuildListItem = buildList.begin();
+    try{
+      while (!timeStep());
+    }catch(const SimulationException &e){
+      output.buildListPrecheck(false);
+      output.setTime(1000);
+    }       
+    output.setTime(curTime);
 }
 
 
@@ -219,7 +234,8 @@ void Game::simulate() {
  * @return time.
  */
 int Game::getMiningTime(int gasMiningWorkers, int mineralMiningWorkers, int neededGas, int neededMineral) {
-    assert(gasMiningWorkers >= 0 && mineralMiningWorkers >= 0);
+    assert(mineralMiningWorkers >= 0);
+    assert(gasMiningWorkers >= 0);
     assert(neededGas >= 0 && neededMineral >= 0);
 
     //Todo add mule thing
@@ -269,15 +285,17 @@ int Game::ternarySearch(int left, int right, int neededGas, int neededMineral, i
         return (getMiningTime(left, freeWorkers - left, neededGas, neededMineral) >
                 getMiningTime(right, freeWorkers - right, neededGas, neededMineral) ? right : left);
     }
-    if (right - left == 2) {
+    if (right - left == 2) {//could be errors
+        //first and second
         int inner = (getMiningTime(left, freeWorkers - left, neededGas, neededMineral) >
-                     getMiningTime(right - 1, freeWorkers - right - 1, neededGas, neededMineral) ? right - 1 : left);
+                     getMiningTime(right - 1, freeWorkers - (right - 1), neededGas, neededMineral) ? right - 1 : left);
+        //third and better
         return (getMiningTime(inner, freeWorkers - inner, neededGas, neededMineral) >
                 getMiningTime(right, freeWorkers - right, neededGas, neededMineral) ? right : inner);
     }
     int m1 = left + (right - left) / 3;
     int m2 = left + 2 * (right - left) / 3;
-
+    assert(m2 <= right);
     if (getMiningTime(m1, freeWorkers - m1, neededGas, neededMineral) >
         getMiningTime(m2, freeWorkers - m2, neededGas, neededMineral)) {
         return ternarySearch(m1, right, neededGas, neededMineral, freeWorkers);
@@ -484,4 +502,11 @@ void ZergGame::invokeRaceActions(bool buildTriggered) {
     // Update the previous larvaCount
     previousLarvaCount = larva.getFreeInstancesCount();
 
+}
+
+void Game::deleteInstanaces(){    
+        for(auto item : buildList)
+            item->getObjectToBuild().deleteInstances();
+        mainBuilding.deleteInstances();
+        worker.deleteInstances();
 }

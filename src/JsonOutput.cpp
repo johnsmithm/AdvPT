@@ -173,3 +173,11 @@ void JsonOutput::addGameGlobals(Game& game) {
 void JsonOutput::print() {
     cout << json;
 }
+
+Json::Value JsonOutput::getJson(){
+    return json;
+}
+
+void JsonOutput::setTime(int value){
+    json["time"] = value;
+}
