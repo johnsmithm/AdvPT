@@ -91,6 +91,7 @@ private:
     unsigned int freeWorkers = 6;
 
     unsigned int finishTimeCurrentBuildItem = 1;
+    unsigned int previousGeyserExploiterCount = 0;
 
     unsigned int nextInstanceID = 0;
 

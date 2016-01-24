@@ -67,8 +67,7 @@ bool Game::timeStep() {
     //check buildList
     bool triggeredBuild = false;
     if (currBuildListItem != buildList.end()) {
-        if ((**currBuildListItem).canExecute()) {
-            (**currBuildListItem).start();
+        if ((**currBuildListItem).tryToStart()) {
             triggeredBuild = true;
             debugOutput(*currBuildListItem, true);
             runningActions.push_back(*currBuildListItem);
@@ -81,8 +80,10 @@ bool Game::timeStep() {
 
     // Reassign workers when we finish mining resources for a build item or
     // We have a change in the workers business
-    if(finishTimeCurrentBuildItem == curTime || freeWorkers != worker.getFreeInstancesCount()){
+    if(finishTimeCurrentBuildItem == curTime || freeWorkers != worker.getFreeInstancesCount()
+       || previousGeyserExploiterCount != geyserExploiter.getInstancesCount()) {
         generateResources();
+        previousGeyserExploiterCount = geyserExploiter.getInstancesCount();
     }
 
     // If a new message was created, populate its global entries.
