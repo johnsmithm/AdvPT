@@ -1,4 +1,5 @@
-static string defaultTechTree = "#name,minerals,vespene,build time,supply cost,supply provided,start energy,max energy,race,produced_by,dependency,built_type,is_building \n\
+static string defaultTechTree = "\
+#name,minerals,vespene,build time,supply cost,supply provided,start energy,max energy,race,produced_by,dependency,built_type,is_building \n\
 ###########,,,,,,,,,, \n\
 # Protoss #,,,,,,,,,, \n\
 ###########,,,,,,,,,, \n\
@@ -19,7 +20,7 @@ carrier,350,250,120,6,0,0,0,protoss, stargate ,fleet_beacon ,active, 0 \n\
 #buildings,,,,,0,,,,, \n\
 nexus,400,0,100,0,10,0,100,protoss, probe , ,warp, 1\n\
 pylon,100,0,25,0,8,0,0,protoss, probe , ,warp, 1\n\
-gateway,150,0,65,0,0,0,0,protoss, probe ,pylon ,warp, 1\n\
+gateway,150,0,65,0,0,0,0,protoss, probe ,pylon/nexus ,warp, 1\n\
 cybernetics_core,150,0,50,0,0,0,0,protoss, probe ,gateway ,warp, 1\n\
 robotics_facility,200,100,65,0,0,0,0,protoss, probe ,cybernetics_core ,warp, 1\n\
 robotics_bay,200,200,65,0,0,0,0,protoss, probe ,robotics_facility ,warp, 1\n\
@@ -87,7 +88,7 @@ battlecruiser,400,300,90,6,0,0,0,terran,starport_with_tech_lab ,fusion_core ,act
 #buildings,,,,,0,,,,, \n\
 command_center,400,0,100,0,11,0,0,terran,scv , ,active, 1\n\
 orbital_command,150,0,35,0,11,50,200,terran,command_center,barracks/barracks_with_tech_lab/barracks_with_reactor ,morph, 1\n\
-planetary_fortress,150,150,50,0,11,0,0,terran,orbital_command,engineering_bay ,morph, 1\n\
+planetary_fortress,150,150,50,0,11,0,0,terran,command_center,engineering_bay ,morph, 1\n\
 refinery,75,0,30,0,0,0,0,terran,scv , ,active, 1\n\
 engineering_bay,125,0,35,0,0,0,0,terran,scv , ,active, 1\n\
 missile_turret,100,0,25,0,0,0,0,terran,scv ,engineering_bay ,active, 1\n\
