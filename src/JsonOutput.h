@@ -4,7 +4,6 @@
 #include "json/json.h"
 #include "GameObject.h"
 
-class Action;
 class BuildAction;
 class BoostAction;
 class MuleAction;

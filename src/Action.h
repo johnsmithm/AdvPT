@@ -9,14 +9,7 @@
 
 class Action {
 public:
-    virtual void finish() = 0;
-    virtual bool timeStep() = 0;
-    virtual bool isBuildAction() {return false;}
-    virtual std::string getName() {return "Generic Action";}
-    virtual Game& getGame() = 0;
-
-protected:
-    unsigned int finishTime;
+    virtual std::string getName() const = 0;
 };
 
 
@@ -26,23 +19,21 @@ public:
         : game(game), objectToBuild(objectToBuild) {}
 
     bool tryToStart();
-    virtual void finish() override;
-    virtual bool timeStep() override;
-    virtual bool isBuildAction() override {return true;}
-    virtual std::string getName() override {return objectToBuild.getName();}
-    virtual Game& getGame() {return game;}
+    void finish();
+    bool timeStep();
+    std::string getName() {return objectToBuild.getName();}
+    Game& getGame() {return game;}
 
     unsigned int getGasCost() const {return objectToBuild.getGasCost();}
     unsigned int getSupplyCost() const  {return objectToBuild.getSupplyCost();}
     unsigned int getMineralCost() const {return objectToBuild.getMineralCost();}
 
-    const std::string getName() const {return objectToBuild.getName();}
+    virtual std::string getName() const override {return objectToBuild.getName();}
     GameObject& getObjectToBuild() {return objectToBuild;}
     int getProducerID() const;
 
 private:
     Game& game;
-    int producerID;
     GameObject& objectToBuild;
     GameObjectInstance* producingInstance = nullptr;
 
@@ -50,7 +41,19 @@ private:
 };
 
 
-class BoostAction : public Action{
+class SpecialAction : public Action {
+public:
+    virtual void finish() = 0;
+    virtual bool timeStep() = 0;
+    virtual std::string getName() const {return "Generic SpecialAction";}
+    virtual Game& getGame() = 0;
+
+protected:
+    unsigned int finishTime;
+};
+
+
+class BoostAction : public SpecialAction {
 public:
     BoostAction(ProtossGame& game, GameObjectInstance& target, GameObjectInstance& source)
         : game(game), target(target), source(source) {}
@@ -58,7 +61,7 @@ public:
     void start();
     virtual void finish() override {target.setBoostTarget(false);}
     virtual bool timeStep() override {return --timeLeft == 0;};
-    virtual std::string getName() override {return "BoostAction";}
+    virtual std::string getName() const override {return "BoostAction";}
     virtual Game& getGame() {return game;}
 
     GameObjectInstance& getTarget() {return target;}
@@ -72,7 +75,7 @@ private:
 };
 
 
-class MuleAction : public Action {
+class MuleAction : public SpecialAction {
 public:
 
     MuleAction(TerranGame& game, GameObjectInstance& source)
@@ -81,7 +84,7 @@ public:
     void start();
     virtual void finish() override;
     virtual bool timeStep() override {return --timeLeft == 0;}
-    virtual std::string getName() override {return "MuleAction";}
+    virtual std::string getName() const override {return "MuleAction";}
     virtual Game& getGame() {return game;}
 
     GameObjectInstance& getSource() {return source;}
@@ -93,7 +96,7 @@ private:
 };
 
 
-class QueenAction : public Action {
+class QueenAction : public SpecialAction {
 public:
 
     QueenAction(ZergGame& game, GameObjectInstance& source, GameObjectInstance& target)
@@ -102,7 +105,7 @@ public:
     void start();
     virtual void finish() override;
     virtual bool timeStep() override {return --timeLeft == 0;}
-    virtual std::string getName() override {return "QueenAction";}
+    virtual std::string getName() const override {return "QueenAction";}
     virtual Game& getGame() {return game;}
 
     GameObjectInstance& getSource() {return source;}

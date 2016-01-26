@@ -14,6 +14,7 @@
 
 //forward declare classes to fix cyclic dependencies
 class Action;
+class SpecialAction;
 class BuildAction;
 
 
@@ -62,10 +63,10 @@ protected:
     GameObject& mainBuilding;
     GameObject& worker;
     GameObject& geyserExploiter;
-    
-    std::list<std::shared_ptr<Action>> runningActions;
 
-    void debugOutput(std::shared_ptr<Action> action, bool start);
+    std::list<std::shared_ptr<SpecialAction>> runningSpecialActions;
+
+    void debugOutput(Action& action, bool start);
 
     virtual void invokeRaceActions(bool buildTriggered) = 0;
 
@@ -93,8 +94,9 @@ private:
     const int energyRate = DEFAULT_ENERGY_INCREASE;
 
     std::vector<std::shared_ptr<BuildAction>> buildList;
-
     std::vector<std::shared_ptr<BuildAction>>::iterator currBuildListItem;
+
+    std::list<std::shared_ptr<BuildAction>> runningBuildActions;
 
     JsonOutput output;
 
