@@ -87,8 +87,8 @@ int main(int argc, char **argv){
     }else{
         GameObject::parseString(defaultTechTree);
     }
-
-    /*Game *g;
+/*
+    Game *g;
 
     if(race == "protoss"){
         g = new ProtossGame();
@@ -104,11 +104,11 @@ int main(int argc, char **argv){
         cerr << e.what() << endl;
         exit(1);
     }
-    */
-    //g->simulate();
-    //g->getOutput().print();
-
-    Genetic s("protoss","rush","colossus");
+    
+    g->simulate();
+    g->getOutput().print();
+*/
+    Genetic s("protoss","push","colossus");
     s.findBuildList();
     s.printBest();
     //delete g;

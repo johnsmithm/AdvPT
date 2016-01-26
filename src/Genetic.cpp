@@ -31,13 +31,24 @@ Genetic::Genetic(std::string setRace, std::string setTypeSearch, std::string set
  * 
  */
 void Genetic::findBuildList(){
-  getNeededUnits();
-  makeBuildList();//or makeBuildList1()
-  do{
-    selection();
-    mutation();
-    reproduction();
-  }while(0);
+  if(typeSearch == "push"){
+    getNeededUnits();
+    makeBuildList();//or makeBuildList1()
+    do{
+      selection();
+      mutation();
+      reproduction();
+    }while(0);
+  }else{
+    getNeededUnits();
+    makeBuildListRush();//or makeBuildList1()
+    do{
+     selection();
+      mutation();
+      reproductionRush();
+      selection();
+    }while(0);
+  }
 }
 
 void Genetic::printBest(){
@@ -65,7 +76,7 @@ void Genetic::printBest(){
     	if(bTime.size() > i)
     	cout<<bestBuildListsString[0][i]<<" "<<bTime[i]<<" "<<(GameObject::get(bestBuildListsString[0][i]).getBuildTime())<<" "<<minerals[i]<<" "<<gas[i]<<"\n";
     cout<<"Time:"<<bestBuildListsJson[0]["time"]<<"\n";
-    //cout<<bestBuildListsString.size()<<"\n";
+    cout<<bestBuildListsString.size()<<"\n";
   }
 }
 
@@ -96,7 +107,7 @@ void Genetic::getDependency(string name){
        	getDependency(item);
         break;
      }
-
+/*
     vector<vector<string>> v;
     v = requiredOrder;
 
@@ -107,10 +118,10 @@ void Genetic::getDependency(string name){
     
     if(++add < 4)cout<<add;
     requiredOrder.insert(requiredOrder.begin(),v.begin(),v.end());
-
+*/
     for(size_t i=0; i<requiredOrder.size(); ++i){
        requiredOrder[i].push_back(name);
-    }   
+    }
 }
 
 /**
@@ -168,6 +179,33 @@ void Genetic::numberNeededWorker(){
 }
 
 /**
+ * Add gas Building.
+ */
+ void Genetic::addGasBuilding(int val, int valMax, size_t pos, size_t maxPos , vector<vector<string>>& requiredOrder, string gasMaker){
+   if(pos >= maxPos)return;
+   cout<<val<<" "<<pos<<"\n";
+   vector<vector<string>> v;
+    v = requiredOrder;
+
+    int k = 0;
+
+    for(size_t i=0; i<v.size(); ++i){
+      k=0;
+      for(size_t j=0;j<pos; ++j)
+        if(v[i][j] == gasMaker)++k;
+      if(k)++k;
+      v[i].insert(v[i].begin() + pos + k,gasMaker);      
+    }
+
+    requiredOrder.insert(requiredOrder.begin(),v.begin(),v.end());
+    if(val >= valMax){
+      addGasBuilding(0, valMax, pos + 1, maxPos,requiredOrder,gasMaker);
+      return;
+    }
+    addGasBuilding(val + 1, valMax, pos, maxPos,requiredOrder,gasMaker);
+    
+ }
+/**
  * Make the first buildlist using the dependencies of the needed unit
  * Add gayserBuilding where is possible.
  */
@@ -175,9 +213,14 @@ void Genetic::getNeededUnits(){
   std::vector<string> v;
   requiredOrder.push_back(v);
   getDependency(unit.getName());
-
+  if(typeSearch == "push"){
+    size_t maxPos = 5;
+    addGasBuilding(0,0,0, requiredOrder[0].size() < maxPos ? requiredOrder[0].size()-1 : maxPos, requiredOrder, gasMaker);
+  }
+  //cout<<requiredOrder.size()<<"\n";
+  //return;
   //requiredOrder.erase(requiredOrder.begin());
-  numberNeededWorker();
+  //numberNeededWorker();
 
   resourcesUnits.push_back(baseworker);
   resourcesUnits.push_back(supplyBuilding);
@@ -187,12 +230,40 @@ void Genetic::getNeededUnits(){
   for(auto item1 : requiredOrder){
     j=0;
   	for(auto item : item1) {
-      cout<<item<<" "<<requiredOrderWorkersNeeded[i][j]<<"\n";
+      cout<<item<<" "/*<<requiredOrderWorkersNeeded[i][j]*/<<"\n";
       ++j;
     }
     ++i;
   	cout<<"\n";
   }
+}
+
+/**
+ * Using rand to insert the worker in buildlist.
+ */
+void Genetic::makeBuildListRush(){
+  int supply =10 - 6 + 8 - 1 - 2;
+  
+  allBuildLists.clear();
+  for(auto item : requiredOrder){
+    std::vector<std::string> mylist = item;
+    mylist.insert(mylist.begin(),"probe");
+    for (int i = 0; i < 10 ; ++ i){   
+      if(supply - 2/*unit.getSupplyCost()*/ < 0){
+        mylist.push_back(supplyBuilding);
+        supply += 8;//GameObject::get(supplyBuilding).getSupplyProvided();
+      }
+      mylist.push_back(unit.getName());
+      supply -= 2;//unit.getSupplyCost();
+      allBuildLists.push_back(mylist);
+      //for(auto t : mylist)
+       // cout<<t<<"\n";
+      //cout<<supply<<"\n";
+    //mylist.clear();
+    }
+  }
+  //  allBuildLists.clear();
+//allBuildLists.push_back({"probe","pylon","probe","gateway","gateway","zealot","zealot"});
 }
 
 /**
@@ -212,7 +283,7 @@ void Genetic::makeBuildList(){
 	  	} 
 	    allBuildLists.push_back(mylist);
 	    mylist.clear();
-	  } 
+	  }
 	//  allBuildLists.clear();
 //allBuildLists.push_back({baseworker,baseworker,baseworker,gasMaker,baseworker,supplyBuilding,baseworker,gasMaker,"gateway",gasMaker,baseworker,"cybernetics_core","robotics_facility","robotics_bay","colossus"});	
 	}
@@ -255,7 +326,7 @@ void Genetic::makeBuildList1(){
           workers++;
           coin -= 17;
           ++p;
-        }     
+        }
           if(supply - GameObject::get(item[i]).getSupplyCost() < 0) {
             mylist.push_back( supplyBuilding);
             supply += 8;
@@ -280,15 +351,28 @@ void Genetic::makeBuildList1(){
  * Simulate buildLists and select the best ones.
  */
 void Genetic::selection(){
-  if(race == "protoss"){
   	 for(auto item : allBuildLists){
   	 	Game *g;
-  	 	g = new ProtossGame();
+      if(race == "protoss"){
+  	 	 g = new ProtossGame();
+      }else {
+        g = new TerranGame();
+      }
   	 	g->readBuildList(item);
   	 	g->simulate();
   	 	Json::Value output = g->getOutput().getJson();
+      //cout<<output;
   	 	g->deleteInstanaces();
       if(output["messages"].size() > 0) {//why do you have empty messages but have time???
+        if(typeSearch == "rush"){
+          if(output["time"] > 360)continue;
+          int k = 0;
+          for(auto me : output["messages"])
+            for(auto ev : me["events"])
+             if(ev["type"] == "build-start" && ev["name"] == unit.getName())
+              ++k;
+          output["time"] = -k;  
+        }
     	 	if(bestBuildListsJson.size() > 4){
            if(bestBuildListsJson[bestBuildListsJson.size()-1]["time"] > output["time"]){     
 
@@ -303,42 +387,16 @@ void Genetic::selection(){
         	 		bestBuildListsString.insert(bestBuildListsString.begin() + po, item);
            } 
     	 	}else{
-    	 		bestBuildListsJson.push_back(output);
-    	 		bestBuildListsString.push_back(item);
-    	 	}
-      }
-  	 	delete g;
-  	 }
-  }else if(race == "terran"){
-    for(auto item : allBuildLists){
-      Game *g;
-      g = new TerranGame();
-      g->readBuildList(item);
-      g->simulate();
-      Json::Value output = g->getOutput().getJson();
-      g->deleteInstanaces();
-      if(output["messages"].size() > 0) {//why do you have empty messages but have time???
-        if(bestBuildListsJson.size() > 4){
-           if(bestBuildListsJson[bestBuildListsJson.size()-1]["time"] > output["time"]){     
-
-              bestBuildListsJson.erase(bestBuildListsJson.begin() + 4);
-              bestBuildListsString.erase(bestBuildListsString.begin() + 4);  
-
-              int po = bestBuildListsString.size()-1;
+    	 		    int po =bestBuildListsString.size() >0 ? bestBuildListsString.size()-1 : 0;
               while(po > 0 && bestBuildListsJson[po]["time"] > output["time"])
                 --po;
 
               bestBuildListsJson.insert(bestBuildListsJson.begin() + po, output);
               bestBuildListsString.insert(bestBuildListsString.begin() + po, item);
-           } 
-        }else{
-          bestBuildListsJson.push_back(output);
-          bestBuildListsString.push_back(item);
-        }
+    	 	}
       }
-      delete g;
-     }
-  }
+  	 	delete g;
+  	 } 
 }
 
 void Genetic::mutation(){
@@ -346,5 +404,64 @@ void Genetic::mutation(){
 }
 
 void Genetic::reproduction(){
+
+}
+
+void Genetic::reproductionRush(){
+  string producer = unit.getProducerNames()[0];
+  vector<vector<string>> addProducer;
+  addProducer.push_back(bestBuildListsString[0]);
+  size_t maxPos = 4;
+  addGasBuilding(0,0,0, addProducer[0].size() < maxPos ? addProducer[0].size()-1 : maxPos, addProducer, producer);
+  
+  allBuildLists.clear();
+  srand (time(NULL));
+  int supply , workers;
+  for(auto item : addProducer){
+    for (int i = 0; i < 10 ; ++ i){//different possibilities of adding workers
+      supply = 10 - 6;
+      workers = 0;
+      std::vector<std::string> mylist;
+      for (size_t j=0 ; j < item.size(); ++j){//add workers
+        size_t coin = rand() % (2);
+        int max_worker = 0;
+        while(coin && workers <= 10 && max_worker++ < 2){
+          //cout<<item[j]<<(supply + 2 - ((GameObject::get(item[j]).getSupplyCost()/10000) + 1) )<<"\n";
+          if((supply + 21 - ((GameObject::get(item[j]).getSupplyCost()/10000) + 1) ) < 21){
+            mylist.push_back(supplyBuilding);
+            cout<<supply<<"\n";
+            supply += 8;//GameObject::get(supplyBuilding).getSupplyProvided();
+            
+          }
+          ++workers;
+          mylist.push_back(baseworker);
+          supply -= 1;
+          coin = rand() % (2);
+        }
+        if(item[j] != supplyBuilding){
+          mylist.push_back(item[j]);
+          supply -= (GameObject::get(item[j]).getSupplyCost()/10000);
+        }
+      }
+      for(int k=0; k< 10; ++k){//add wanted units
+        if((supply )/*unit.getSupplyCost()*/ < 2){
+          mylist.push_back(supplyBuilding);
+          supply += 8;//GameObject::get(supplyBuilding).getSupplyProvided();
+        }
+        mylist.push_back(unit.getName());
+        supply -= 2;//unit.getSupplyCost();
+        allBuildLists.push_back(mylist);
+      }
+      cout<<"\n";
+      mylist.clear();
+    }
+  }
+
+  for(auto item : allBuildLists)
+  {
+    for(auto n : item)
+      cout<<n<<"\n";
+    cout<<"\n";
+  }
 
 }

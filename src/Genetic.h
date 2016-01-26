@@ -21,12 +21,15 @@ class Genetic{
   private:
   	void getNeededUnits();
     void numberNeededWorker();
-
+   void addGasBuilding(int val, int valMax, size_t pos, size_t maxPos , vector<vector<string>>& requiredOrder, string gasMaker);
+ 
     void makeBuildList();
+    void makeBuildListRush();
     void makeBuildList1();
     void selection();
     void mutation();
     void reproduction();
+    void reproductionRush();
 
     size_t getTime(int mineral, int gas, int workers);
 
