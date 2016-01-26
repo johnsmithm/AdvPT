@@ -22,12 +22,16 @@ bool BuildAction::tryToStart() {
     if (producer == nullptr)
         return false;
     producingInstance = producer;
+    GameObject& producingType = producingInstance->getType();
 
     switch (objectToBuild.getBuildType()) {
-    case BuildType::MORPH:
-        // NO BREAK - intended fallthrough
     case BuildType::PAIRMORPH:
+        game.setUsedSupplyAmount(game.getUsedSupplyAmount() + objectToBuild.getSupplyCost());
+        // NO BREAK - intended fallthrough
+    case BuildType::MORPH:
         producingInstance->setDead(true);
+        game.setUsedSupplyAmount(game.getUsedSupplyAmount() + objectToBuild.getSupplyCost()
+                                 - producingType.getSupplyCost());
         break;
     case BuildType::ACTIVE_BUILD:
         producingInstance->increaseBusiness();
@@ -69,15 +73,11 @@ void BuildAction::finish() {
     switch (objectToBuild.getBuildType()) {
     case BuildType::PAIRMORPH:
         objectToBuild.addNewInstance(game);
-        game.setUsedSupplyAmount(game.getUsedSupplyAmount() + objectToBuild.getSupplyCost()
-                                 - producingType.getSupplyCost());
         game.setTotalSupplyAmount(game.getTotalSupplyAmount() - producingType.getSupplyProvided());
         // NO BREAK - intended fallthrough
     case BuildType::MORPH:
         objectToBuild.morphInstance(*producingInstance);
         instance = producingInstance;
-        game.setUsedSupplyAmount(game.getUsedSupplyAmount() + objectToBuild.getSupplyCost()
-                                 - producingType.getSupplyCost());
         game.setTotalSupplyAmount(game.getTotalSupplyAmount() - producingType.getSupplyProvided());
         break;
     case BuildType::ACTIVE_BUILD:

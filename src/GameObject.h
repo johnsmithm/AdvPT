@@ -154,7 +154,7 @@ private:
 
     std::list<GameObjectInstance> instances;
 
-    static std::unordered_map<std::string, std::shared_ptr<GameObject>> gameObjects;
+    static std::unordered_map<std::string, GameObject> gameObjects;
 };
 
 

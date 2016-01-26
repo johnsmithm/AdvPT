@@ -12,7 +12,7 @@ using namespace std;
 static const char DELIMETER    = ',';
 static const char SUBDELIMITER = '/';
 
-unordered_map<string, shared_ptr<GameObject>> GameObject::gameObjects;
+unordered_map<string, GameObject> GameObject::gameObjects;
 
 
 GameObject::GameObject(std::string name,
@@ -108,13 +108,13 @@ void GameObject::parseStream(istream &inputStream) {
         if(dependencies[0] == "")
             dependencies.clear();
           
-        gameObjects[tokens[0]] = make_shared<GameObject>(
-            tokens[0], // name;
+        gameObjects.insert(make_pair(tokens[0], GameObject(
+            tokens[0],                   // name;
             stol(tokens[1]) * FP_FACTOR, // mineralCost
             stol(tokens[2]) * FP_FACTOR, // gasCost
             stol(tokens[3]),             // buildTime
-            stod(tokens[4]) * FP_FACTOR, // supplyCost (uses stod becaue it can be 0.5)
-            stod(tokens[5]) * FP_FACTOR, // supplyProvided (uses stod becaue it can be 0.5)
+            stod(tokens[4]) * FP_FACTOR, // supplyCost (uses stod because it can be 0.5)
+            stod(tokens[5]) * FP_FACTOR, // supplyProvided (uses stod because it can be 0.5)
 
             stol(tokens[6]) * FP_FACTOR, // startEnergy
             stol(tokens[7]) * FP_FACTOR, // maxEnergy
@@ -136,7 +136,7 @@ void GameObject::parseStream(istream &inputStream) {
                         (tokens[11] == "warp" ? BuildType::INSTANTIATE :
                             throw TechTreeParsingException("Invalid build type", linecounter)))),
             tokens[12][0] == '1' //isBuilding
-        );
+        )));
     }
 }
 
@@ -150,15 +150,15 @@ void GameObject::parseStream(istream &inputStream) {
  * @return a reference to the GameObject corresponding to this name
  */
 GameObject& GameObject::get(const string name) {
-    return *GameObject::gameObjects.at(name);
+    return GameObject::gameObjects.at(name);
 }
 
 
 vector<GameObjectInstance*> GameObject::getAll(function<bool(GameObjectInstance&)> filter) {
     vector<GameObjectInstance*> results;
 
-    for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects) {
-        for(GameObjectInstance& goi : objectPointer.second->instances) {
+    for(auto& go : gameObjects) {
+        for(GameObjectInstance& goi : go.second.instances) {
             if(filter(goi))
                 results.push_back(&goi);
         }
@@ -231,11 +231,11 @@ GameObject::InstancesIter GameObject::end() {
 
 
 void GameObject::increaseInstancesEnergy(int value) {
-    for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects){
-        for(GameObjectInstance& goi : objectPointer.second->instances){
+    for(auto& go : gameObjects){
+        for(GameObjectInstance& goi : go.second.instances){
             goi.updateEnergy(value);
-            if(goi.getEnergy() > objectPointer.second->maxEnergy)
-                goi.setEnergy(objectPointer.second->maxEnergy);
+            if(goi.getEnergy() > go.second.maxEnergy)
+                goi.setEnergy(go.second.maxEnergy);
         }
     }
 }

@@ -6,6 +6,7 @@
 #include <cassert>
 #include <string>
 #include <stdlib.h>
+#include <algorithm>
 #include "Action.h"
 #include "Game.h"
 #include "util.h"
@@ -27,13 +28,8 @@ Game::Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExplo
 }
 
 
-bool Game::allBuildActionsFinished() {
-    return runningBuildActions.size() == 0;
-}
-
-
 bool Game::timeStep() {
-    if (currBuildListItem == buildList.end() && allBuildActionsFinished()) {
+    if (currBuildListItem == buildList.end() && (runningBuildActions.size() == 0)) {
         return true;
     }
 
@@ -44,31 +40,31 @@ bool Game::timeStep() {
     //increase energy on all buildings
     GameObject::increaseInstancesEnergy(energyRate);
 
-    // check runningBuildActions
-    std::list<std::shared_ptr<BuildAction>> toRemoveBuild;
-    for (shared_ptr<BuildAction> item : runningBuildActions) {
+    // Iterate over all running build actions and finish them if possible.
+    // std::remove_if moves all finished actions to the end of the list and returns an iterator to the first finished action.
+    // It does not really delete items from the list, so we have to erase them afterwards.
+    auto buildFinishedIt = std::remove_if(runningBuildActions.begin(), runningBuildActions.end(), [&](shared_ptr<BuildAction>& item) {
         if (item->timeStep()) {
             item->finish();
             debugOutput(*item, false);
-            toRemoveBuild.push_back(item);
+            return true;
         }
-    }
-    for (shared_ptr<BuildAction> item : toRemoveBuild) {
-        runningBuildActions.remove(item);
-    }
+        return false;
+    });
+    runningBuildActions.erase(buildFinishedIt, runningBuildActions.end());
 
-    // check runningSpecialActions
-    std::list<std::shared_ptr<SpecialAction>> toRemoveSpecial;
-    for (shared_ptr<SpecialAction> item : runningSpecialActions) {
+    // Iterate over all running special actions and finish them if possible.
+    // std::remove_if moves all finished actions to the end of the list and returns an iterator to the first finished action.
+    // It does not really delete items from the list, so we have to erase them afterwards.
+    auto specialFinishedIt = std::remove_if(runningSpecialActions.begin(), runningSpecialActions.end(), [&](shared_ptr<SpecialAction>& item) {
         if (item->timeStep()) {
             item->finish();
             debugOutput(*item, false);
-            toRemoveSpecial.push_back(item);
+            return true;
         }
-    }
-    for (shared_ptr<SpecialAction> item : toRemoveSpecial) {
-        runningSpecialActions.remove(item);
-    }
+        return false;
+    });
+    runningSpecialActions.erase(specialFinishedIt, runningSpecialActions.end());
 
     //check buildList
     bool triggeredBuild = false;
@@ -369,6 +365,7 @@ ZergGame::ZergGame()
     auto& overlord = GameObject::get("overlord");
     overlord.addNewInstance(*this);
     setTotalSupplyAmount(getTotalSupplyAmount() + overlord.getSupplyProvided());
+    setUsedSupplyAmount(getUsedSupplyAmount() + overlord.getSupplyCost());
 
     // Add initial larvae
     for (int i = 0; i < 3; ++i)

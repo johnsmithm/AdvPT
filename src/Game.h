@@ -103,7 +103,6 @@ private:
     void readBuildList(std::istream &input);
     bool timeStep();
     void generateResources();
-    bool allBuildActionsFinished();
     void updateMessagesForWorkersReassignment();
     int ternarySearch(int left, int right, int neededGas,int neededMineral, int freeWorkers);
     int getMiningTime(int gasMiningWorkers, int mineralMiningWorkers, int neededGas,int neededMineral);
