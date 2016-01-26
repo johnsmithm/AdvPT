@@ -28,12 +28,7 @@ Game::Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExplo
 
 
 bool Game::allBuildActionsFinished() {
-    auto predicate = [](shared_ptr<Action> a) {
-        return a->isBuildAction();
-    };
-    if (findFirstIf(runningActions, predicate) == nullptr)
-        return true;
-    return false;
+    return runningBuildActions.size() == 0;
 }
 
 
@@ -49,18 +44,30 @@ bool Game::timeStep() {
     //increase energy on all buildings
     GameObject::increaseInstancesEnergy(energyRate);
 
-    // check runningAction
-    std::list<std::shared_ptr<Action>> toRemove;
-    for (shared_ptr<Action> item : runningActions) {
+    // check runningBuildActions
+    std::list<std::shared_ptr<BuildAction>> toRemoveBuild;
+    for (shared_ptr<BuildAction> item : runningBuildActions) {
         if (item->timeStep()) {
-
             item->finish();
-            debugOutput(item, false);
-            toRemove.push_back(item);
+            debugOutput(*item, false);
+            toRemoveBuild.push_back(item);
         }
     }
-    for (shared_ptr<Action> item : toRemove) {
-        runningActions.remove(item);
+    for (shared_ptr<BuildAction> item : toRemoveBuild) {
+        runningBuildActions.remove(item);
+    }
+
+    // check runningSpecialActions
+    std::list<std::shared_ptr<SpecialAction>> toRemoveSpecial;
+    for (shared_ptr<SpecialAction> item : runningSpecialActions) {
+        if (item->timeStep()) {
+            item->finish();
+            debugOutput(*item, false);
+            toRemoveSpecial.push_back(item);
+        }
+    }
+    for (shared_ptr<SpecialAction> item : toRemoveSpecial) {
+        runningSpecialActions.remove(item);
     }
 
     //check buildList
@@ -68,8 +75,8 @@ bool Game::timeStep() {
     if (currBuildListItem != buildList.end()) {
         if ((**currBuildListItem).tryToStart()) {
             triggeredBuild = true;
-            debugOutput(*currBuildListItem, true);
-            runningActions.push_back(*currBuildListItem);
+            debugOutput(**currBuildListItem, true);
+            runningBuildActions.push_back(*currBuildListItem);
             currBuildListItem++;
         }
     }
@@ -96,7 +103,7 @@ bool Game::timeStep() {
 
 
 //For testing
-void Game::debugOutput(shared_ptr<Action> action, bool start) {
+void Game::debugOutput(Action& action, bool start) {
     cerr << "Time:" << curTime << "\n"
          << "resources{minerals :" << minerals / FP_FACTOR
          << ", vespene :" << gas / FP_FACTOR
@@ -106,9 +113,9 @@ void Game::debugOutput(shared_ptr<Action> action, bool start) {
          << ", vespene :" << gasMiningWorkers << "}\n";
 
     if (start) {
-        cerr << "start " << action->getName() << "\n";
+        cerr << "start " << action.getName() << "\n";
     } else {
-        cerr << "finish " << action->getName() << "\n";
+        cerr << "finish " << action.getName() << "\n";
     }
 
     cerr << endl;
@@ -389,12 +396,12 @@ void ProtossGame::invokeRaceActions(bool buildTriggered) {
                     break;
 
                 auto action = make_shared<BoostAction>(BoostAction(*this, *targets[0], instance));
-                Game::debugOutput(action, true);
+                Game::debugOutput(*action, true);
 
                 action->start();
                 instance.updateEnergy(-BOOST_REQUIRED_ENERGY);
 
-                runningActions.push_back(action);
+                runningSpecialActions.push_back(action);
             }
         }
     }
@@ -407,12 +414,12 @@ void TerranGame::invokeRaceActions(bool buildTriggered) {
             if (instance.hasEnergy(MULE_REQUIRED_ENERGY)) {
 
                 auto action = make_shared<MuleAction>(MuleAction(*this, instance));
-                Game::debugOutput(action, true);
+                Game::debugOutput(*action, true);
 
                 action->start();
                 instance.updateEnergy(-MULE_REQUIRED_ENERGY);
 
-                runningActions.push_back(action);
+                runningSpecialActions.push_back(action);
 
             }
         }
@@ -447,13 +454,13 @@ void ZergGame::invokeRaceActions(bool buildTriggered) {
 
                 if (target != nullptr) {
                     auto action = make_shared<QueenAction>(QueenAction(*this, instance, *target));
-                    Game::debugOutput(action, true);
+                    Game::debugOutput(*action, true);
 
                     action->start();
                     instance.updateEnergy(-QUEEN_EGGS_REQUIRED_ENERGY);
                     target->setInjectedLarvaeEggs(target->getInjectedLarvaeEggs() + QUEEN_EGGS_AMOUNT);
 
-                    runningActions.push_back(action);
+                    runningSpecialActions.push_back(action);
                 }
             }
         }
