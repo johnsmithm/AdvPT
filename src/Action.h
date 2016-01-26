@@ -9,7 +9,6 @@
 
 class Action {
 public:
-    virtual void start() = 0;
     virtual void finish() = 0;
     virtual bool timeStep() = 0;
     virtual bool isBuildAction() {return false;}
@@ -26,8 +25,7 @@ public:
     BuildAction(Game& game, GameObject& objectToBuild)
         : game(game), objectToBuild(objectToBuild) {}
 
-    bool canExecute();
-    virtual void start() override;
+    bool tryToStart();
     virtual void finish() override;
     virtual bool timeStep() override;
     virtual bool isBuildAction() override {return true;}
@@ -57,7 +55,7 @@ public:
     BoostAction(ProtossGame& game, GameObjectInstance& target, GameObjectInstance& source)
         : game(game), target(target), source(source) {}
 
-    virtual void start() override;
+    void start();
     virtual void finish() override {target.setBoostTarget(false);}
     virtual bool timeStep() override {return --timeLeft == 0;};
     virtual std::string getName() override {return "BoostAction";}
@@ -80,7 +78,7 @@ public:
     MuleAction(TerranGame& game, GameObjectInstance& source)
         : game(game), source(source) {}
 
-    virtual void start() override;
+    void start();
     virtual void finish() override;
     virtual bool timeStep() override {return --timeLeft == 0;}
     virtual std::string getName() override {return "MuleAction";}
@@ -101,7 +99,7 @@ public:
     QueenAction(ZergGame& game, GameObjectInstance& source, GameObjectInstance& target)
         : game(game), source(source), target(target) {}
 
-    virtual void start() override;
+    void start();
     virtual void finish() override;
     virtual bool timeStep() override {return --timeLeft == 0;}
     virtual std::string getName() override {return "QueenAction";}

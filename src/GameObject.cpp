@@ -119,7 +119,7 @@ void GameObject::parseStream(istream &inputStream) {
             stol(tokens[6]) * FP_FACTOR, // startEnergy
             stol(tokens[7]) * FP_FACTOR, // maxEnergy
 
-            tokens[0].find("_with_reactor") != std::string::npos? 2 : 1, //TODO: freeProductionLines
+            tokens[0].find("_with_reactor") != std::string::npos ? 2 : 1, //TODO: freeProductionLines
 
             //race, we don't need this (yet?)
             // tokens[8] == "terran" ? Race::TERRAN :
@@ -131,11 +131,12 @@ void GameObject::parseStream(istream &inputStream) {
             dependencies,
 
             tokens[11] == "morph" ? BuildType::MORPH :
-                (tokens[11] == "active" ? BuildType::ACTIVE_BUILD :
-                (tokens[11] == "warp" ? BuildType::INSTANTIATE :
-                    throw TechTreeParsingException("Invalid build type", linecounter))),
+                (tokens[11] == "pairmorph" ? BuildType::PAIRMORPH :
+                    (tokens[11] == "active" ? BuildType::ACTIVE_BUILD :
+                        (tokens[11] == "warp" ? BuildType::INSTANTIATE :
+                            throw TechTreeParsingException("Invalid build type", linecounter)))),
             tokens[12][0] == '1' //isBuilding
-            );
+        );
     }
 }
 
@@ -167,29 +168,29 @@ vector<GameObjectInstance*> GameObject::getAll(function<bool(GameObjectInstance&
 }
 
 
-/** @brief gets a possible producer instance for this GameObject type.
+/** @brief gets a producer instance for this GameObject type.
  *  The producer is guaranteed to be not too busy (i.e. it can produce this object)
  *  and be a viable producer (i.e. it is allowed to produce this object)
  *
- *  @return a pointer to the producer or nullptr if there is no available producer
+ *  @return a pointer to the possible producer or nullptr if there is no available producer
  */
 GameObjectInstance* GameObject::getPossibleProducer() {
-    for(string producerName : producerNames){
-        GameObject& producer = get(producerName);
+    static const auto canMorph = [](GameObjectInstance& inst) {
+        // When mophing all production lines must be free
+        return (!inst.isDead()) && (inst.getFreeProductionLines() == inst.getType().getProductionLines());
+    };
 
-        if (buildType == BuildType::MORPH) {
-            auto predicate = [](GameObjectInstance& inst) {
-                // When mophing all production lines must be free
-                return (!inst.isDead()) && (inst.getFreeProductionLines() == inst.getType().getProductionLines());
-            };
-            return findFirstIf(producer, predicate);
+    static const auto canActiveOrInstatiate = [](GameObjectInstance& inst) {
+        return (!inst.isDead()) && (inst.getFreeProductionLines() > 0);
+    };
 
-        } else {
-            auto predicate = [](GameObjectInstance& inst) {
-                return (!inst.isDead()) && (inst.getFreeProductionLines() > 0);
-            };
-            return findFirstIf(producer, predicate);
-        }
+    auto predicate = (buildType == BuildType::MORPH || buildType == BuildType::PAIRMORPH) ? canMorph : canActiveOrInstatiate;
+
+    for(string producerName : producerNames) {
+        GameObject& producerType = get(producerName);
+        auto prod = find_if(producerType.begin(), producerType.end(), predicate);
+        if (prod != producerType.end())
+            return &(*prod);
     }
     return nullptr;
 }

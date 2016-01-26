@@ -11,31 +11,22 @@ const int FP_BUILDTIME_FACTOR = 10;
 const int FP_BUILDTIME_BOOST_FACTOR = 15;
 
 
-/** @brief checks if an action can be executed
- *
- *  @return true if all dependencies for this action
- *           are met (resources, buildings and units), else false
- */
-bool BuildAction::canExecute() {
-    return game.getGasAmount() >= objectToBuild.getGasCost() &&
-            game.getMineralAmount() >= objectToBuild.getMineralCost() &&
-            game.getAvailableSupplyAmount() >= objectToBuild.getSupplyCost() &&
-            objectToBuild.areDependenciesMet() &&
-            objectToBuild.getPossibleProducer() != nullptr;
-}
+bool BuildAction::tryToStart() {
+    if (game.getGasAmount() < objectToBuild.getGasCost() ||
+        game.getMineralAmount() < objectToBuild.getMineralCost() ||
+        game.getAvailableSupplyAmount() < objectToBuild.getSupplyCost() ||
+        (!objectToBuild.areDependenciesMet()))
+        return false;
 
-
-/** @brief starts the action
- *  Increases busyness of dependencies, subtracts resources and removes
- *  morphed units. Does not recheck canExecute! Do this before calling start.
- */
-void BuildAction::start() {
-    producingInstance = objectToBuild.getPossibleProducer();
-
-    assert(producingInstance != nullptr);
+    auto producer = objectToBuild.getPossibleProducer();
+    if (producer == nullptr)
+        return false;
+    producingInstance = producer;
 
     switch (objectToBuild.getBuildType()) {
     case BuildType::MORPH:
+        // NO BREAK - intended fallthrough
+    case BuildType::PAIRMORPH:
         producingInstance->setDead(true);
         break;
     case BuildType::ACTIVE_BUILD:
@@ -45,13 +36,15 @@ void BuildAction::start() {
         game.setUsedSupplyAmount(game.getUsedSupplyAmount() + objectToBuild.getSupplyCost());
         break;
     }
-
+    
     // timeLeft is thenths of a second, buildTime is seconds
     timeLeft = objectToBuild.getBuildTime() * FP_BUILDTIME_FACTOR;
     game.setGasAmount(game.getGasAmount() - objectToBuild.getGasCost());
     game.setMineralAmount(game.getMineralAmount() - objectToBuild.getMineralCost());
 
     game.getOutput().event(*this);
+
+    return true;
 }
 
 
@@ -74,6 +67,12 @@ void BuildAction::finish() {
     GameObjectInstance* instance;
 
     switch (objectToBuild.getBuildType()) {
+    case BuildType::PAIRMORPH:
+        objectToBuild.addNewInstance(game);
+        game.setUsedSupplyAmount(game.getUsedSupplyAmount() + objectToBuild.getSupplyCost()
+                                 - producingType.getSupplyCost());
+        game.setTotalSupplyAmount(game.getTotalSupplyAmount() - producingType.getSupplyProvided());
+        // NO BREAK - intended fallthrough
     case BuildType::MORPH:
         objectToBuild.morphInstance(*producingInstance);
         instance = producingInstance;
