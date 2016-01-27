@@ -107,7 +107,7 @@ void GameObject::parseStream(istream &inputStream) {
             producers.clear();
         if(dependencies[0] == "")
             dependencies.clear();
-          
+
         gameObjects[tokens[0]] = make_shared<GameObject>(
             tokens[0], // name;
             stol(tokens[1]) * FP_FACTOR, // mineralCost
@@ -153,8 +153,18 @@ GameObject& GameObject::get(const string name) {
     return *GameObject::gameObjects.at(name);
 }
 
+vector<GameObject*> GameObject::getAll(function<bool(GameObject&)> filter) {
+    vector<GameObject*> results;
 
-vector<GameObjectInstance*> GameObject::getAll(function<bool(GameObjectInstance&)> filter) {
+    for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects) {
+        if(filter(*(objectPointer.second)))
+            results.push_back(objectPointer.second.get());
+    }
+
+    return results;
+}
+
+vector<GameObjectInstance*> GameObject::getAllInstances(function<bool(GameObjectInstance&)> filter) {
     vector<GameObjectInstance*> results;
 
     for(pair<string, shared_ptr<GameObject>> objectPointer : gameObjects) {

@@ -50,7 +50,7 @@ void JsonOutput::buildListPrecheck(bool isValid) {
  *  Should be only called once per game
  */
 void JsonOutput::initSimulation() {
-    for (auto goi : GameObject::getAll()) {
+    for (auto goi : GameObject::getAllInstances()) {
         if(goi->getType().getName() != "larva")
             json["initialUnits"][goi->getType().getName()].append(to_string(goi->getID()));
     }

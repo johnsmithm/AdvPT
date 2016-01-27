@@ -16,7 +16,7 @@ Game::Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExplo
     : mainBuilding(mainBuilding), worker(worker), geyserExploiter(geyserExploiter) {
 
     setMineralAmount(INITIAL_MINERAL_AMOUNT);
-    
+
     // create initial workers and main building
     for (int i = 0; i < INITIAL_WORKER_COUNT; ++i) {
         worker.addNewInstance(*this);
@@ -390,7 +390,7 @@ void ProtossGame::invokeRaceActions(bool buildTriggered) {
 
         for (GameObjectInstance& instance : mainBuilding) {
             while (instance.hasEnergy(BOOST_REQUIRED_ENERGY)) {
-                vector<GameObjectInstance*> targets = GameObject::getAll(isPotentialBoostTarget);
+                vector<GameObjectInstance*> targets = GameObject::getAllInstances(isPotentialBoostTarget);
 
                 if (targets.size() == 0)
                     break;
@@ -434,7 +434,7 @@ void ZergGame::invokeRaceActions(bool buildTriggered) {
             if (instance.hasEnergy(QUEEN_EGGS_REQUIRED_ENERGY)) {
 
                 auto findTarget = [&]() {
-                    GameObjectInstance* possibleTarget = nullptr; 
+                    GameObjectInstance* possibleTarget = nullptr;
                     unsigned int lowest = MAX_LARVA_SLOTS;
                     for (GameObject* go : larvaProducerTypes) {
                         for (GameObjectInstance& goi : *go) {
