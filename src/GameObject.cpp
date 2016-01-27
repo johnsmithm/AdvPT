@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cassert>
+#include <cstdlib>
 #include "GameObject.h"
 #include "Game.h"
 #include "util.h"
@@ -25,7 +26,7 @@ GameObject::GameObject(std::string name,
       supplyCost(supplyCost), supplyProvided(supplyProvided),
       startEnergy(startEnergy), maxEnergy(maxEnergy), productionLines(productionLines),
       producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType),
-      building(isBuilding) {}
+      building(isBuilding), introductionProbability((int)(50.0*RAND_MAX/100.0)), deletionProbability((int)(50.0*RAND_MAX/100.0)) {}
 
 
 GameObjectInstance& GameObject::addNewInstance(Game& game) {

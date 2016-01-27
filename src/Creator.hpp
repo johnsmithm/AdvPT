@@ -1,6 +1,7 @@
 #ifndef _CREATOR_H_
 #define _CREATOR_H_
 
+#include <deque>
 #include <string>
 #include <vector>
 
@@ -11,12 +12,12 @@ using namespace std;
 class Creator{
 public:
 
-	static vector<vector<string>> createInitialBuildList(string target);
+	static vector<deque<string>> createInitialBuildList(string target);
 
-	static void mutateBuildList(vector<vector<string>> &list);
+	static void mutateBuildLists(vector<deque<string>> &lists);
 
 private:
-	static vector<vector<string>> getDeeperDependencies(string target);
+	static vector<deque<string>> getDeeperDependencies(string target);
 };
 
 #endif

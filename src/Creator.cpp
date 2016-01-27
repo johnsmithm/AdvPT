@@ -1,13 +1,14 @@
 #include "Creator.hpp"
 
 #include <iostream>
+#include <cstdlib>
 
 using namespace std;
 
-vector<vector<string>> Creator::createInitialBuildList(string target){
-	vector<vector<string>> buildLists = getDeeperDependencies(target);
+vector<deque<string>> Creator::createInitialBuildList(string target){
+	vector<deque<string>> buildLists = getDeeperDependencies(target);
 
-	for(vector<string>& buildList : buildLists){
+	for(deque<string>& buildList : buildLists){
 		buildList.push_back(target);
 	}
 
@@ -18,7 +19,7 @@ vector<vector<string>> Creator::createInitialBuildList(string target){
 	return buildLists;
 }
 
-vector<vector<string>> Creator::getDeeperDependencies(string target){
+vector<deque<string>> Creator::getDeeperDependencies(string target){
 	GameObject targetGO = GameObject::get(target);
 	vector<string> dependencies = targetGO.getDependencyNames();
 
@@ -26,13 +27,39 @@ vector<vector<string>> Creator::getDeeperDependencies(string target){
 		return {{}};
 	}
 
-	vector<vector<string>> deeperDependencies;
+	vector<deque<string>> deeperDependencies;
 	for(string dependency : dependencies){
-		for(vector<string>& dependencyTree : getDeeperDependencies(dependency)){
+		for(deque<string>& dependencyTree : getDeeperDependencies(dependency)){
 			dependencyTree.push_back(dependency);
 			deeperDependencies.push_back(dependencyTree);
 		}
 	}
 
 	return deeperDependencies;
+}
+
+void Creator::mutateBuildLists(vector<deque<string>>& buildLists){
+	for(deque<string>& buildList : buildLists){
+		//delete an item from the build list, if a random value is lower
+		//than its deletion probability
+		for(unsigned int i = 0; i < buildList.size(); i++){
+			int random = rand();
+
+			if(random < GameObject::get(buildList[i]).getDeletionProbability()){
+				buildList.erase(buildList.begin()+i);
+				i--;
+			}
+		}
+
+		//delete an item at a random position into the build list, if a random value is lower
+		//than its addition probability
+		for(GameObject *go : GameObject::getAll()){
+			int random = rand();
+			if(random < go->getIntroductionProbability()){
+				int insertAfter = buildList.size() != 0 ? rand()%buildList.size() : 0;
+				buildList.insert(buildList.begin()+insertAfter, go->getName());
+			}
+		}
+	}
+
 }

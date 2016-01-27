@@ -126,6 +126,9 @@ public:
     InstancesIter begin();
     InstancesIter end();
 
+    int getIntroductionProbability(){return introductionProbability;}
+    int getDeletionProbability(){return deletionProbability;}
+
     static void parseFile(std::string filename);
     static void parseString(std::string input);
     static void parseStream(std::istream &inputStream);
@@ -152,6 +155,10 @@ private:
 
     BuildType buildType;
     bool building;
+
+    //probabilities between 0 and RAND_MAX
+    int introductionProbability; //prob that this object will be introduced into buildlist on mutate
+    int deletionProbability; //prob that this object will be deleted from buildlist on mutate
 
     std::list<GameObjectInstance> instances;
 
