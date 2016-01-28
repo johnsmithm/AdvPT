@@ -47,6 +47,10 @@ public:
 
     void readBuildList(std::string filename);
 
+
+    template<template <typename, typename> class Container>
+    void readBuildList(Container<std::string, std::allocator<std::string>> &input);
+
     bool precheckBuildList() const;
 
     void updateMuleAction(int value) {muleActions += value;}
@@ -136,7 +140,7 @@ protected:
 class ZergGame : public Game {
 public:
     GameObject& larva;
-    GameObject& queen;    
+    GameObject& queen;
 
     ZergGame();
 
@@ -151,5 +155,24 @@ private:
     std::vector<GameObject*> larvaProducerTypes;
     unsigned int previousLarvaCount = 0;
 };
+
+#include "Action.h"
+
+/** @brief reads a buildList from any iterable container of strings
+  */
+template<template <typename, typename> class Container>
+void Game::readBuildList(Container<std::string, std::allocator<std::string>> &input){
+    int linecounter = 0;
+    for(std::string line : input){
+        linecounter++;
+        try {
+            buildList.push_back(std::make_shared<BuildAction>(BuildAction(*this, GameObject::get(line))));
+            //TODO: check correct race?
+        } catch (const std::out_of_range& e) {
+            throw SimulationException("Invalid build list: Unknown unit \"" + line + "\" on line " + std::to_string(linecounter));
+        }
+    }
+}
+
 
 #endif
