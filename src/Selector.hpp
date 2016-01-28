@@ -12,17 +12,22 @@
 #include "json/json.h"
 #include "fstream"
 
+enum class OptimizationMode {
+    RUSH,
+    PUSH
+};
+
 using namespace std;
 template<typename Gametype>
 class Selector{
 	public:
-		Selector(string mode, string setTarget);
-    	void getBestBuildLists(vector<vector<string>>& newlists, vector<pair<vector<string>, int>>& bestLists);
-    	
+		Selector(OptimizationMode mode, string setTarget);
+		void getBestBuildLists(vector<vector<string>>& newlists, vector<pair<vector<string>, int>>& bestLists);
+
 	private:
 		//vector<pair<vector<string>, int>> lastBuildLists;
 		int getCompareCriteria(Json::Value output);
-		string mode;
+		OptimizationMode mode;
 		string target;
 		size_t arraySize;
 
@@ -34,7 +39,7 @@ class Selector{
  */
 template<typename Gametype>
 int Selector<Gametype>::getCompareCriteria(Json::Value output){
-	if(mode == "rush"){
+	if(mode == OptimizationMode::RUSH){
 		if(output["buildlistValid"] == 1 && output["messages"].size() > 0){
 			Json::Value maX = 0;
 			return output["messages"][output["messages"].size()-1]["time"].asInt();
@@ -57,8 +62,8 @@ int Selector<Gametype>::getCompareCriteria(Json::Value output){
 }
 
 template<typename Gametype>
-Selector<Gametype>::Selector(string setMode, string setTarget)
-:mode(setMode), target(setTarget) ,arraySize(10){}
+Selector<Gametype>::Selector(OptimizationMode setMode, string setTarget)
+:mode(setMode), target(setTarget), arraySize(10){}
 
 /**
  * Simulate newlists, add best list in the bestLists.
