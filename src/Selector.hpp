@@ -2,7 +2,8 @@
 #define _SELECTOR_H_
 
 #include <functional>
-
+#include <queue>
+#include <deque>
 #include <vector>
 #include <utility>
 #include <climits>
@@ -12,17 +13,27 @@
 #include "json/json.h"
 #include "fstream"
 
+using namespace std;
+
 enum class OptimizationMode {
     RUSH,
     PUSH
 };
 
-using namespace std;
+class ListComparator {
+public:
+	bool operator()(const pair<vector<string>, int> &a, const pair<vector<string>, int> &b){
+		//TODO: Figure out, if this is the correct ordering.
+		//pop() should remove lowest fitness => order in descending fitness
+		return a.second < b.second;
+	}
+};
+
 template<typename Gametype>
 class Selector{
 	public:
 		Selector(OptimizationMode mode, string setTarget);
-		void getBestBuildLists(vector<vector<string>>& newlists, vector<pair<vector<string>, int>>& bestLists);
+		void getBestBuildLists(vector<vector<string>>& newlists);
 
 	private:
 		//vector<pair<vector<string>, int>> lastBuildLists;
@@ -30,6 +41,7 @@ class Selector{
 		OptimizationMode mode;
 		string target;
 		size_t arraySize;
+		priority_queue<pair<vector<string>, int>, deque<pair<vector<string>, int>>, ListComparator> bestLists;
 
 };
 
@@ -69,31 +81,22 @@ Selector<Gametype>::Selector(OptimizationMode setMode, string setTarget)
  * Simulate newlists, add best list in the bestLists.
  */
 template<typename Gametype>
-void Selector<Gametype>::getBestBuildLists(vector<vector<string>>& newlists, vector<pair<vector<string>, int>>& bestLists){
+void Selector<Gametype>::getBestBuildLists(vector<vector<string>>& newlists){
 	//lastBuildLists = bestLists;
 	for(auto list : newlists){
 		Gametype g;
-		g.readBuildList(list);//TODO
+		g.readBuildList(list);
 		g.simulate();
 		Json::Value output = g.getOutput().getJson();
 		g.deleteInstanaces();
 		if(output["buildlistValid"] == 1 && output["messages"].size() > 0){
 
 			int compareCriteria = getCompareCriteria(output);
-			if(bestLists.size() > arraySize ){
-				if(bestLists[arraySize - 1].second <= compareCriteria)continue;
-				bestLists.erase(bestLists.begin() + arraySize - 1);
 
-			}
+			bestLists.push(make_pair(list,compareCriteria));
 
-			size_t position = bestLists.size();
-			// Find the position where buildList fits(Could use binary search).
-			while(position > 0 && bestLists[--position].second > compareCriteria);
-			if(position == 0){
-				ofstream out("output.txt");
-						out<<output;
-			}
-			bestLists.insert(bestLists.begin() + position, make_pair(list,compareCriteria));
+			while(bestLists.size() > arraySize)
+				bestLists.pop();
 		}
 	}
 }
