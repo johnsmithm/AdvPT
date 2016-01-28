@@ -22,7 +22,7 @@ public:
     void emptyMessage(Game& game);
 
     void event(BuildAction& action);
-    
+
     void event(BuildAction& action, unsigned int producedID);
 
     void event(BoostAction& action);
@@ -34,6 +34,8 @@ public:
     void addGameGlobals(Game& game);
 
     void print(); // TODO replace with << operator
+
+    Json::Value getRawData(){return json;}
 
 private:
     Json::Value json;
