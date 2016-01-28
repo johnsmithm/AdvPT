@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <utility>
+#include <climits>
 #include "Game.h"
 
 #include "util.h"
@@ -24,30 +25,34 @@ class Selector{
 		string mode;
 		string target;
 		size_t arraySize;
-		   
+
 };
 
+/** @brief returns the fitness of a buildList from the output of its simulation
+ *
+ *  The smaller the output the fitter the buildList. Invalid build-lists return INT_MAX
+ */
 template<typename Gametype>
 int Selector<Gametype>::getCompareCriteria(Json::Value output){
 	if(mode == "rush"){
-				if(output["buildlistValid"] == 1 && output["messages"].size() > 0){
-					Json::Value maX = 0;					
-					return output["messages"][output["messages"].size()-1]["time"].asInt();
-				}
-				return 1000;
+		if(output["buildlistValid"] == 1 && output["messages"].size() > 0){
+			Json::Value maX = 0;
+			return output["messages"][output["messages"].size()-1]["time"].asInt();
+		}
+		return INT_MAX;
 	}
 	else {
-			if(output["buildlistValid"] == 1 && output["messages"].size() > 0){
-				int count = 0;
-				if(output["messages"][output["messages"].size()-1]["time"].asInt() > 360)
-					return 1000;
-				for(auto message : output["messages"])
-					for(auto event : message["events"])
-						if(event["type"] == "build-start" && event["name"] == target)
-							++count;
-				return -count;
-			}
-			return 1000;
+		if(output["buildlistValid"] == 1 && output["messages"].size() > 0){
+			int count = 0;
+			if(output["messages"][output["messages"].size()-1]["time"].asInt() > 360)
+				return INT_MAX;
+			for(auto message : output["messages"])
+				for(auto event : message["events"])
+					if(event["type"] == "build-start" && event["name"] == target)
+						++count;
+			return -count;
+		}
+		return INT_MAX;
 	}
 }
 
@@ -66,9 +71,9 @@ void Selector<Gametype>::getBestBuildLists(vector<vector<string>>& newlists, vec
 		g.readBuildList(list);//TODO
 		g.simulate();
 		Json::Value output = g.getOutput().getJson();
-        g.deleteInstanaces();
+		g.deleteInstanaces();
 		if(output["buildlistValid"] == 1 && output["messages"].size() > 0){
-			
+
 			int compareCriteria = getCompareCriteria(output);
 			if(bestLists.size() > arraySize ){
 				if(bestLists[arraySize - 1].second <= compareCriteria)continue;
