@@ -22,7 +22,7 @@ enum class OptimizationMode {
 
 class ListComparator {
 public:
-	bool operator()(const pair<vector<string>, int> &a, const pair<vector<string>, int> &b){
+	bool operator()(const pair<deque<string>, int> &a, const pair<deque<string>, int> &b){
 		//TODO: Figure out, if this is the correct ordering.
 		//pop() should remove lowest fitness => order in descending fitness
 		return a.second < b.second;
@@ -33,7 +33,7 @@ template<typename Gametype>
 class Selector{
 	public:
 		Selector(OptimizationMode mode, string setTarget);
-		void getBestBuildLists(vector<vector<string>>& newlists);
+		void getBestBuildLists(vector<deque<string>>& newlists);
 
 	private:
 		//vector<pair<vector<string>, int>> lastBuildLists;
@@ -41,7 +41,7 @@ class Selector{
 		OptimizationMode mode;
 		string target;
 		size_t arraySize;
-		priority_queue<pair<vector<string>, int>, deque<pair<vector<string>, int>>, ListComparator> bestLists;
+		priority_queue<pair<deque<string>, int>, deque<pair<deque<string>, int>>, ListComparator> bestLists;
 
 };
 
@@ -81,7 +81,7 @@ Selector<Gametype>::Selector(OptimizationMode setMode, string setTarget)
  * Simulate newlists, add best list in the bestLists.
  */
 template<typename Gametype>
-void Selector<Gametype>::getBestBuildLists(vector<vector<string>>& newlists){
+void Selector<Gametype>::getBestBuildLists(vector<deque<string>>& newlists){
 	//lastBuildLists = bestLists;
 	for(auto list : newlists){
 		Gametype g;
