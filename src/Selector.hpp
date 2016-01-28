@@ -87,17 +87,19 @@ void Selector<Gametype>::getBestBuildLists(vector<deque<string>>& newlists){
 		Gametype g;
 		g.readBuildList(list);
 		g.simulate();
+
 		Json::Value output = g.getOutput().getRawData();
 		if(output["buildlistValid"] == 1 && output["messages"].size() > 0){
 
 			int compareCriteria = getCompareCriteria(output);
 
-			bestLists.push(make_pair(list,compareCriteria));
-
-			while(bestLists.size() > arraySize)
-				bestLists.pop();
+			if(compareCriteria != INT_MAX)
+				bestLists.push(make_pair(list,compareCriteria));
 		}
 	}
+
+	while(bestLists.size() > arraySize)
+		bestLists.pop();
 }
 
 #endif
