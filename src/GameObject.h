@@ -55,7 +55,7 @@ public:
     void setEnergy(unsigned int value) {energy = value;}
     bool hasEnergy(unsigned int value) const {return (value <= energy);}
     void updateEnergy(int value) {energy += value;}
-    
+
     unsigned int getFreeProductionLines() const {return freeProductionLines;}
     void setFreeProductionLines(unsigned int value) {freeProductionLines = value;}
     void increaseBusiness() {--freeProductionLines;}
@@ -126,12 +126,16 @@ public:
     InstancesIter begin();
     InstancesIter end();
 
+    int getIntroductionProbability(){return introductionProbability;}
+    int getDeletionProbability(){return deletionProbability;}
+
     static void parseFile(std::string filename);
     static void parseString(std::string input);
     static void parseStream(std::istream &inputStream);
 
     static GameObject& get(const std::string name);
-    static std::vector<GameObjectInstance*> getAll(std::function<bool(GameObjectInstance&)> filter=[](GameObjectInstance &goi){return true;});
+    static std::vector<GameObjectInstance*> getAllInstances(std::function<bool(GameObjectInstance&)> filter=[](GameObjectInstance &goi){return true;});
+    static std::vector<GameObject*> getAll(std::function<bool(GameObject&)> filter=[](GameObject &go){return true;});
 
     static void increaseInstancesEnergy(int value=DEFAULT_ENERGY_INCREASE);
 
@@ -151,6 +155,10 @@ private:
 
     BuildType buildType;
     bool building;
+
+    //probabilities between 0 and RAND_MAX
+    int introductionProbability; //prob that this object will be introduced into buildlist on mutate
+    int deletionProbability; //prob that this object will be deleted from buildlist on mutate
 
     std::list<GameObjectInstance> instances;
 

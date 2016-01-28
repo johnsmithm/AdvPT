@@ -25,7 +25,7 @@ GameObject::GameObject(std::string name,
       supplyCost(supplyCost), supplyProvided(supplyProvided),
       startEnergy(startEnergy), maxEnergy(maxEnergy), productionLines(productionLines),
       producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType),
-      building(isBuilding) {}
+      building(isBuilding), introductionProbability((int)(50.0*RAND_MAX/100.0)), deletionProbability((int)(50.0*RAND_MAX/100.0)) {}
 
 
 GameObjectInstance& GameObject::addNewInstance(Game& game) {
@@ -153,8 +153,18 @@ GameObject& GameObject::get(const string name) {
     return GameObject::gameObjects.at(name);
 }
 
+vector<GameObject*> GameObject::getAll(function<bool(GameObject&)> filter) {
+    vector<GameObject*> results;
 
-vector<GameObjectInstance*> GameObject::getAll(function<bool(GameObjectInstance&)> filter) {
+    for(auto& objectPointer : gameObjects) {
+        if(filter(objectPointer.second))
+            results.push_back(&objectPointer.second);
+    }
+
+    return results;
+}
+
+vector<GameObjectInstance*> GameObject::getAllInstances(function<bool(GameObjectInstance&)> filter) {
     vector<GameObjectInstance*> results;
 
     for(auto& go : gameObjects) {

@@ -9,7 +9,9 @@
 
 class Action {
 public:
+
     virtual std::string getName() const = 0;
+
 };
 
 
@@ -19,10 +21,12 @@ public:
         : game(game), objectToBuild(objectToBuild) {}
 
     bool tryToStart();
+
     void finish();
     bool timeStep();
     std::string getName() {return objectToBuild.getName();}
     Game& getGame() {return game;}
+
 
     unsigned int getGasCost() const {return objectToBuild.getGasCost();}
     unsigned int getSupplyCost() const  {return objectToBuild.getSupplyCost();}
