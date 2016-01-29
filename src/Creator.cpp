@@ -113,7 +113,21 @@ bool Creator::checkValidity(deque<string>& list, string newOne){
 
 }
 
+
+bool Creator::checkBuildList(deque<string> list){
+	supplyCheck = 0;
+	deque<string> newlist;
+	for(auto item : list){
+		if(checkValidity(newlist, item))
+			return false;
+		newlist.push_back(item);
+	}
+	return true;
+}
+
+
 void Creator::getChild(deque<string>& a, deque<string>& b, deque<string>& newList){
+
 	supplyCheck = 0;
 	int coin = rand() % 2;
 	for(size_t i=0; i < a.size() && i < b.size(); ++i){
@@ -154,4 +168,52 @@ void Creator::reproduce(vector<deque<string>>& bestLists, vector<deque<string>>&
 		getChild(bestLists[i],bestLists[maxID],newChild);
 		children.push_back(newChild);
 	}
+
+}
+
+/**
+ * @brief Exchange blocks of genes.
+ * blocks are different size, exchange at same position
+ * n + 1 - number of blocks
+ */
+vector<deque<string>> nPointsCrossover(deque<string> a,deque<string> b, size_t n){
+	int trys = 0;
+	size_t maxL = max(a.size(), b.size()) - 1;
+	n = min(maxL / 2, n);
+	deque<string> firstChild;
+	deque<string> secondChild;
+	deque<string> firstChildNew;
+	deque<string> secondChildNew;
+	bool ok1 = false;
+	bool ok2 = false;
+	do{
+		firstChild = a;
+		secondChild = b;
+		firstChildNew.clear();
+		secondChildNew.clear();
+		for(size_t i=0; i<n; ++i){
+			firstChildNew.clear();
+			secondChildNew.clear();
+			//size_t position = rand() % maxL;
+
+			//firstChildNew.splice(firstChildNew.begin(),firstChild.begin(), firstChild.begin() + position);
+			//secondChildNew.splice(secondChildNew.begin(),secondChild.begin(), secondChild.begin() + position);
+
+			//firstChildNew.splice(firstChildNew.begin() + position ,secondChildNew.begin() + position, secondChildNew.end());
+			//secondChildNew.splice(secondChildNew.begin() + position,firstChild.begin() + position, firstChild.begin());
+			
+			firstChild = firstChildNew;
+			secondChild = secondChildNew;
+		}
+		//ok1 = checkBuildList(firstChild);
+		//ok2 = checkBuildList(secondChild);
+		if(ok1 || ok2){
+			if(ok1 && ok2){
+				return {firstChild,secondChild};
+			}else if (ok1) return {firstChild};
+			else return {secondChild};
+			break;
+		}
+	}while(trys < 3);
+	return {};
 }
