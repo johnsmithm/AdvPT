@@ -18,9 +18,18 @@ public:
 
 	void mutateBuildLists(vector<deque<string>> &lists);
 
+	vector<vector<string>> reproductionDistance(vector<vector<string>> bestLists);
+
 private:
 	static vector<deque<string>> getDeeperDependencies(string target);
 
+	int getDistance (vector<string> a,vector<string> b);
+
+	bool checkValidity(vector<string> list, string newOne);
+
+	vector<string> getChild(vector<string> a,vector<string> b);
+
+	int supplyCheck;
 	Race targetRace;
 };
 
