@@ -98,7 +98,7 @@ public:
     GameObject(std::string name,
                unsigned int mineralCost, unsigned int gasCost, unsigned int buildTime,
                unsigned int supplyCost, unsigned int supplyProvided, unsigned int startEnergy,
-               unsigned int maxEnergy, unsigned int productionLines,
+               unsigned int maxEnergy, unsigned int productionLines, Race race,
                std::vector<std::string> producerNames, std::vector<std::string> dependencyNames,
                BuildType buildType, bool isBuilding);
 
@@ -109,6 +109,7 @@ public:
     unsigned int getSupplyCost() const {return supplyCost;}
     unsigned int getSupplyProvided() const {return supplyProvided;}
     unsigned int getProductionLines() const {return productionLines;}
+    Race getRace(){return race;}
     const std::vector<std::string>& getProducerNames() const {return producerNames;}
     const std::vector<std::string>& getDependencyNames() const {return dependencyNames;}
     BuildType getBuildType() const {return buildType;}
@@ -149,6 +150,8 @@ private:
     unsigned int startEnergy;
     unsigned int maxEnergy;
     unsigned int productionLines;
+
+    Race race;
 
     std::vector<std::string> producerNames;
     std::vector<std::string> dependencyNames;

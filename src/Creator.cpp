@@ -53,7 +53,7 @@ void Creator::mutateBuildLists(vector<deque<string>>& buildLists){
 
 		//delete an item at a random position into the build list, if a random value is lower
 		//than its addition probability
-		for(GameObject *go : GameObject::getAll()){
+		for(GameObject *go : GameObject::getAll([=](GameObject &go){return go.getRace() == targetRace;})){
 			int random = rand();
 			if(random < go->getIntroductionProbability()){
 				int insertAfter = buildList.size() != 0 ? rand()%buildList.size() : 0;

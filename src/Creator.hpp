@@ -12,12 +12,16 @@ using namespace std;
 class Creator{
 public:
 
+	Creator(Race targetRace) : targetRace(targetRace){};
+
 	static vector<deque<string>> createInitialBuildList(string target);
 
-	static void mutateBuildLists(vector<deque<string>> &lists);
+	void mutateBuildLists(vector<deque<string>> &lists);
 
 private:
 	static vector<deque<string>> getDeeperDependencies(string target);
+
+	Race targetRace;
 };
 
 #endif

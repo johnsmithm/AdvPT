@@ -18,12 +18,12 @@ unordered_map<string, GameObject> GameObject::gameObjects;
 GameObject::GameObject(std::string name,
                        unsigned int mineralCost, unsigned int gasCost, unsigned int buildTime,
                        unsigned int supplyCost, unsigned int supplyProvided, unsigned int startEnergy,
-                       unsigned int maxEnergy, unsigned int productionLines,
+                       unsigned int maxEnergy, unsigned int productionLines, Race race,
                        std::vector<std::string> producerNames, std::vector<std::string> dependencyNames,
                        BuildType buildType, bool isBuilding)
     : name(name), mineralCost(mineralCost), gasCost(gasCost), buildTime(buildTime),
       supplyCost(supplyCost), supplyProvided(supplyProvided),
-      startEnergy(startEnergy), maxEnergy(maxEnergy), productionLines(productionLines),
+      startEnergy(startEnergy), maxEnergy(maxEnergy), productionLines(productionLines), race(race),
       producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType),
       building(isBuilding), introductionProbability((int)(50.0*RAND_MAX/100.0)), deletionProbability((int)(50.0*RAND_MAX/100.0)) {}
 
@@ -107,7 +107,7 @@ void GameObject::parseStream(istream &inputStream) {
             producers.clear();
         if(dependencies[0] == "")
             dependencies.clear();
-          
+
         gameObjects.insert(make_pair(tokens[0], GameObject(
             tokens[0],                   // name;
             stol(tokens[1]) * FP_FACTOR, // mineralCost
@@ -121,11 +121,10 @@ void GameObject::parseStream(istream &inputStream) {
 
             tokens[0].find("_with_reactor") != std::string::npos ? 2 : 1, //TODO: freeProductionLines
 
-            //race, we don't need this (yet?)
-            // tokens[8] == "terran" ? Race::TERRAN :
-            //     (tokens[8] == "zerg" ? Race::ZERG :
-            //     (tokens[8] == "protoss" ? Race::PROTOSS :
-            //         throw TechTreeParsingException("Invalid race", linecounter))),
+            tokens[8] == "terran" ? Race::TERRAN :
+                (tokens[8] == "zerg" ? Race::ZERG :
+                (tokens[8] == "protoss" ? Race::PROTOSS :
+                    throw TechTreeParsingException("Invalid race", linecounter))),
 
             producers,
             dependencies,
