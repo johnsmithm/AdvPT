@@ -21,10 +21,10 @@ Selector<Gametype>::Selector(OptimizationMode setMode, string setTarget)
 
 template<typename Gametype>
 void Selector<Gametype>::optimize(int maxIterations){
-	vector<deque<string>> curGen;
+	vector<list<string>> curGen;
 	creator.createInitialBuildList(target, curGen);
 
-	list<pair<deque<string>, int>> bestLists;
+	list<pair<list<string>, int>> bestLists;
 
 	cout << "Beginning optimization" << endl;
 
@@ -47,7 +47,7 @@ void Selector<Gametype>::optimize(int maxIterations){
 				cout << endl;
 		}
 
-		vector<deque<string>> nextGen;
+		vector<list<string>> nextGen;
 		creator.createNextGeneration(curGen, nextGen);
 
 		curGen.insert(curGen.end(), nextGen.begin(), nextGen.end());
@@ -102,7 +102,7 @@ int Selector<Gametype>::getCompareCriteria(Json::Value output){
  * Simulate newlists, add best list in the bestLists.
  */
 template<typename Gametype>
-void Selector<Gametype>::getBestBuildLists(vector<deque<string>>& newlists, list<pair<deque<string>, int>>& bestLists){
+void Selector<Gametype>::getBestBuildLists(vector<list<string>>& newlists, list<pair<list<string>, int>>& bestLists){
 	//lastBuildLists = bestLists;
 	for(auto list : newlists){
 		if(list.size() ==0)

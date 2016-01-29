@@ -1,4 +1,4 @@
-#include <deque>
+#include <list>
 #include <iostream>
 #include "Config.h"
 #include "Game.h"

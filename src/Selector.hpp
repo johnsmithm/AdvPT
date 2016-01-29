@@ -3,7 +3,7 @@
 
 #include <functional>
 #include <queue>
-#include <deque>
+#include <list>
 #include <vector>
 #include <utility>
 #include <climits>
@@ -23,7 +23,7 @@ enum class OptimizationMode {
 
 class ListComparator {
 public:
-	bool operator()(const pair<deque<string>, int> &a, const pair<deque<string>, int> &b){
+	bool operator()(const pair<list<string>, int> &a, const pair<list<string>, int> &b){
 		//TODO: Figure out, if this is the correct ordering.
 		//pop_back() should remove lowest fitness => order in ascending fitness
 		return a.second < b.second;
@@ -34,7 +34,7 @@ template<typename Gametype>
 class Selector{
 	public:
 		Selector(OptimizationMode mode, string setTarget);
-		void getBestBuildLists(vector<deque<string>>& newlists, list<pair<deque<string>, int>>& bestLists);
+		void getBestBuildLists(vector<list<string>>& newlists, list<pair<list<string>, int>>& bestLists);
 		void optimize(int maxIterations);
 
 	private:

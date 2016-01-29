@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void Creator::createNextGeneration(vector<deque<string>> curGen, vector<deque<string>>& nextGen){
+void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<string>>& nextGen){
 	if(nextGen.size() != 0 && curGen.size() != 0)
 		reproduce(curGen, nextGen);
 
@@ -29,7 +29,7 @@ void Creator::createInitialBuildList(string target, vector<deque<string>>& build
 
 /** @brief returns recursively all possible dependency trees leading to target
  */
-void Creator::getDeeperDependencies(string target, vector<deque<string>>& deeperDependencies){
+void Creator::getDeeperDependencies(string target, vector<list<string>>& deeperDependencies){
 	GameObject targetGO = GameObject::get(target);
 	vector<string> dependencies = targetGO.getDependencyNames();
 
@@ -40,32 +40,37 @@ void Creator::getDeeperDependencies(string target, vector<deque<string>>& deeper
 
 	for(string dependency : dependencies){
 		getDeeperDependencies(dependency, deeperDependencies);
-		for(deque<string>& dependencyTree : deeperDependencies){
+		for(list<string>& dependencyTree : deeperDependencies){
 			dependencyTree.push_back(dependency);
 		}
 	}
 }
 
-void Creator::mutate(vector<deque<string>>& buildLists){
-	for(deque<string>& buildList : buildLists){
+void Creator::mutate(vector<list<string>>& buildLists){
+	for(list<string>& buildList : buildLists){
 		//delete an item from the build list, if a random value is lower
 		//than its deletion probability
-		for(unsigned int i = 0; i < buildList.size(); i++){
+		for(auto iterator=buildList.begin(); iterator != buildList.end();){
 			int random = rand();
 
-			if(random < GameObject::get(buildList[i]).getDeletionProbability()){
-				buildList.erase(buildList.begin()+i);
-				i--;
+			if(random < GameObject::get(*iterator).getDeletionProbability()){
+				buildList.erase(iterator++);
+			}else{
+				iterator++;
 			}
 		}
 
-		//delete an item at a random position into the build list, if a random value is lower
+		//insert an item at a random position into the build list, if a random value is lower
 		//than its addition probability
 		for(GameObject *go : GameObject::getAll([=](GameObject &go){return go.getRace() == targetRace;})){
 			int random = rand();
 			if(random < go->getIntroductionProbability()){
 				int insertAfter = buildList.size() != 0 ? rand()%buildList.size() : 0;
-				buildList.insert(buildList.begin()+insertAfter, go->getName());
+
+				auto positional=buildList.begin();
+				for(int i=0; i<insertAfter; i++, positional++);
+
+				buildList.insert(positional, go->getName());
 			}
 		}
 	}
@@ -75,21 +80,24 @@ void Creator::mutate(vector<deque<string>>& buildLists){
 /**
  * Hamming distance.
  */
-int Creator::getDistance (deque<string>& a,deque<string>& b) {
+int Creator::getDistance (list<string>& a,list<string>& b) {
 	int value = 0;
-	for(size_t i=0; i < a.size() && i < b.size(); ++i)
-		if(a[i] != b[i])
+	auto ita = a.begin();
+	auto itb = b.begin();
+	for(; ita != a.end() && itb != b.end();)
+		if(*ita != *itb)
 			++value;
+
 	return value;
 }
 
-bool Creator::checkValidity(deque<string>& list, string newOne){
+bool Creator::checkValidity(list<string>& listL, string newOne){
 
 	GameObject go = GameObject::get(newOne);
 	vector<string> producers = go.getProducerNames();
 	bool ok = false;
 	for(auto name : producers)
-		if(list.end() != find(list.begin(), list.end(), name))
+		if(listL.end() != find(listL.begin(), listL.end(), name))
 			ok = true;
 	if(!ok)
 		return false;
@@ -97,13 +105,13 @@ bool Creator::checkValidity(deque<string>& list, string newOne){
 	vector<string> dependencies = go.getDependencyNames();
 	ok = false;
 	for(auto name : dependencies)
-		if(list.end() != find(list.begin(), list.end(), name))
+		if(listL.end() != find(listL.begin(), listL.end(), name))
 			ok = true;
 	if(!ok)return false;
 
 	string gasMaker = "assimilator"; //Depends on race
 
-	if(go.getGasCost() > 0 && list.end() == find(list.begin(), list.end(), gasMaker))
+	if(go.getGasCost() > 0 && listL.end() == find(listL.begin(), listL.end(), gasMaker))
 		return false;
 
 	if(supplyCheck - go.getSupplyCost() > 0)
@@ -116,10 +124,10 @@ bool Creator::checkValidity(deque<string>& list, string newOne){
 }
 
 
-bool Creator::checkBuildList(deque<string> list){
+bool Creator::checkBuildLists(list<string> listL){
 	supplyCheck = 0;
-	deque<string> newlist;
-	for(auto item : list){
+	list<string> newlist;
+	for(auto item : listL){
 		if(checkValidity(newlist, item))
 			return false;
 		newlist.push_back(item);
@@ -128,28 +136,34 @@ bool Creator::checkBuildList(deque<string> list){
 }
 
 
-void Creator::getChild(deque<string>& a, deque<string>& b, deque<string>& newList){
+
+void Creator::getChild(list<string>& a, list<string>& b, list<string>& newList){
 
 	supplyCheck = 0;
 	int coin = rand() % 2;
-	for(size_t i=0; i < a.size() && i < b.size(); ++i){
-		if(coin && checkValidity(newList,a[i])){
-				newList.push_back(a[i]);
+	auto ita = a.begin();
+	auto itb = b.begin();
+	for(; ita != a.end() && itb != b.end();){
+		if(coin && checkValidity(newList,*ita)){
+				newList.push_back(*ita);
 		}else{
-			if(checkValidity(newList,b[i]))
-				newList.push_back(b[i]);
+			if(checkValidity(newList,*itb))
+				newList.push_back(*itb);
 			else
-				newList.push_back(a[i]);
+				newList.push_back(*ita);
 		}
 		coin = rand() % 2;
+		++ita;
+		++itb;
 	}
 }
+
 
 /**
  * Combine parents base on Hamming distance. O(bestlist.size^2 * list.size * name.size)
  * Combine the different ones.
  */
-void Creator::reproduce(vector<deque<string>>& bestLists, vector<deque<string>>& children){
+void Creator::reproduce(vector<list<string>>& bestLists, vector<list<string>>& children){
 	int maxD;
 	int maxID;
 	//int vizit[bestLists.size()];
@@ -166,7 +180,7 @@ void Creator::reproduce(vector<deque<string>>& bestLists, vector<deque<string>>&
 			}
 		}
 
-		deque<string> newChild;
+		list<string> newChild;
 		getChild(bestLists[i],bestLists[maxID],newChild);
 		children.push_back(newChild);
 	}
@@ -178,14 +192,14 @@ void Creator::reproduce(vector<deque<string>>& bestLists, vector<deque<string>>&
  * blocks are different size, exchange at same position
  * n + 1 - number of blocks
  */
-vector<deque<string>> nPointsCrossover(deque<string> a,deque<string> b, size_t n){
+vector<list<string>> nPointsCrossover(list<string> a,list<string> b, size_t n){
 	int trys = 0;
 	size_t maxL = max(a.size(), b.size()) - 1;
 	n = min(maxL / 2, n);
-	deque<string> firstChild;
-	deque<string> secondChild;
-	deque<string> firstChildNew;
-	deque<string> secondChildNew;
+	list<string> firstChild;
+	list<string> secondChild;
+	list<string> firstChildNew;
+	list<string> secondChildNew;
 	bool ok1 = false;
 	bool ok2 = false;
 	do{
