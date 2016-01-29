@@ -26,7 +26,7 @@ public:
 	bool operator()(const pair<deque<string>, int> &a, const pair<deque<string>, int> &b){
 		//TODO: Figure out, if this is the correct ordering.
 		//pop_back() should remove lowest fitness => order in ascending fitness
-		return a.second > b.second;
+		return a.second < b.second;
 	}
 };
 

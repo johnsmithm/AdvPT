@@ -18,6 +18,7 @@ public:
 	static void createInitialBuildList(string target, vector<deque<string>>& buildLists);
 
 	void createNextGeneration(vector<deque<string>> curGen, vector<deque<string>>& nextGen);
+
 private:
 	static void getDeeperDependencies(string target, vector<deque<string>>& deeperDependencies);
 

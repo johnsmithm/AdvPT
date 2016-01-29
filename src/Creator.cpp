@@ -7,7 +7,9 @@
 using namespace std;
 
 void Creator::createNextGeneration(vector<deque<string>> curGen, vector<deque<string>>& nextGen){
-	reproduce(curGen, nextGen);
+	if(nextGen.size() != 0 && curGen.size() != 0)
+		reproduce(curGen, nextGen);
+
 	mutate(curGen);
 
 	nextGen.insert(nextGen.end(), curGen.begin(), curGen.end());
@@ -201,7 +203,7 @@ vector<deque<string>> nPointsCrossover(deque<string> a,deque<string> b, size_t n
 
 			//firstChildNew.splice(firstChildNew.begin() + position ,secondChildNew.begin() + position, secondChildNew.end());
 			//secondChildNew.splice(secondChildNew.begin() + position,firstChild.begin() + position, firstChild.begin());
-			
+
 			firstChild = firstChildNew;
 			secondChild = secondChildNew;
 		}

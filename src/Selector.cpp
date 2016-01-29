@@ -3,7 +3,7 @@
 
 template<typename Gametype>
 Selector<Gametype>::Selector(OptimizationMode setMode, string setTarget)
-:mode(setMode), target(setTarget), arraySize(10), creator(GameObject::get(setTarget).getRace()){}
+:mode(setMode), target(setTarget), arraySize(500), creator(GameObject::get(setTarget).getRace()){}
 
 
 template<typename Gametype>
@@ -34,25 +34,24 @@ void Selector<Gametype>::optimize(int maxIterations){
  */
 template<typename Gametype>
 int Selector<Gametype>::getCompareCriteria(Json::Value output){
-	if(mode == OptimizationMode::RUSH){
-		if(output["buildlistValid"] == 1 && output["messages"].size() > 0){
-			Json::Value maX = 0;
-			return output["messages"][output["messages"].size()-1]["time"].asInt();
-		}
+	if(output["buildlistValid"] != 1 || output["messages"].size() == 0){
 		return INT_MAX;
 	}
-	else {
-		if(output["buildlistValid"] == 1 && output["messages"].size() > 0){
-			int count = 0;
-			if(output["messages"][output["messages"].size()-1]["time"].asInt() > 360)
-				return INT_MAX;
-			for(auto message : output["messages"])
-				for(auto event : message["events"])
-					if(event["type"] == "build-start" && event["name"] == target)
-						++count;
-			return -count;
-		}
-		return INT_MAX;
+
+	if(mode == OptimizationMode::PUSH) {
+		return output["messages"][output["messages"].size()-1]["time"].asInt();
+	} else {
+		int count = 0;
+
+		if(output["messages"][output["messages"].size()-1]["time"].asInt() > 360)
+			return INT_MAX;
+
+		for(auto message : output["messages"])
+			for(auto event : message["events"])
+				if(event["type"] == "build-end" && event["name"] == target)
+					++count;
+
+		return -count;
 	}
 }
 
@@ -63,6 +62,8 @@ template<typename Gametype>
 void Selector<Gametype>::getBestBuildLists(vector<deque<string>>& newlists, list<pair<deque<string>, int>>& bestLists){
 	//lastBuildLists = bestLists;
 	for(auto list : newlists){
+		if(list.size() ==0)
+			continue;
 		try{
 			Gametype g;
 			g.readBuildList(list);
@@ -74,8 +75,9 @@ void Selector<Gametype>::getBestBuildLists(vector<deque<string>>& newlists, list
 
 				int compareCriteria = getCompareCriteria(output);
 
-				if(compareCriteria != INT_MAX)
+				if(compareCriteria != INT_MAX){
 					bestLists.push_back(make_pair(list,compareCriteria));
+				}
 			}
 		}catch(SimulationException){
 			//ignore buildList if it's invalid
@@ -83,6 +85,7 @@ void Selector<Gametype>::getBestBuildLists(vector<deque<string>>& newlists, list
 	}
 
 	bestLists.sort(ListComparator());
+
 	while(bestLists.size() > arraySize)
 		bestLists.pop_back();
 }

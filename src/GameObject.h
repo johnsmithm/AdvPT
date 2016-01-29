@@ -132,6 +132,9 @@ public:
     int getIntroductionProbability(){return introductionProbability;}
     int getDeletionProbability(){return deletionProbability;}
 
+    void setIntroductionProbability(double probability);
+    void setDeletionProbability(double probability);
+
     static void parseFile(std::string filename);
     static void parseString(std::string input);
     static void parseStream(std::istream &inputStream);
