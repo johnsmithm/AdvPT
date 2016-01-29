@@ -6,8 +6,8 @@
 
 using namespace std;
 
-vector<deque<string>> Creator::createInitialBuildList(string target){
-	vector<deque<string>> buildLists = getDeeperDependencies(target);
+void Creator::createInitialBuildList(string target, vector<deque<string>>& buildLists){
+	getDeeperDependencies(target, buildLists);
 
 	for(deque<string>& buildList : buildLists){
 		buildList.push_back(target);
@@ -16,27 +16,25 @@ vector<deque<string>> Creator::createInitialBuildList(string target){
 	//TODO: Producer of all entries of the build-list and their dependencies
 	//have to be added too... But in which order? Maybe we should not generate
 	//a buildList based on dependencies at all...
-
-	return buildLists;
 }
 
-vector<deque<string>> Creator::getDeeperDependencies(string target){
+/** @brief returns recursively all possible dependency trees leading to target
+ */
+void Creator::getDeeperDependencies(string target, vector<deque<string>>& deeperDependencies){
 	GameObject targetGO = GameObject::get(target);
 	vector<string> dependencies = targetGO.getDependencyNames();
 
 	if(dependencies.size() == 0){
-		return {{}};
+		deeperDependencies.push_back({});
+		return;
 	}
 
-	vector<deque<string>> deeperDependencies;
 	for(string dependency : dependencies){
-		for(deque<string>& dependencyTree : getDeeperDependencies(dependency)){
+		getDeeperDependencies(dependency, deeperDependencies);
+		for(deque<string>& dependencyTree : deeperDependencies){
 			dependencyTree.push_back(dependency);
-			deeperDependencies.push_back(dependencyTree);
 		}
 	}
-
-	return deeperDependencies;
 }
 
 void Creator::mutateBuildLists(vector<deque<string>>& buildLists){
@@ -68,7 +66,7 @@ void Creator::mutateBuildLists(vector<deque<string>>& buildLists){
 /**
  * Hamming distance.
  */
-int Creator::getDistance (vector<string> a,vector<string> b) {
+int Creator::getDistance (deque<string>& a,deque<string>& b) {
 	int value = 0;
 	for(size_t i=0; i < a.size() && i < b.size(); ++i)
 		if(a[i] != b[i])
@@ -76,7 +74,7 @@ int Creator::getDistance (vector<string> a,vector<string> b) {
 	return value;
 }
 
-bool Creator::checkValidity(vector<string> list, string newOne){
+bool Creator::checkValidity(deque<string>& list, string newOne){
 
 	GameObject go = GameObject::get(newOne);
 	vector<string> producers = go.getProducerNames();
@@ -84,7 +82,8 @@ bool Creator::checkValidity(vector<string> list, string newOne){
 	for(auto name : producers)
 		if(list.end() != find(list.begin(), list.end(), name))
 			ok = true;
-	if(!ok)return false;
+	if(!ok)
+		return false;
 
 	vector<string> dependencies = go.getDependencyNames();
 	ok = false;
@@ -107,13 +106,12 @@ bool Creator::checkValidity(vector<string> list, string newOne){
 
 }
 
-vector<string> Creator::getChild(vector<string> a,vector<string> b){
+void Creator::getChild(deque<string>& a, deque<string>& b, deque<string>& newList){
 	supplyCheck = 0;
 	int coin = rand() % 2;
-	vector<string> newList;
 	for(size_t i=0; i < a.size() && i < b.size(); ++i){
-		if(coin && checkValidity(newList,a[i])){			
-				newList.push_back(a[i]);					
+		if(coin && checkValidity(newList,a[i])){
+				newList.push_back(a[i]);
 		}else{
 			if(checkValidity(newList,b[i]))
 				newList.push_back(b[i]);
@@ -122,18 +120,16 @@ vector<string> Creator::getChild(vector<string> a,vector<string> b){
 		}
 		coin = rand() % 2;
 	}
-	return newList;
 }
 
 /**
  * Combine parents base on Hamming distance. O(bestlist.size^2 * list.size * name.size)
  * Combine the different ones.
  */
-vector<vector<string>> Creator::reproductionDistance(vector<vector<string>> bestLists){
+void Creator::reproduce(vector<deque<string>>& bestLists, vector<deque<string>>& children){
 	int maxD;
 	int maxID;
 	//int vizit[bestLists.size()];
-	vector<vector<string>> children;
 
 	for(size_t i=0; i<bestLists.size() - 1; ++i)
 	{
@@ -146,7 +142,9 @@ vector<vector<string>> Creator::reproductionDistance(vector<vector<string>> best
 				maxID = j;
 			}
 		}
-		children.push_back(getChild(bestLists[i],bestLists[maxID]));
+
+		deque<string> newChild;
+		getChild(bestLists[i],bestLists[maxID],newChild);
+		children.push_back(newChild);
 	}
-	return children;
 }
