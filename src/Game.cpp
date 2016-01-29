@@ -340,7 +340,7 @@ void Game::generateResources() {
     }
 
     // Write messages when we reassign workers and do not have events
-    if (mineralMiningWorkers != oldMineralMiningWorkers || gasMiningWorkers != oldGasMiningWorkers)
+    if (curTime == 1 || mineralMiningWorkers != oldMineralMiningWorkers || gasMiningWorkers != oldGasMiningWorkers)
         output.emptyMessage(*this);
 }
 
