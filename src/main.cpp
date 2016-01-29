@@ -1,6 +1,9 @@
+#include <deque>
 #include <iostream>
 #include "Config.h"
 #include "Game.h"
+#include "Creator.hpp"
+#include "Selector.hpp"
 
 
 #include <boost/program_options.hpp>
@@ -86,6 +89,13 @@ int main(int argc, char **argv){
     }else{
         GameObject::parseString(defaultTechTree);
     }
+
+
+    Selector<ProtossGame> selector(OptimizationMode::PUSH, "gateway");
+    // GameObject::get("stalker").setIntroductionProbability(30);
+    selector.optimize(1000);
+
+    return 1;
 
     Game *g;
 

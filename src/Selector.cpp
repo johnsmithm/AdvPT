@@ -1,5 +1,18 @@
 #include "Selector.hpp"
 
+#include <chrono>
+#include <iomanip>
+
+/** @brief reads a buildList from any iterable container of strings
+  */
+template<template <typename, typename> class Container>
+void debugPrint(Container<std::string, std::allocator<std::string>> &input, ostream& stream=cerr){
+    for(std::string line : input){
+        stream << line << "->";
+    }
+    stream << input.size() << endl;
+}
+
 
 template<typename Gametype>
 Selector<Gametype>::Selector(OptimizationMode setMode, string setTarget)
@@ -13,7 +26,26 @@ void Selector<Gametype>::optimize(int maxIterations){
 
 	list<pair<deque<string>, int>> bestLists;
 
+	cout << "Beginning optimization" << endl;
+
+	chrono::time_point<std::chrono::system_clock> start,end;
+	start = std::chrono::high_resolution_clock::now();
+
 	for(int i=0; i<maxIterations; i++){
+		if(!(i%10)){
+			end = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> elapsed_seconds = end-start;
+			cout << "Iteration " << setw(4) << setfill('0') << i << "/" << maxIterations;
+			if(i!=0)
+				cout << " with an average iteration time of " << elapsed_seconds.count()/i*1000 << "ms" << endl;
+
+				if(bestLists.size() != 0){
+					cout << "\t current best (score: " << bestLists.front().second << ") :";
+					debugPrint(bestLists.front().first, cout);
+				}
+			else
+				cout << endl;
+		}
 
 		vector<deque<string>> nextGen;
 		creator.createNextGeneration(curGen, nextGen);
@@ -26,6 +58,17 @@ void Selector<Gametype>::optimize(int maxIterations){
 		for(auto list : bestLists)
 			curGen.push_back(list.first);
 	}
+
+	if(bestLists.size() == 0){
+		cout << "optimization failed, no results!" << endl;
+		return;
+	}
+
+	auto bestList = bestLists.front();
+	for(auto s : bestList.first){
+		cout << s << "->";
+	}
+	cout << bestList.first.size();
 }
 
 /** @brief returns the fitness of a buildList from the output of its simulation

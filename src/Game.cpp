@@ -100,6 +100,7 @@ bool Game::timeStep() {
 
 //For testing
 void Game::debugOutput(Action& action, bool start) {
+    return;
     cerr << "Time:" << curTime << "\n"
          << "resources{minerals :" << minerals / FP_FACTOR
          << ", vespene :" << gas / FP_FACTOR
