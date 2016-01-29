@@ -7,10 +7,19 @@
 
 using namespace std;
 
-void Creator::createInitialBuildList(string target, vector<deque<string>>& buildLists){
+void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<string>>& nextGen){
+	if(nextGen.size() != 0 && curGen.size() != 0)
+		reproduce(curGen, nextGen);
+
+	mutate(curGen);
+
+	nextGen.insert(nextGen.end(), curGen.begin(), curGen.end());
+}
+
+void Creator::createInitialBuildList(string target, vector<list<string>>& buildLists){
 	getDeeperDependencies(target, buildLists);
 
-	for(deque<string>& buildList : buildLists){
+	for(list<string>& buildList : buildLists){
 		buildList.push_back(target);
 	}
 
@@ -21,7 +30,7 @@ void Creator::createInitialBuildList(string target, vector<deque<string>>& build
 
 /** @brief returns recursively all possible dependency trees leading to target
  */
-void Creator::getDeeperDependencies(string target, vector<deque<string>>& deeperDependencies){
+void Creator::getDeeperDependencies(string target, vector<list<string>>& deeperDependencies){
 	GameObject targetGO = GameObject::get(target);
 	vector<string> dependencies = targetGO.getDependencyNames();
 
@@ -32,32 +41,37 @@ void Creator::getDeeperDependencies(string target, vector<deque<string>>& deeper
 
 	for(string dependency : dependencies){
 		getDeeperDependencies(dependency, deeperDependencies);
-		for(deque<string>& dependencyTree : deeperDependencies){
+		for(list<string>& dependencyTree : deeperDependencies){
 			dependencyTree.push_back(dependency);
 		}
 	}
 }
 
-void Creator::mutateBuildLists(vector<deque<string>>& buildLists){
-	for(deque<string>& buildList : buildLists){
+void Creator::mutate(vector<list<string>>& buildLists){
+	for(list<string>& buildList : buildLists){
 		//delete an item from the build list, if a random value is lower
 		//than its deletion probability
-		for(unsigned int i = 0; i < buildList.size(); i++){
+		for(auto iterator=buildList.begin(); iterator != buildList.end();){
 			int random = rand();
 
-			if(random < GameObject::get(buildList[i]).getDeletionProbability()){
-				buildList.erase(buildList.begin()+i);
-				i--;
+			if(random < GameObject::get(*iterator).getDeletionProbability()){
+				buildList.erase(iterator++);
+			}else{
+				iterator++;
 			}
 		}
 
-		//delete an item at a random position into the build list, if a random value is lower
+		//insert an item at a random position into the build list, if a random value is lower
 		//than its addition probability
 		for(GameObject *go : GameObject::getAll([=](GameObject &go){return go.getRace() == targetRace;})){
 			int random = rand();
 			if(random < go->getIntroductionProbability()){
 				int insertAfter = buildList.size() != 0 ? rand()%buildList.size() : 0;
-				buildList.insert(buildList.begin()+insertAfter, go->getName());
+
+				auto positional=buildList.begin();
+				for(int i=0; i<insertAfter; i++, positional++);
+
+				buildList.insert(positional, go->getName());
 			}
 		}
 	}
@@ -68,12 +82,14 @@ void Creator::mutateBuildLists(vector<deque<string>>& buildLists){
  * Hamming distance.
  */
 int Creator::getDistance (list<string>& a,list<string>& b) {
+
 	int value = 0;	
 	auto ita = a.begin();
 	auto itb = b.begin();
 	for(; ita != a.end() && itb != b.end();++itb,++ita)
 		if(*ita != *itb)
 			++value;
+
 	return value;
 }
 
@@ -121,7 +137,6 @@ bool Creator::checkBuildLists(list<string> listL){
 	return true;
 }
 
-
 void Creator::getChild(list<string>& a, list<string>& b, list<string>& newList){
 
 	supplyCheck = 0;
@@ -142,6 +157,7 @@ void Creator::getChild(list<string>& a, list<string>& b, list<string>& newList){
 		++itb;
 	}
 }
+
 
 /**
  * Combine parents base on Hamming distance. O(bestlist.size^2 * list.size * name.size)
@@ -194,6 +210,7 @@ vector<list<string>> nPointsCrossover(list<string> a,list<string> b, size_t n){
 		for(size_t i=0; i<n; ++i){
 			firstChildNew.clear();
 			secondChildNew.clear();
+
 			size_t position = rand() % maxL;
 			
 			auto vi = firstChild.begin();

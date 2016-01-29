@@ -1,7 +1,7 @@
 #ifndef _CREATOR_H_
 #define _CREATOR_H_
 
-#include <deque>
+#include <list>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -21,17 +21,21 @@ public:
 		srand (time(NULL));
 	};
 
-	static void createInitialBuildList(string target, vector<deque<string>>& buildLists);
+	static void createInitialBuildList(string target, vector<list<string>>& buildLists);
 
-	void mutateBuildLists(vector<deque<string>> &lists);
-public:
-	static void getDeeperDependencies(string target, vector<deque<string>>& deeperDependencies);
+	void createNextGeneration(vector<list<string>> curGen, vector<list<string>>& nextGen);
+
+
+private:
+	static void getDeeperDependencies(string target, vector<list<string>>& deeperDependencies);
+
 
 	int getDistance (list<string>& a,list<string>& b);
 
 	bool checkValidity(list<string>& list, string newOne);
 
-	bool checkBuildLists(list<string> list);
+	bool checkBuildLists(list<string> listL);
+
 
 	void getChild(list<string>& a, list<string>& b, list<string>& newList);
 
@@ -39,10 +43,13 @@ public:
 	list<string> nLengthCrossover(list<string> a,list<string> b, int n);//Todo-same length for each slice
 	vector<string> nSlicesCrossover(vector<string> a,vector<string> b, int n);//Todo-different points for spliting
 
-	void switchGenesMutation(vector<deque<string>> &lists);//Todo-change two genes
-	void deleteAddGenesMutation(vector<deque<string>> &lists);//Todo
+	void switchGenesMutation(vector<list<string>> &lists);//Todo-change two genes
+	void deleteAddGenesMutation(vector<list<string>> &lists);//Todo
 
-	void reproduce(vector<list<string>>& bestLists, vector<list<string>>& children);	
+
+	void mutate(vector<list<string>> &lists);
+	void reproduce(vector<list<string>>& bestLists, vector<list<string>>& children);
+
 
 	int supplyCheck;
 	Race targetRace;

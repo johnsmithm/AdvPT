@@ -3,12 +3,13 @@
 
 #include <functional>
 #include <queue>
-#include <deque>
+#include <list>
 #include <vector>
 #include <utility>
 #include <climits>
-#include "Game.h"
 
+#include "Creator.hpp"
+#include "Game.h"
 #include "util.h"
 #include "json/json.h"
 #include "fstream"
@@ -22,9 +23,9 @@ enum class OptimizationMode {
 
 class ListComparator {
 public:
-	bool operator()(const pair<deque<string>, int> &a, const pair<deque<string>, int> &b){
+	bool operator()(const pair<list<string>, int> &a, const pair<list<string>, int> &b){
 		//TODO: Figure out, if this is the correct ordering.
-		//pop() should remove lowest fitness => order in descending fitness
+		//pop_back() should remove lowest fitness => order in ascending fitness
 		return a.second < b.second;
 	}
 };
@@ -33,7 +34,8 @@ template<typename Gametype>
 class Selector{
 	public:
 		Selector(OptimizationMode mode, string setTarget);
-		void getBestBuildLists(vector<deque<string>>& newlists);
+		void getBestBuildLists(vector<list<string>>& newlists, list<pair<list<string>, int>>& bestLists);
+		void optimize(int maxIterations);
 
 	private:
 		//vector<pair<vector<string>, int>> lastBuildLists;
@@ -41,8 +43,8 @@ class Selector{
 		OptimizationMode mode;
 		string target;
 		size_t arraySize;
-		priority_queue<pair<deque<string>, int>, deque<pair<deque<string>, int>>, ListComparator> bestLists;
 
+		Creator creator;
 };
 
 
