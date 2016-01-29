@@ -31,6 +31,8 @@ enum class Race {
     ZERG
 };
 
+Race raceFromString(std::string race);
+
 
 class TechTreeParsingException : public std::runtime_error {
 public:

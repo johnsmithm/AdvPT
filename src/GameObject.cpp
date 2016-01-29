@@ -248,3 +248,14 @@ void GameObject::increaseInstancesEnergy(int value) {
         }
     }
 }
+
+
+Race raceFromString(string race){
+    if(race == "terran")
+        return Race::TERRAN;
+    if(race == "protoss")
+        return Race::PROTOSS;
+    if(race == "zerg")
+        return Race::ZERG;
+    throw std::out_of_range("no such race");
+}
