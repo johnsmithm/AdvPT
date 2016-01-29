@@ -4,6 +4,7 @@
 #include <deque>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "GameObject.h"
 
@@ -14,27 +15,28 @@ public:
 
 	Creator(Race targetRace) : targetRace(targetRace){};
 
-	static vector<deque<string>> createInitialBuildList(string target);
+	static void createInitialBuildList(string target, vector<deque<string>>& buildLists);
 
 	void mutateBuildLists(vector<deque<string>> &lists);
-
-	vector<vector<string>> reproductionDistance(vector<vector<string>> bestLists);
-
 private:
-	static vector<deque<string>> getDeeperDependencies(string target);
+	static void getDeeperDependencies(string target, vector<deque<string>>& deeperDependencies);
 
-	int getDistance (vector<string> a,vector<string> b);
+	int getDistance (deque<string>& a,deque<string>& b);
 
-	bool checkValidity(vector<string> list, string newOne);
+	bool checkValidity(deque<string>& list, string newOne);
 
-	vector<string> getChild(vector<string> a,vector<string> b);
+	bool checkBuildList(deque<string> list);
 
-	vector<string> nPointsCrossover(vector<string> a,vector<string> b, int n);
+	void getChild(deque<string>& a, deque<string>& b, deque<string>& newList);
+
+	vector<string> nPointsCrossover(vector<string> a,vector<string> b, size_t n);
 	vector<string> nLengthCrossover(vector<string> a,vector<string> b, int n);//Todo-same length for each slice
 	vector<string> nSlicesCrossover(vector<string> a,vector<string> b, int n);//Todo-different points for spliting
 
 	void switchGenesMutation(vector<deque<string>> &lists);//Todo-change two genes
 	void deleteAddGenesMutation(vector<deque<string>> &lists);//Todo
+
+	void reproduce(vector<deque<string>>& bestLists, vector<deque<string>>& children);	
 
 	int supplyCheck;
 	Race targetRace;
