@@ -16,7 +16,7 @@ void debugPrint(Container<std::string, std::allocator<std::string>> &input, ostr
 
 template<typename Gametype>
 Selector<Gametype>::Selector(OptimizationMode setMode, string setTarget)
-:mode(setMode), target(setTarget), arraySize(500), creator(GameObject::get(setTarget).getRace()){}
+:mode(setMode), target(setTarget), arraySize(500), creator(setTarget, setMode){}
 
 
 template<typename Gametype>

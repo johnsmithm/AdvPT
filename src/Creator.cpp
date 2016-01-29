@@ -7,6 +7,23 @@
 
 using namespace std;
 
+
+Creator::Creator(string targetUnit, OptimizationMode modeC) 
+: targetRace(GameObject::get(targetUnit).getRace()), targetUnit(targetUnit), modeC(modeC){
+	srand (time(NULL));
+	if(targetRace == Race::PROTOSS){
+		baseworker = "probe";
+		baseBuilding = "nexus";
+		gasMaker = "assimilator";
+		supplyBuilding = "pylon";
+	}else if(targetRace == Race::TERRAN){
+		baseworker = "scv";
+		baseBuilding = "command_center";    
+		gasMaker = "refinery";
+		supplyBuilding = "supply_depot";
+	}
+}
+
 void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<string>>& nextGen){
 	if(nextGen.size() != 0 && curGen.size() != 0)
 		reproduce(curGen, nextGen);
@@ -93,13 +110,14 @@ int Creator::getDistance (list<string>& a,list<string>& b) {
 	return value;
 }
 
+//checked
 bool Creator::checkValidity(list<string>& listL, string newOne){
 
 	GameObject go = GameObject::get(newOne);
 	vector<string> producers = go.getProducerNames();
 	bool ok = producers.size() == 0;
 	for(auto name : producers)
-		if(listL.end() != find(listL.begin(), listL.end(), name))
+		if(listL.end() != find(listL.begin(), listL.end(), name) || name == baseworker || name == baseBuilding)
 			ok = true;
 	if(!ok)
 		return false;
@@ -111,12 +129,10 @@ bool Creator::checkValidity(list<string>& listL, string newOne){
 			ok = true;
 	if(!ok)return false;
 
-	string gasMaker = "assimilator"; //Depends on race
-
 	if(go.getGasCost() > 0 && listL.end() == find(listL.begin(), listL.end(), gasMaker))
 		return false;
 
-	if(supplyCheck - go.getSupplyCost() < 0 && 0)
+	if((supplyCheck < (int)go.getSupplyCost()))
 		return false;
 
 	supplyCheck += go.getSupplyProvided() - go.getSupplyCost();
@@ -125,21 +141,33 @@ bool Creator::checkValidity(list<string>& listL, string newOne){
 
 }
 
-
+//checked
 bool Creator::checkBuildLists(list<string> listL){
-	supplyCheck = 0;
+	supplyCheck = GameObject::get(baseBuilding).getSupplyProvided() - 6*GameObject::get(baseworker).getSupplyCost();
+
 	list<string> newlist;
 	for(auto item : listL){
-		if(checkValidity(newlist, item))
+		if(!checkValidity(newlist, item))
 			return false;
 		newlist.push_back(item);
+	}
+	
+	return true;
+}
+
+bool Creator::meetGoal(list<string> newList, list<string> oldList){
+	if(modeC == OptimizationMode::PUSH){
+		if(newList.end() == find(newList.begin(), newList.end(), targetUnit))
+			return false;
+	}else{
+		//count #targets
 	}
 	return true;
 }
 
 void Creator::getChild(list<string>& a, list<string>& b, list<string>& newList){
 
-	supplyCheck = 0;
+	supplyCheck = GameObject::get(baseBuilding).getSupplyProvided() - 6*GameObject::get(baseworker).getSupplyCost();
 	int coin = rand() % 2;
 	auto ita = a.begin();
 	auto itb = b.begin();
@@ -155,6 +183,11 @@ void Creator::getChild(list<string>& a, list<string>& b, list<string>& newList){
 		coin = rand() % 2;
 		++ita;
 		++itb;
+	}
+	if(!meetGoal(newList,{})){
+		if(ita != a.end()){
+			newList.insert(newList.end(),ita, a.end());
+		}else newList.insert(newList.end(),itb, b.end());
 	}
 }
 

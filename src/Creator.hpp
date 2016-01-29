@@ -14,19 +14,22 @@
 
 using namespace std;
 
+enum class OptimizationMode {
+    RUSH,
+    PUSH
+};
+
 class Creator{
 public:
 
-	Creator(Race targetRace) : targetRace(targetRace){
-		srand (time(NULL));
-	};
+	Creator(string targetUnit, OptimizationMode modeC);
 
 	static void createInitialBuildList(string target, vector<list<string>>& buildLists);
 
 	void createNextGeneration(vector<list<string>> curGen, vector<list<string>>& nextGen);
 
 
-private:
+public:
 	static void getDeeperDependencies(string target, vector<list<string>>& deeperDependencies);
 
 
@@ -50,9 +53,17 @@ private:
 	void mutate(vector<list<string>> &lists);
 	void reproduce(vector<list<string>>& bestLists, vector<list<string>>& children);
 
+	bool meetGoal(list<string> newList, list<string> oldList);
 
 	int supplyCheck;
 	Race targetRace;
+	string targetUnit;
+	OptimizationMode modeC;
+
+	string baseworker;
+    string baseBuilding;
+    string gasMaker;
+    string supplyBuilding;
 };
 
 #endif

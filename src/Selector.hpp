@@ -16,10 +16,6 @@
 
 using namespace std;
 
-enum class OptimizationMode {
-    RUSH,
-    PUSH
-};
 
 class ListComparator {
 public:
