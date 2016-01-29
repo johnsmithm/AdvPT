@@ -3,7 +3,30 @@
 
 template<typename Gametype>
 Selector<Gametype>::Selector(OptimizationMode setMode, string setTarget)
-:mode(setMode), target(setTarget), arraySize(10){}
+:mode(setMode), target(setTarget), arraySize(10), creator(GameObject::get(setTarget).getRace()){}
+
+
+template<typename Gametype>
+void Selector<Gametype>::optimize(int maxIterations){
+	vector<deque<string>> curGen;
+	creator.createInitialBuildList(target, curGen);
+
+	list<pair<deque<string>, int>> bestLists;
+
+	for(int i=0; i<maxIterations; i++){
+
+		vector<deque<string>> nextGen;
+		creator.createNextGeneration(curGen, nextGen);
+
+		curGen.insert(curGen.end(), nextGen.begin(), nextGen.end());
+
+		getBestBuildLists(curGen, bestLists);
+
+		curGen.clear();
+		for(auto list : bestLists)
+			curGen.push_back(list.first);
+	}
+}
 
 /** @brief returns the fitness of a buildList from the output of its simulation
  *
@@ -37,7 +60,7 @@ int Selector<Gametype>::getCompareCriteria(Json::Value output){
  * Simulate newlists, add best list in the bestLists.
  */
 template<typename Gametype>
-void Selector<Gametype>::getBestBuildLists(vector<deque<string>>& newlists){
+void Selector<Gametype>::getBestBuildLists(vector<deque<string>>& newlists, list<pair<deque<string>, int>>& bestLists){
 	//lastBuildLists = bestLists;
 	for(auto list : newlists){
 		try{
@@ -52,15 +75,16 @@ void Selector<Gametype>::getBestBuildLists(vector<deque<string>>& newlists){
 				int compareCriteria = getCompareCriteria(output);
 
 				if(compareCriteria != INT_MAX)
-					bestLists.push(make_pair(list,compareCriteria));
+					bestLists.push_back(make_pair(list,compareCriteria));
 			}
 		}catch(SimulationException){
 			//ignore buildList if it's invalid
 		}
 	}
 
+	bestLists.sort(ListComparator());
 	while(bestLists.size() > arraySize)
-		bestLists.pop();
+		bestLists.pop_back();
 }
 
 //force creation of all possible and necessarry selector classes

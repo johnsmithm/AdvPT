@@ -7,8 +7,9 @@
 #include <vector>
 #include <utility>
 #include <climits>
-#include "Game.h"
 
+#include "Creator.hpp"
+#include "Game.h"
 #include "util.h"
 #include "json/json.h"
 #include "fstream"
@@ -24,8 +25,8 @@ class ListComparator {
 public:
 	bool operator()(const pair<deque<string>, int> &a, const pair<deque<string>, int> &b){
 		//TODO: Figure out, if this is the correct ordering.
-		//pop() should remove lowest fitness => order in descending fitness
-		return a.second < b.second;
+		//pop_back() should remove lowest fitness => order in ascending fitness
+		return a.second > b.second;
 	}
 };
 
@@ -33,7 +34,8 @@ template<typename Gametype>
 class Selector{
 	public:
 		Selector(OptimizationMode mode, string setTarget);
-		void getBestBuildLists(vector<deque<string>>& newlists);
+		void getBestBuildLists(vector<deque<string>>& newlists, list<pair<deque<string>, int>>& bestLists);
+		void optimize(int maxIterations);
 
 	private:
 		//vector<pair<vector<string>, int>> lastBuildLists;
@@ -41,8 +43,8 @@ class Selector{
 		OptimizationMode mode;
 		string target;
 		size_t arraySize;
-		priority_queue<pair<deque<string>, int>, deque<pair<deque<string>, int>>, ListComparator> bestLists;
 
+		Creator creator;
 };
 
 
