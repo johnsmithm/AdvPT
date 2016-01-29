@@ -9,17 +9,22 @@
 #include <iterator>
 #include "GameObject.h"
 
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
+
 using namespace std;
 
 class Creator{
 public:
 
-	Creator(Race targetRace) : targetRace(targetRace){};
+	Creator(Race targetRace) : targetRace(targetRace){
+		srand (time(NULL));
+	};
 
 	static void createInitialBuildList(string target, vector<deque<string>>& buildLists);
 
 	void mutateBuildLists(vector<deque<string>> &lists);
-private:
+public:
 	static void getDeeperDependencies(string target, vector<deque<string>>& deeperDependencies);
 
 	int getDistance (list<string>& a,list<string>& b);

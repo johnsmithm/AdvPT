@@ -81,7 +81,7 @@ bool Creator::checkValidity(list<string>& listL, string newOne){
 
 	GameObject go = GameObject::get(newOne);
 	vector<string> producers = go.getProducerNames();
-	bool ok = false;
+	bool ok = producers.size() == 0;
 	for(auto name : producers)
 		if(listL.end() != find(listL.begin(), listL.end(), name))
 			ok = true;
@@ -89,7 +89,7 @@ bool Creator::checkValidity(list<string>& listL, string newOne){
 		return false;
 
 	vector<string> dependencies = go.getDependencyNames();
-	ok = false;
+	ok = dependencies.size() == 0;
 	for(auto name : dependencies)
 		if(listL.end() != find(listL.begin(), listL.end(), name))
 			ok = true;
@@ -100,7 +100,7 @@ bool Creator::checkValidity(list<string>& listL, string newOne){
 	if(go.getGasCost() > 0 && listL.end() == find(listL.begin(), listL.end(), gasMaker))
 		return false;
 
-	if(supplyCheck - go.getSupplyCost() > 0)
+	if(supplyCheck - go.getSupplyCost() < 0 && 0)
 		return false;
 
 	supplyCheck += go.getSupplyProvided() - go.getSupplyCost();
