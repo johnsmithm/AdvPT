@@ -16,7 +16,7 @@ public:
 
 	static void createInitialBuildList(string target, vector<deque<string>>& buildLists);
 
-	void mutateBuildLists(vector<deque<string>> &lists);
+	void createNextGeneration(vector<deque<string>> curGen, vector<deque<string>>& nextGen);
 private:
 	static void getDeeperDependencies(string target, vector<deque<string>>& deeperDependencies);
 
@@ -34,6 +34,7 @@ private:
 	void deleteAddGenesMutation(vector<deque<string>> &lists);//Todo
 
 
+	void mutate(vector<deque<string>> &lists);
 	void reproduce(vector<deque<string>>& bestLists, vector<deque<string>>& children);
 
 	int supplyCheck;

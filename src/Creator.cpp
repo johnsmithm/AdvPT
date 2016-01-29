@@ -6,6 +6,13 @@
 
 using namespace std;
 
+void Creator::createNextGeneration(vector<deque<string>> curGen, vector<deque<string>>& nextGen){
+	reproduce(curGen, nextGen);
+	mutate(curGen);
+
+	nextGen.insert(nextGen.end(), curGen.begin(), curGen.end());
+}
+
 void Creator::createInitialBuildList(string target, vector<deque<string>>& buildLists){
 	getDeeperDependencies(target, buildLists);
 
@@ -37,7 +44,7 @@ void Creator::getDeeperDependencies(string target, vector<deque<string>>& deeper
 	}
 }
 
-void Creator::mutateBuildLists(vector<deque<string>>& buildLists){
+void Creator::mutate(vector<deque<string>>& buildLists){
 	for(deque<string>& buildList : buildLists){
 		//delete an item from the build list, if a random value is lower
 		//than its deletion probability
