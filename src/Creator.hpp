@@ -31,7 +31,7 @@ private:
 	void getChild(list<string>& a, list<string>& b, list<string>& newList);
 
 	list<string> nPointsCrossover(list<string> a,list<string> b, size_t n);
-	vector<string> nLengthCrossover(vector<string> a,vector<string> b, int n);//Todo-same length for each slice
+	list<string> nLengthCrossover(list<string> a,list<string> b, int n);//Todo-same length for each slice
 	vector<string> nSlicesCrossover(vector<string> a,vector<string> b, int n);//Todo-different points for spliting
 
 	void switchGenesMutation(vector<deque<string>> &lists);//Todo-change two genes

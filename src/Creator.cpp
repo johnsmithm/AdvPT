@@ -71,7 +71,7 @@ int Creator::getDistance (list<string>& a,list<string>& b) {
 	int value = 0;	
 	auto ita = a.begin();
 	auto itb = b.begin();
-	for(; ita != a.end() && itb != b.end();)
+	for(; ita != a.end() && itb != b.end();++itb,++ita)
 		if(*ita != *itb)
 			++value;
 	return value;
@@ -228,6 +228,43 @@ vector<list<string>> nPointsCrossover(list<string> a,list<string> b, size_t n){
 			else return {secondChild};
 			break;
 		}
-	}while(trys < 3);
+	}while(++trys < 3);
+	return {};
+}
+
+/**
+ * @brief Blocks of length n are interchanged between lists a and b.
+ */
+list<string> Creator::nLengthCrossover(list<string> a,list<string> b, int n){
+	supplyCheck = 0;
+	int trys = 0;
+	while(trys++ < 3){
+		int coin = rand() % 2;
+		auto ita = a.begin();
+		auto itb = b.begin();
+		list<string> newList;
+		int j = 0;
+		for(; ita != a.end() && itb != b.end();){
+			if(coin){
+				auto itB = a.begin();
+				advance(itB, n*j);
+				auto itE = itB;
+				advance(itE, n);
+				newList.splice(newList.end(), a, itB, itE );
+			}else{
+				auto itB = b.begin();
+				advance(itB, n*j);
+				auto itE = itB;
+				advance(itE, n);
+				newList.splice(newList.end(), b, itB, itE );
+			}
+			coin = rand() % 2;
+			advance(ita, n);
+			advance(itb, n);
+			++j;
+		}
+		if(checkBuildLists(newList))
+			return newList;
+	}
 	return {};
 }
