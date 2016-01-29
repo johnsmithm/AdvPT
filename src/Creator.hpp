@@ -29,7 +29,7 @@ private:
 
 	vector<string> getChild(vector<string> a,vector<string> b);
 
-	vector<string> nPointsCrossover(vector<string> a,vector<string> b, int n);//Todo-same points for both
+	vector<string> nPointsCrossover(vector<string> a,vector<string> b, int n);
 	vector<string> nLengthCrossover(vector<string> a,vector<string> b, int n);//Todo-same length for each slice
 	vector<string> nSlicesCrossover(vector<string> a,vector<string> b, int n);//Todo-different points for spliting
 

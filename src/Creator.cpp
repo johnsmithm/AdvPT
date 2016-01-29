@@ -107,6 +107,17 @@ bool Creator::checkValidity(vector<string> list, string newOne){
 
 }
 
+bool checkBuildList(vector<string> list){
+	supplyCheck = 0;
+	vector<string> newlist;
+	for(auto item : list){
+		if(checkValidity(newlist, item))
+			return false;
+		newlist.push_back(item);
+	}
+	return true;
+}
+
 vector<string> Creator::getChild(vector<string> a,vector<string> b){
 	supplyCheck = 0;
 	int coin = rand() % 2;
@@ -149,4 +160,50 @@ vector<vector<string>> Creator::reproductionDistance(vector<vector<string>> best
 		children.push_back(getChild(bestLists[i],bestLists[maxID]));
 	}
 	return children;
+}
+
+/**
+ * @brief Exchange blocks of genes.
+ * blocks are different size, exchange at same position
+ * n + 1 - number of blocks
+ */
+vector<deque<string>> nPointsCrossover(deque<string> a,deque<string> b, int n){
+	int trys = 0;
+	size_t maxL = max(a.size(), b.size()) - 1;
+	n = min(maxL / 2, n);
+	deque<string> firstChild;
+	deque<string> secondChild;
+	deque<string> firstChildNew;
+	deque<string> secondChildNew;
+	bool ok1 = false;
+	bool ok2 = false;
+	do{
+		firstChild = a;
+		secondChild = b;
+		firstChildNew.clear();
+		secondChildNew.clear();
+		for(int i=0; i<n; ++i){
+			firstChildNew.clear();
+			secondChildNew.clear();
+			int position = rand() % maxL;
+
+			firstChildNew.splice(firstChildNew.begin(),firstChild.begin(), firstChild.begin() + position);
+			secondChildNew.splice(secondChildNew.begin(),secondChild.begin(), secondChild.begin() + position);
+
+			firstChildNew.splice(firstChildNew.begin() + position ,secondChildNew.begin() + position, secondChildNew.end());
+			secondChildNew.splice(secondChildNew.begin() + position,firstChild.begin() + position, firstChild.begin());
+			
+			firstChild = firstChildNew;
+			secondChild = secondChildNew;
+		}
+		ok1 = checkBuildList(firstChild);
+		ok2 = checkBuildList(secondChild);
+		if(ok1 || ok2){
+			if(ok1 && ok2){
+				return {firstChild,secondChild};
+			}else if (ok1) return {firstChild};
+			else return {secondChild}
+			break;
+		}
+	}while(trys < 3);
 }
