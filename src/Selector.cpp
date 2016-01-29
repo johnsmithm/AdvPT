@@ -40,17 +40,21 @@ template<typename Gametype>
 void Selector<Gametype>::getBestBuildLists(vector<deque<string>>& newlists){
 	//lastBuildLists = bestLists;
 	for(auto list : newlists){
-		Gametype g;
-		g.readBuildList(list);
-		g.simulate();
+		try{
+			Gametype g;
+			g.readBuildList(list);
+			g.simulate();
 
-		Json::Value output = g.getOutput().getRawData();
-		if(output["buildlistValid"] == 1 && output["messages"].size() > 0){
+			Json::Value output = g.getOutput().getRawData();
+			if(output["buildlistValid"] == 1 && output["messages"].size() > 0){
 
-			int compareCriteria = getCompareCriteria(output);
+				int compareCriteria = getCompareCriteria(output);
 
-			if(compareCriteria != INT_MAX)
-				bestLists.push(make_pair(list,compareCriteria));
+				if(compareCriteria != INT_MAX)
+					bestLists.push(make_pair(list,compareCriteria));
+			}
+		}catch(SimulationException){
+			//ignore buildList if it's invalid
 		}
 	}
 
