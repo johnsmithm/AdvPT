@@ -137,8 +137,9 @@ public:
     static void parseStream(std::istream &inputStream);
 
     static GameObject& get(const std::string name);
-    static std::vector<GameObjectInstance*> getAllInstances(std::function<bool(GameObjectInstance&)> filter=[](GameObjectInstance &goi){return true;});
     static std::vector<GameObject*> getAll(std::function<bool(GameObject&)> filter=[](GameObject &go){return true;});
+    static std::vector<GameObjectInstance*> getAllInstances(std::function<bool(GameObjectInstance&)> filter=[](GameObjectInstance &goi){return true;});
+    static void removeAllInstances();
 
     static void increaseInstancesEnergy(int value=DEFAULT_ENERGY_INCREASE);
 

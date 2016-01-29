@@ -44,6 +44,7 @@ void Selector<Gametype>::getBestBuildLists(vector<deque<string>>& newlists){
 			Gametype g;
 			g.readBuildList(list);
 			g.simulate();
+			GameObject::removeAllInstances();
 
 			Json::Value output = g.getOutput().getRawData();
 			if(output["buildlistValid"] == 1 && output["messages"].size() > 0){

@@ -249,6 +249,12 @@ void GameObject::increaseInstancesEnergy(int value) {
     }
 }
 
+void GameObject::removeAllInstances(){
+    for(auto& go : gameObjects){
+        go.second.instances.clear();
+    }
+}
+
 
 Race raceFromString(string race){
     if(race == "terran")
