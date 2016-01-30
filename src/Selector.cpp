@@ -119,6 +119,7 @@ void Selector<Gametype>::getBestBuildLists(vector<list<string>>& newlists, list<
 			GameObject::removeAllInstances();
 		}catch(SimulationException){
 			compareCriteria = 2000;
+			GameObject::removeAllInstances();
 		}
 		bestLists.push_back(make_pair(list,compareCriteria));
 	}
