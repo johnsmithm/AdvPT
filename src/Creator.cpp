@@ -191,10 +191,9 @@ bool Creator::checkBuildLists(list<string> listL){
 }
 //checked
 bool Creator::meetGoal(list<string> newList, list<string> oldList){
-	if(modeC == OptimizationMode::PUSH){
-		if(newList.end() == find(newList.begin(), newList.end(), targetUnit))
+	if(newList.end() == find(newList.begin(), newList.end(), targetUnit))
 			return false;
-	}else{
+	if(modeC == OptimizationMode::RUSH){
 		//count #targets
 	}
 	return true;
