@@ -30,7 +30,7 @@ public:
 	void createNextGeneration(vector<list<string>> curGen, vector<list<string>>& nextGen);
 
 
-public:
+private:
 	static void getDeeperDependencies(string target, vector<list<string>>& deeperDependencies);
 
 	bool gasNeeded(string name);
