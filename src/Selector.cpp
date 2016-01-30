@@ -93,18 +93,9 @@ int Selector<Gametype>::getCompareCriteria(Game& game){
 		    score += 1000;
 		return score;
 	} else {
-		/*int count = 0;
-
-		if(output["messages"][output["messages"].size()-1]["time"].asInt() > 360)
-			return INT_MAX;
-
-		for(auto message : output["messages"])
-			for(auto event : message["events"])
-				if(event["type"] == "build-end" && event["name"] == target)
-					++count;
-
-		return -count;*/
-		return 0;
+		if(game.getCurrentTime() - 1 <= 360)
+			return (- GameObject::get(target).getInstancesCount());
+		return INT_MAX;
 	}
 }
 
