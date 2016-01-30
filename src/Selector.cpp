@@ -7,7 +7,7 @@
 
 template<typename Gametype>
 Selector<Gametype>::Selector(OptimizationMode setMode, string setTarget)
-:mode(setMode), target(setTarget), arraySize(50), creator(setTarget, setMode){}
+:mode(setMode), target(setTarget), arraySize(30), creator(setTarget, setMode){}
 
 
 template<typename Gametype>
@@ -17,12 +17,15 @@ void Selector<Gametype>::optimize(int maxIterations){
 
 	list<pair<list<string>, int>> bestLists;
 
-	cout << "Beginning optimization" << endl;
+	#ifdef DIAGNOSE
+		cout << "Beginning optimization" << endl;
+	#endif
 
 	chrono::time_point<std::chrono::system_clock> start,end;
 	start = std::chrono::high_resolution_clock::now();
 
 	for(int i=0; i<maxIterations; i++){
+		#ifdef DIAGNOSE_PRINT_STEPS
 		if(!(i%10)){
 			end = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double> elapsed_seconds = end-start;
@@ -37,6 +40,7 @@ void Selector<Gametype>::optimize(int maxIterations){
 			else
 				cout << endl;
 		}
+		#endif
 
 		vector<list<string>> nextGen;
 		#ifdef DIAGNOSE_NEXTGEN
@@ -63,11 +67,18 @@ void Selector<Gametype>::optimize(int maxIterations){
 		return;
 	}
 
-	auto bestList = bestLists.front();
-	for(auto s : bestList.first){
-		cout << s << "->";
-	}
-	cout << bestList.first.size();
+	#ifdef DIAGNOSE_PRINT_RESULT
+		auto bestList = bestLists.front();
+		for(auto s : bestList.first){
+			cerr << s << "->";
+		}
+		cerr << bestList.first.size();
+	#else
+		Gametype g;
+		g.readBuildList(bestLists.front().first);
+		g.simulate();
+		g.getOutput().print();
+	#endif
 }
 
 /** @brief returns the fitness of a buildList from the output of its simulation
