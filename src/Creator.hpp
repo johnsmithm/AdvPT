@@ -32,6 +32,7 @@ public:
 public:
 	static void getDeeperDependencies(string target, vector<list<string>>& deeperDependencies);
 
+	bool gasNeeded(string name);
 
 	int getDistance (list<string>& a,list<string>& b);
 
@@ -64,6 +65,8 @@ public:
     string baseBuilding;
     string gasMaker;
     string supplyBuilding;
+
+    vector<string> involvedUnits;
 };
 
 #endif

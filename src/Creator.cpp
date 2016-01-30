@@ -22,6 +22,36 @@ Creator::Creator(string targetUnit, OptimizationMode modeC)
 		gasMaker = "refinery";
 		supplyBuilding = "supply_depot";
 	}
+	involvedUnits.push_back(baseBuilding);
+	involvedUnits.push_back(baseworker);
+	involvedUnits.push_back(supplyBuilding);
+	if(gasNeeded(targetUnit))
+		involvedUnits.push_back(gasMaker);
+}
+
+/**
+ * get all ivolved units 
+ */
+bool Creator::gasNeeded(string name){
+	if(involvedUnits.end() != find(involvedUnits.begin(), involvedUnits.end(), name))
+		return false;
+
+	involvedUnits.push_back(name);
+
+	GameObject& targetGO = GameObject::get(name);
+	bool needGas = targetGO.getSupplyCost() > 0;
+   
+	vector<string> producerNames = targetGO.getProducerNames();
+	for(size_t i = 0; i < producerNames.size(); ++i){
+		needGas = gasNeeded(producerNames[i]) || needGas;       
+	}
+
+	vector<string> dependencyNames = targetGO.getDependencyNames();
+	for(auto item : dependencyNames){
+		needGas = gasNeeded(item) || needGas;
+		break;
+	}
+	return needGas;
 }
 
 void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<string>>& nextGen){
@@ -80,15 +110,17 @@ void Creator::mutate(vector<list<string>>& buildLists){
 
 		//insert an item at a random position into the build list, if a random value is lower
 		//than its addition probability
-		for(GameObject *go : GameObject::getAll([=](GameObject &go){return go.getRace() == targetRace;})){
+		//for(GameObject *go : /*GameObject::getAll([=](GameObject &go){return go.getRace() == targetRace;})*/){
+		for(auto name : involvedUnits){
+			auto go = GameObject::get(name);
 			int random = rand();
-			if(random < go->getIntroductionProbability()){
+			if(random < go.getIntroductionProbability()){
 				int insertAfter = buildList.size() != 0 ? rand()%buildList.size() : 0;
 
 				auto positional=buildList.begin();
 				for(int i=0; i<insertAfter; i++, positional++);
 
-				buildList.insert(positional, go->getName());
+				buildList.insert(positional, name);
 			}
 		}
 	}
@@ -154,7 +186,7 @@ bool Creator::checkBuildLists(list<string> listL){
 	
 	return true;
 }
-
+//checked
 bool Creator::meetGoal(list<string> newList, list<string> oldList){
 	if(modeC == OptimizationMode::PUSH){
 		if(newList.end() == find(newList.begin(), newList.end(), targetUnit))
@@ -164,7 +196,7 @@ bool Creator::meetGoal(list<string> newList, list<string> oldList){
 	}
 	return true;
 }
-
+//checked
 void Creator::getChild(list<string>& a, list<string>& b, list<string>& newList){
 
 	supplyCheck = GameObject::get(baseBuilding).getSupplyProvided() - 6*GameObject::get(baseworker).getSupplyCost();
@@ -180,6 +212,7 @@ void Creator::getChild(list<string>& a, list<string>& b, list<string>& newList){
 			else
 				newList.push_back(*ita);
 		}
+		//maybe we should switch if we choose too many times one side
 		coin = rand() % 2;
 		++ita;
 		++itb;
@@ -191,7 +224,7 @@ void Creator::getChild(list<string>& a, list<string>& b, list<string>& newList){
 	}
 }
 
-
+//checked
 /**
  * Combine parents base on Hamming distance. O(bestlist.size^2 * list.size * name.size)
  * Combine the different ones.
@@ -214,6 +247,7 @@ void Creator::reproduce(vector<list<string>>& bestLists, vector<list<string>>& c
 		}
 
 		list<string> newChild;
+		//maybe should check if we use that buildlist ones
 		getChild(bestLists[i],bestLists[maxID],newChild);
 		children.push_back(newChild);
 	}
