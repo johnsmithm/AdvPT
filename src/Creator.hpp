@@ -29,9 +29,9 @@ public:
 
 	void createNextGeneration(vector<list<string>> curGen, vector<list<string>>& nextGen);
 
-
-private:
-	static void getDeeperDependencies(string target, vector<list<string>>& deeperDependencies);
+//for testing
+public:
+	void getDeeperDependencies(string target, vector<list<string>>& deeperDependencies,vector<string>& vizitedA,vector<string> vizited, size_t idList);
 
 	bool gasNeeded(string name);
 
@@ -68,6 +68,7 @@ private:
     string supplyBuilding;
 
     vector<string> involvedUnits;
+    vector<string> vizited;
 
     std::default_random_engine randgen;
 };

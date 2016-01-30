@@ -20,25 +20,45 @@ Creator::Creator(string targetUnit, OptimizationMode modeC)
 		baseBuilding = "command_center";
 		gasMaker = "refinery";
 		supplyBuilding = "supply_depot";
-	}
-	
+	}	
+
 	involvedUnits.push_back(baseBuilding);
 	involvedUnits.push_back(baseworker);
 	involvedUnits.push_back(supplyBuilding);
 	if(gasNeeded(targetUnit))
 		involvedUnits.push_back(gasMaker);
 
+	
+
 	if(modeC == OptimizationMode::RUSH){
+		for(auto name : involvedUnits){
+			GameObject::get(name).setIntroductionProbability(10);
+			GameObject::get(name).setDeletionProbability(9);
+		}
+
+		GameObject::get(baseworker).setIntroductionProbability(40);
+		GameObject::get(baseBuilding).setIntroductionProbability(10);
+		GameObject::get(baseworker).setDeletionProbability(40);
+		GameObject::get(baseBuilding).setDeletionProbability(10);	
+
 		GameObject::get(targetUnit).setIntroductionProbability(40);
+		GameObject::get(targetUnit).setDeletionProbability(10);
+
 		vector<string> targetProducer = GameObject::get(targetUnit).getProducerNames();
 		for(auto name : targetProducer){
-			GameObject::get(name).setIntroductionProbability(10);
+			GameObject::get(name).setIntroductionProbability(20);
+			GameObject::get(name).setDeletionProbability(15);
 		}
+	}else{
+		GameObject::get(baseworker).setIntroductionProbability(40);
+		GameObject::get(baseBuilding).setIntroductionProbability(10);
+		GameObject::get(baseworker).setDeletionProbability(40);
+		GameObject::get(baseBuilding).setDeletionProbability(10);
 	}
 }
 
 /**
- * get all ivolved units
+ * get all involved units
  */
 bool Creator::gasNeeded(string name){
 	if(involvedUnits.end() != find(involvedUnits.begin(), involvedUnits.end(), name))
@@ -72,10 +92,12 @@ void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<stri
 }
 
 void Creator::createInitialBuildList(string target, vector<list<string>>& buildLists){
-	getDeeperDependencies(target, buildLists);
+	vector<string> viz;
+	buildLists.push_back({});
+	getDeeperDependencies(target, buildLists,viz,{}, 0);
 
 	for(list<string>& buildList : buildLists){
-		buildList.push_back(target);
+		//buildList.push_back(target);
 		buildList.push_front(gasMaker);
 		buildList.push_front(supplyBuilding);
 	}
@@ -87,21 +109,35 @@ void Creator::createInitialBuildList(string target, vector<list<string>>& buildL
 
 /** @brief returns recursively all possible dependency trees leading to target
  */
-void Creator::getDeeperDependencies(string target, vector<list<string>>& deeperDependencies){
-	GameObject targetGO = GameObject::get(target);
-	vector<string> dependencies = targetGO.getDependencyNames();
+void Creator::getDeeperDependencies(string target, vector<list<string>>& deeperDependencies,vector<string>& vizitedA, vector<string> vizited, size_t idList){
+	if(target == baseworker || target == baseBuilding || vizitedA.end() != find(vizitedA.begin(), vizitedA.end(), target))
+       return;
 
-	if(dependencies.size() == 0){
-		deeperDependencies.push_back({});
-		return;
-	}
+    vizitedA.push_back(target);
+    vizited.push_back(target);
 
-	for(string dependency : dependencies){
-		getDeeperDependencies(dependency, deeperDependencies);
-		for(list<string>& dependencyTree : deeperDependencies){
-			dependencyTree.push_back(dependency);
-		}
-	}
+	GameObject& targetGO = GameObject::get(target);
+    
+	vector<string> producerNames = targetGO.getProducerNames();
+	for(size_t i = 0; i < producerNames.size(); ++i){
+        if(i == producerNames.size() - 1)
+       		getDeeperDependencies(producerNames[i], deeperDependencies,vizitedA, vizited, idList);
+       	else{
+       		list<string> v = deeperDependencies[idList];
+       		deeperDependencies.push_back(v);
+       		vector<string> viz = vizited;
+       		getDeeperDependencies(producerNames[i], deeperDependencies,viz, vizited, idList + 1 + i);
+       	}
+    }
+
+	vector<string> dependencyNames = targetGO.getDependencyNames();
+	for(auto item : dependencyNames){
+       	getDeeperDependencies(item, deeperDependencies,vizitedA, vizited, idList);
+        break;
+    }
+
+    for(size_t i = 0; i < producerNames.size(); ++i)
+    	deeperDependencies[idList + i].push_back(target);    
 }
 
 void Creator::mutate(vector<list<string>>& buildLists){
