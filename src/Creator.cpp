@@ -7,7 +7,7 @@
 using namespace std;
 
 
-Creator::Creator(string targetUnit, OptimizationMode modeC) 
+Creator::Creator(string targetUnit, OptimizationMode modeC)
 : targetRace(GameObject::get(targetUnit).getRace()), targetUnit(targetUnit), modeC(modeC){
 	randgen.seed(std::random_device()());
 	if(targetRace == Race::PROTOSS){
@@ -17,7 +17,7 @@ Creator::Creator(string targetUnit, OptimizationMode modeC)
 		supplyBuilding = "pylon";
 	}else if(targetRace == Race::TERRAN){
 		baseworker = "scv";
-		baseBuilding = "command_center";    
+		baseBuilding = "command_center";
 		gasMaker = "refinery";
 		supplyBuilding = "supply_depot";
 	}
@@ -29,7 +29,7 @@ Creator::Creator(string targetUnit, OptimizationMode modeC)
 }
 
 /**
- * get all ivolved units 
+ * get all ivolved units
  */
 bool Creator::gasNeeded(string name){
 	if(involvedUnits.end() != find(involvedUnits.begin(), involvedUnits.end(), name))
@@ -39,10 +39,10 @@ bool Creator::gasNeeded(string name){
 
 	GameObject& targetGO = GameObject::get(name);
 	bool needGas = targetGO.getSupplyCost() > 0;
-   
+
 	vector<string> producerNames = targetGO.getProducerNames();
 	for(size_t i = 0; i < producerNames.size(); ++i){
-		needGas = gasNeeded(producerNames[i]) || needGas;       
+		needGas = gasNeeded(producerNames[i]) || needGas;
 	}
 
 	vector<string> dependencyNames = targetGO.getDependencyNames();
@@ -135,7 +135,7 @@ void Creator::mutate(vector<list<string>>& buildLists){
  */
 int Creator::getDistance (list<string>& a,list<string>& b) {
 
-	int value = 0;	
+	int value = 0;
 	auto ita = a.begin();
 	auto itb = b.begin();
 	for(; ita != a.end() && itb != b.end();++itb,++ita)
@@ -186,7 +186,7 @@ bool Creator::checkBuildLists(list<string> listL){
 			return false;
 		newlist.push_back(item);
 	}
-	
+
 	return true;
 }
 //checked
@@ -283,11 +283,11 @@ vector<list<string>> Creator::nPointsCrossover(list<string> a,list<string> b, si
 
             std::uniform_int_distribution<std::default_random_engine::result_type> rand(0,maxL-1);
 			size_t position = rand(randgen);
-			
+
 			auto vi = firstChild.begin();
 			advance(vi, position);
 			firstChildNew.splice(firstChildNew.begin(),firstChild ,firstChild.begin(),  vi);
-			
+
 			vi = secondChild.begin();
 			advance(vi, position);
 			secondChildNew.splice(secondChildNew.begin(),secondChild, secondChild.begin(), vi);
@@ -303,7 +303,7 @@ vector<list<string>> Creator::nPointsCrossover(list<string> a,list<string> b, si
 			ti = firstChild.begin();
 			advance(ti, position);
 			secondChildNew.splice(vi,firstChild, ti, firstChild.end());
-			
+
 			firstChild = firstChildNew;
 			secondChild = secondChildNew;
 		}
