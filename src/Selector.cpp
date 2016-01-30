@@ -76,15 +76,14 @@ void Selector<Gametype>::optimize(int maxIterations){
  *  The smaller the output the fitter the buildList. Invalid build-lists return INT_MAX
  */
 template<typename Gametype>
-int Selector<Gametype>::getCompareCriteria(Json::Value output){
-	if(output["buildlistValid"] != 1 || output["messages"].size() == 0){
-		return INT_MAX;
-	}
-
+int Selector<Gametype>::getCompareCriteria(Game& game){
 	if(mode == OptimizationMode::PUSH) {
-		return output["messages"][output["messages"].size()-1]["time"].asInt();
+		int score = game.getCurrentTime();
+		if (GameObject::get(target).getInstancesCount() == 0)
+		    score += 1000;
+		return score;
 	} else {
-		int count = 0;
+		/*int count = 0;
 
 		if(output["messages"][output["messages"].size()-1]["time"].asInt() > 360)
 			return INT_MAX;
@@ -94,7 +93,8 @@ int Selector<Gametype>::getCompareCriteria(Json::Value output){
 				if(event["type"] == "build-end" && event["name"] == target)
 					++count;
 
-		return -count;
+		return -count;*/
+		return 0;
 	}
 }
 
@@ -104,6 +104,7 @@ int Selector<Gametype>::getCompareCriteria(Json::Value output){
 template<typename Gametype>
 void Selector<Gametype>::getBestBuildLists(vector<list<string>>& newlists, list<pair<list<string>, int>>& bestLists){
 	//lastBuildLists = bestLists;
+	int compareCriteria;
 	for(auto list : newlists){
 		if(list.size() ==0)
 			continue;
@@ -111,20 +112,12 @@ void Selector<Gametype>::getBestBuildLists(vector<list<string>>& newlists, list<
 			Gametype g;
 			g.readBuildList(list);
 			g.simulate();
+			compareCriteria = getCompareCriteria(g);
 			GameObject::removeAllInstances();
-
-			Json::Value output = g.getOutput().getRawData();
-			if(output["buildlistValid"] == 1 && output["messages"].size() > 0){
-
-				int compareCriteria = getCompareCriteria(output);
-
-				if(compareCriteria != INT_MAX){
-					bestLists.push_back(make_pair(list,compareCriteria));
-				}
-			}
 		}catch(SimulationException){
-			//ignore buildList if it's invalid
+			compareCriteria = 2000;
 		}
+		bestLists.push_back(make_pair(list,compareCriteria));
 	}
 
 	bestLists.sort(ListComparator());

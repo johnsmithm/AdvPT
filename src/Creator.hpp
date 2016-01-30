@@ -24,7 +24,7 @@ public:
 
 	Creator(string targetUnit, OptimizationMode modeC);
 
-	static void createInitialBuildList(string target, vector<list<string>>& buildLists);
+	void createInitialBuildList(string target, vector<list<string>>& buildLists);
 
 	void createNextGeneration(vector<list<string>> curGen, vector<list<string>>& nextGen);
 

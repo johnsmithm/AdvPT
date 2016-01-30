@@ -35,7 +35,7 @@ class Selector{
 
 	private:
 		//vector<pair<vector<string>, int>> lastBuildLists;
-		int getCompareCriteria(Json::Value output);
+		int getCompareCriteria(Game& game);
 		OptimizationMode mode;
 		string target;
 		size_t arraySize;

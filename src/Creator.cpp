@@ -68,6 +68,8 @@ void Creator::createInitialBuildList(string target, vector<list<string>>& buildL
 
 	for(list<string>& buildList : buildLists){
 		buildList.push_back(target);
+		buildList.push_front(gasMaker);
+		buildList.push_front(supplyBuilding);
 	}
 
 	//TODO: Producer of all entries of the build-list and their dependencies

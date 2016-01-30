@@ -91,8 +91,9 @@ int main(int argc, char **argv){
     }
 
 
-    Selector<ProtossGame> selector(OptimizationMode::PUSH, "gateway");
-    // GameObject::get("stalker").setIntroductionProbability(30);
+    Selector<ProtossGame> selector(OptimizationMode::PUSH, "stargate");
+    GameObject::get("nexus").setIntroductionProbability(10);
+    GameObject::get("probe").setIntroductionProbability(40);
     selector.optimize(1000);
 
     return 1;
