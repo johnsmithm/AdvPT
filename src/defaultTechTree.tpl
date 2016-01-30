@@ -55,7 +55,7 @@ mutalisk,100,100,33,2,0,0,0,zerg, larva ,spire/greater_spire ,morph, 0\n\
 hatchery,300,0,100,0,2,0,0,zerg,drone , ,morph, 1\n\
 evolution_chamber,75,0,35,0,0,0,0,zerg,drone ,hatchery ,morph, 1\n\
 spore_crawler,75,0,30,0,0,0,0,zerg,drone ,evolution_chamber ,morph, 1\n\
-lair,150,100,80,0,2,0,0,zerg,hatchery ,hatchery/spawning_pool ,morph, 1\n\
+lair,150,100,80,0,2,0,0,zerg,hatchery ,spawning_pool ,morph, 1\n\
 spawning_pool,200,0,65,0,0,0,0,zerg,drone ,hatchery ,morph, 1\n\
 extractor,25,0,30,0,0,0,0,zerg,drone , ,morph, 1\n\
 spine_crawler,100,0,50,0,0,0,0,zerg,drone ,spawning_pool ,morph, 1\n\
