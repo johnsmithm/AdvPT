@@ -132,8 +132,8 @@ public:
     int getIntroductionProbability(){return introductionProbability;}
     int getDeletionProbability(){return deletionProbability;}
 
-    void setIntroductionProbability(double probability);
-    void setDeletionProbability(double probability);
+    void setIntroductionProbability(int probability) {introductionProbability = probability;}
+    void setDeletionProbability(int probability) {deletionProbability = probability;}
 
     static void parseFile(std::string filename);
     static void parseString(std::string input);

@@ -1,7 +1,6 @@
 #include "Creator.hpp"
 
 #include <iostream>
-#include <cstdlib>
 #include <algorithm>
 #include <list>
 
@@ -10,7 +9,7 @@ using namespace std;
 
 Creator::Creator(string targetUnit, OptimizationMode modeC) 
 : targetRace(GameObject::get(targetUnit).getRace()), targetUnit(targetUnit), modeC(modeC){
-	srand (time(NULL));
+	randgen.seed(std::random_device()());
 	if(targetRace == Race::PROTOSS){
 		baseworker = "probe";
 		baseBuilding = "nexus";
@@ -97,11 +96,13 @@ void Creator::getDeeperDependencies(string target, vector<list<string>>& deeperD
 }
 
 void Creator::mutate(vector<list<string>>& buildLists){
+    std::uniform_int_distribution<std::default_random_engine::result_type> rand(0,99);
+
 	for(list<string>& buildList : buildLists){
 		//delete an item from the build list, if a random value is lower
 		//than its deletion probability
 		for(auto iterator=buildList.begin(); iterator != buildList.end();){
-			int random = rand();
+			int random = rand(randgen);
 
 			if(random < GameObject::get(*iterator).getDeletionProbability()){
 				buildList.erase(iterator++);
@@ -115,9 +116,9 @@ void Creator::mutate(vector<list<string>>& buildLists){
 		//for(GameObject *go : /*GameObject::getAll([=](GameObject &go){return go.getRace() == targetRace;})*/){
 		for(auto name : involvedUnits){
 			auto go = GameObject::get(name);
-			int random = rand();
+			int random = rand(randgen);
 			if(random < go.getIntroductionProbability()){
-				int insertAfter = buildList.size() != 0 ? rand()%buildList.size() : 0;
+				int insertAfter = buildList.size() != 0 ? rand(randgen)%buildList.size() : 0;
 
 				auto positional=buildList.begin();
 				for(int i=0; i<insertAfter; i++, positional++);
@@ -200,9 +201,10 @@ bool Creator::meetGoal(list<string> newList, list<string> oldList){
 }
 //checked
 void Creator::getChild(list<string>& a, list<string>& b, list<string>& newList){
+    std::uniform_int_distribution<std::default_random_engine::result_type> rand(0,1);
 
 	supplyCheck = GameObject::get(baseBuilding).getSupplyProvided() - 6*GameObject::get(baseworker).getSupplyCost();
-	int coin = rand() % 2;
+	int coin = rand(randgen);
 	auto ita = a.begin();
 	auto itb = b.begin();
 	for(; ita != a.end() && itb != b.end();){
@@ -215,7 +217,7 @@ void Creator::getChild(list<string>& a, list<string>& b, list<string>& newList){
 				newList.push_back(*ita);
 		}
 		//maybe we should switch if we choose too many times one side
-		coin = rand() % 2;
+		coin = rand(randgen);
 		++ita;
 		++itb;
 	}
@@ -261,7 +263,7 @@ void Creator::reproduce(vector<list<string>>& bestLists, vector<list<string>>& c
  * blocks are different size, exchange at same position
  * n + 1 - number of blocks
  */
-vector<list<string>> nPointsCrossover(list<string> a,list<string> b, size_t n){
+vector<list<string>> Creator::nPointsCrossover(list<string> a,list<string> b, size_t n){
 	int trys = 0;
 	size_t maxL = max(a.size(), b.size()) - 1;
 	n = min(maxL / 2, n);
@@ -280,7 +282,8 @@ vector<list<string>> nPointsCrossover(list<string> a,list<string> b, size_t n){
 			firstChildNew.clear();
 			secondChildNew.clear();
 
-			size_t position = rand() % maxL;
+            std::uniform_int_distribution<std::default_random_engine::result_type> rand(0,maxL-1);
+			size_t position = rand(randgen);
 			
 			auto vi = firstChild.begin();
 			advance(vi, position);
@@ -322,10 +325,11 @@ vector<list<string>> nPointsCrossover(list<string> a,list<string> b, size_t n){
  * @brief Blocks of length n are interchanged between lists a and b.
  */
 list<string> Creator::nLengthCrossover(list<string> a,list<string> b, int n){
+    std::uniform_int_distribution<std::default_random_engine::result_type> rand(0,1);
 	supplyCheck = 0;
 	int trys = 0;
 	while(trys++ < 3){
-		int coin = rand() % 2;
+		int coin = rand(randgen);
 		auto ita = a.begin();
 		auto itb = b.begin();
 		list<string> newList;
@@ -344,7 +348,7 @@ list<string> Creator::nLengthCrossover(list<string> a,list<string> b, int n){
 				advance(itE, n);
 				newList.splice(newList.end(), b, itB, itE );
 			}
-			coin = rand() % 2;
+			coin = rand(randgen);
 			advance(ita, n);
 			advance(itb, n);
 			++j;

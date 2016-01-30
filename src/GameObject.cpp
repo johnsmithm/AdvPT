@@ -26,8 +26,8 @@ GameObject::GameObject(std::string name,
       startEnergy(startEnergy), maxEnergy(maxEnergy), productionLines(productionLines), race(race),
       producerNames(producerNames), dependencyNames(dependencyNames), buildType(buildType),
       building(isBuilding) {
-        setIntroductionProbability(5.0);
-        setDeletionProbability(5.0);
+        setIntroductionProbability(3);
+        setDeletionProbability(6);
       }
 
 
@@ -36,13 +36,6 @@ GameObjectInstance& GameObject::addNewInstance(Game& game) {
     return instances.back();
 }
 
-void GameObject::setIntroductionProbability(double probability){
-    introductionProbability = (int)(probability*RAND_MAX/100.0);
-}
-
-void GameObject::setDeletionProbability(double probability){
-    deletionProbability = (int)(probability*RAND_MAX/100.0);
-}
 
 void GameObject::morphInstance(GameObjectInstance& source) {
     auto& sourceType = source.getType();

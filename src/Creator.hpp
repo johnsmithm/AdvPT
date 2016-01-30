@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <list>
 #include <iterator>
+#include <random>
 #include "GameObject.h"
 
 #include <stdlib.h>     /* srand, rand */
@@ -43,7 +44,7 @@ public:
 
 	void getChild(list<string>& a, list<string>& b, list<string>& newList);
 
-	list<string> nPointsCrossover(list<string> a,list<string> b, size_t n);
+	vector<list<string>> nPointsCrossover(list<string> a,list<string> b, size_t n);
 	list<string> nLengthCrossover(list<string> a,list<string> b, int n);//Todo-same length for each slice
 	vector<string> nSlicesCrossover(vector<string> a,vector<string> b, int n);//Todo-different points for spliting
 
@@ -67,6 +68,8 @@ public:
     string supplyBuilding;
 
     vector<string> involvedUnits;
+
+    std::default_random_engine randgen;
 };
 
 #endif
