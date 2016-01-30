@@ -21,11 +21,20 @@ Creator::Creator(string targetUnit, OptimizationMode modeC)
 		gasMaker = "refinery";
 		supplyBuilding = "supply_depot";
 	}
+	
 	involvedUnits.push_back(baseBuilding);
 	involvedUnits.push_back(baseworker);
 	involvedUnits.push_back(supplyBuilding);
 	if(gasNeeded(targetUnit))
 		involvedUnits.push_back(gasMaker);
+
+	if(modeC == OptimizationMode::RUSH){
+		GameObject::get(targetUnit).setIntroductionProbability(40);
+		vector<string> targetProducer = GameObject::get(targetUnit).getProducerNames();
+		for(auto name : targetProducer){
+			GameObject::get(name).setIntroductionProbability(10);
+		}
+	}
 }
 
 /**
