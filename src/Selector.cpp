@@ -3,20 +3,11 @@
 #include <chrono>
 #include <iomanip>
 
-/** @brief reads a buildList from any iterable container of strings
-  */
-template<template <typename, typename> class Container>
-void debugPrint(Container<std::string, std::allocator<std::string>> &input, ostream& stream=cerr){
-    for(std::string line : input){
-        stream << line << "->";
-    }
-    stream << input.size() << endl;
-}
-
+#include "Diagnosis.hpp"
 
 template<typename Gametype>
 Selector<Gametype>::Selector(OptimizationMode setMode, string setTarget)
-:mode(setMode), target(setTarget), arraySize(500), creator(setTarget, setMode){}
+:mode(setMode), target(setTarget), arraySize(50), creator(setTarget, setMode){}
 
 
 template<typename Gametype>
@@ -41,18 +32,26 @@ void Selector<Gametype>::optimize(int maxIterations){
 
 				if(bestLists.size() != 0){
 					cout << "\t current best (score: " << bestLists.front().second << ") :";
-					debugPrint(bestLists.front().first, cout);
+					printBuildList(bestLists.front().first, cout);
 				}
 			else
 				cout << endl;
 		}
 
 		vector<list<string>> nextGen;
-		creator.createNextGeneration(curGen, nextGen);
+		#ifdef DIAGNOSE_NEXTGEN
+			measureTime<void>(bind(&Creator::createNextGeneration, &creator, curGen, ref(nextGen)), "createNextGeneration");
+		#else
+			creator.createNextGeneration(curGen, nextGen);
+		#endif
 
 		curGen.insert(curGen.end(), nextGen.begin(), nextGen.end());
 
-		getBestBuildLists(curGen, bestLists);
+		#ifdef DIAGNOSE_GETBEST
+			measureTime<void>(bind(&Selector<Gametype>::getBestBuildLists, this, ref(curGen), ref(bestLists)), "getBestBuildLists");
+		#else
+			getBestBuildLists(curGen, bestLists);
+		#endif
 
 		curGen.clear();
 		for(auto list : bestLists)
@@ -111,7 +110,11 @@ void Selector<Gametype>::getBestBuildLists(vector<list<string>>& newlists, list<
 		try{
 			Gametype g;
 			g.readBuildList(list);
-			g.simulate();
+			#ifdef DIAGNOSE_SIMULATE
+				measureTime<void>(bind(&Gametype::simulate, &g), "simulate");
+			#else
+				g.simulate();
+			#endif
 			compareCriteria = getCompareCriteria(g);
 			GameObject::removeAllInstances();
 		}catch(SimulationException){
