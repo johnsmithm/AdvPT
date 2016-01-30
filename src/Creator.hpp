@@ -41,6 +41,7 @@ public:
 
 	bool checkBuildLists(list<string> listL);
 
+	void addDrone(vector<list<string>>& buildLists);
 
 	void getChild(list<string>& a, list<string>& b, list<string>& newList);
 

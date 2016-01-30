@@ -20,7 +20,12 @@ Creator::Creator(string targetUnit, OptimizationMode modeC)
 		baseBuilding = "command_center";
 		gasMaker = "refinery";
 		supplyBuilding = "supply_depot";
-	}	
+	}else{
+		baseworker = "drone";
+		baseBuilding = "hatchery";
+		gasMaker = "extractor";
+		supplyBuilding = "overlord";
+	}
 
 	involvedUnits.push_back(baseBuilding);
 	involvedUnits.push_back(baseworker);
@@ -61,7 +66,7 @@ Creator::Creator(string targetUnit, OptimizationMode modeC)
  * get all involved units
  */
 bool Creator::gasNeeded(string name){
-	if(involvedUnits.end() != find(involvedUnits.begin(), involvedUnits.end(), name))
+	if(involvedUnits.end() != find(involvedUnits.begin(), involvedUnits.end(), name) || name == "larva")
 		return false;
 
 	involvedUnits.push_back(name);
@@ -91,6 +96,29 @@ void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<stri
 	nextGen.insert(nextGen.end(), curGen.begin(), curGen.end());
 }
 
+void Creator::addDrone(vector<list<string>>& buildLists){
+	for(list<string> & buildList : buildLists){
+		int count = 0;
+		for(auto item : buildList)
+			if(GameObject::get(item).getProducerNames()[0] == "drone")
+				++count;
+		count*=2;	
+		buildList.push_front(gasMaker);
+		auto it = buildList.begin();
+		while(count>=0 && it != buildList.end()){
+			if(*it == "spawning_pool"){
+				buildList.insert(it, "drone");
+				++it;
+				buildList.insert(it, "queen");
+			}else{
+				buildList.insert(it, "drone");
+				++it;
+			}
+			--count;
+		}
+	}
+}
+
 void Creator::createInitialBuildList(string target, vector<list<string>>& buildLists){
 	vector<string> viz;
 	buildLists.push_back({});
@@ -102,6 +130,10 @@ void Creator::createInitialBuildList(string target, vector<list<string>>& buildL
 		buildList.push_front(supplyBuilding);
 	}
 
+	if(targetRace == Race::ZERG){
+		addDrone(buildLists);
+	}
+
 	//TODO: Producer of all entries of the build-list and their dependencies
 	//have to be added too... But in which order? Maybe we should not generate
 	//a buildList based on dependencies at all...
@@ -110,7 +142,8 @@ void Creator::createInitialBuildList(string target, vector<list<string>>& buildL
 /** @brief returns recursively all possible dependency trees leading to target
  */
 void Creator::getDeeperDependencies(string target, vector<list<string>>& deeperDependencies,vector<string>& vizitedA, vector<string> vizited, size_t idList){
-	if(target == baseworker || target == baseBuilding || vizitedA.end() != find(vizitedA.begin(), vizitedA.end(), target))
+	if(target == "larva" || target == baseworker || target == baseBuilding 
+		|| vizitedA.end() != find(vizitedA.begin(), vizitedA.end(), target))
        return;
 
     vizitedA.push_back(target);
