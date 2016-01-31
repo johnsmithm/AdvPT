@@ -132,7 +132,7 @@ int main_optimization(int argc, char **argv){
                 Selector<ProtossGame> selector(mode, target);
                 GameObject::get("nexus").setIntroductionProbability(10);
                 GameObject::get("probe").setIntroductionProbability(40);
-                selector.optimize(1000);
+                selector.optimize(10000);
                 return 0;
             }
             case Race::ZERG: {
