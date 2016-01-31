@@ -97,6 +97,7 @@ class GameObject {
 public:
     // Iterator type; allows to iterate through GameObjectInstances (see begin(), end())
     using InstancesIter = std::list<GameObjectInstance>::iterator;
+    using instances = std::unordered_map<GameObject *, std::list<GameObjectInstance>>;
 
     GameObject(std::string name,
                unsigned int mineralCost, unsigned int gasCost, unsigned int buildTime,
@@ -118,17 +119,17 @@ public:
     BuildType getBuildType() const {return buildType;}
     bool isBuilding() const {return building;}
 
-    bool areDependenciesMet(int gameId) const;
-    GameObjectInstance* getPossibleProducer(int gameId);
+    bool areDependenciesMet(instances& inst) const;
+    GameObjectInstance* getPossibleProducer(instances& inst);
 
-    unsigned int getInstancesCount(int gameId) {return instances(gameId).size();}
-    unsigned int getFreeInstancesCount(int gameId);
+    unsigned int getInstancesCount(instances& inst) {return inst[this].size();}
+    unsigned int getFreeInstancesCount(instances& inst);
 
-    GameObjectInstance& addNewInstance(int gameId, Game& game);
-    void morphInstance(int gameId, GameObjectInstance& source);
+    GameObjectInstance& addNewInstance(instances& inst, Game& game);
+    void morphInstance(instances& inst, GameObjectInstance& source);
 
-    InstancesIter begin(int gameId);
-    InstancesIter end(int gameId);
+    InstancesIter begin(instances& inst);
+    InstancesIter end(instances& inst);
 
     int getIntroductionProbability(){return introductionProbability;}
     int getDeletionProbability(){return deletionProbability;}
@@ -142,17 +143,10 @@ public:
 
     static GameObject& get(const std::string name);
     static std::vector<GameObject*> getAll(std::function<bool(GameObject&)> filter=[](GameObject &go){return true;});
-    static std::vector<GameObjectInstance*> getAllInstances(int gameId, std::function<bool(GameObjectInstance&)> filter=[](GameObjectInstance &goi){return true;});
-    static void removeAllInstances(int gameId);
+    static std::vector<GameObjectInstance*> getAllInstances(instances& inst, std::function<bool(GameObjectInstance&)> filter=[](GameObjectInstance &goi){return true;});
+    static void removeAllInstances(instances& inst);
 
-    static void increaseInstancesEnergy(int gameId, int value=DEFAULT_ENERGY_INCREASE);
-
-    std::list<GameObjectInstance>& instances(int gameId){
-        //lock for thread safety: this methods creates lists of instances, if needed
-        std::lock_guard<std::mutex> lock(instancesCreationMutex);
-        return instances_per_game[gameId];
-    }
-
+    static void increaseInstancesEnergy(instances& inst, int value=DEFAULT_ENERGY_INCREASE);
 
 private:
     std::string name;
@@ -176,9 +170,6 @@ private:
     //probabilities between 0 and RAND_MAX
     int introductionProbability; //prob that this object will be introduced into buildlist on mutate
     int deletionProbability; //prob that this object will be deleted from buildlist on mutate
-
-    std::unordered_map<int, std::list<GameObjectInstance>> instances_per_game;
-    static std::mutex instancesCreationMutex;
 
     static std::unordered_map<std::string, GameObject> gameObjects;
 };

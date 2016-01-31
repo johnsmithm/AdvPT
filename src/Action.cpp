@@ -15,10 +15,10 @@ bool BuildAction::tryToStart() {
     if (game.getGasAmount() < objectToBuild.getGasCost() ||
         game.getMineralAmount() < objectToBuild.getMineralCost() ||
         game.getAvailableSupplyAmount() < objectToBuild.getSupplyCost() ||
-        (!objectToBuild.areDependenciesMet(game.getId())))
+        (!objectToBuild.areDependenciesMet(game.getInstances())))
         return false;
 
-    auto producer = objectToBuild.getPossibleProducer(getGame().getId());
+    auto producer = objectToBuild.getPossibleProducer(getGame().getInstances());
     if (producer == nullptr)
         return false;
     producingInstance = producer;
@@ -72,11 +72,11 @@ void BuildAction::finish() {
 
     switch (objectToBuild.getBuildType()) {
     case BuildType::PAIRMORPH:
-        objectToBuild.addNewInstance(game.getId(), game);
+        objectToBuild.addNewInstance(game.getInstances(), game);
         game.setTotalSupplyAmount(game.getTotalSupplyAmount() - producingType.getSupplyProvided());
         // NO BREAK - intended fallthrough
     case BuildType::MORPH:
-        objectToBuild.morphInstance(game.getId(), *producingInstance);
+        objectToBuild.morphInstance(game.getInstances(), *producingInstance);
         instance = producingInstance;
         game.setTotalSupplyAmount(game.getTotalSupplyAmount() - producingType.getSupplyProvided());
         break;
@@ -84,7 +84,7 @@ void BuildAction::finish() {
         producingInstance->decreaseBusiness();
         // NO BREAK - intended fallthrough
     case BuildType::INSTANTIATE:
-        instance = &objectToBuild.addNewInstance(game.getId(), game);
+        instance = &objectToBuild.addNewInstance(game.getInstances(), game);
         break;
     }
 
@@ -135,5 +135,5 @@ void QueenAction::finish() {
     target.setOccupiedLarvaSlots(occupied + increase);
     game.setPreviousLarvaCount(game.getPreviousLarvaCount() + increase);
     for (unsigned int i = 0; i < increase; ++i)
-        game.larva.addNewInstance(game.getId(), game);
+        game.larva.addNewInstance(game.getInstances(), game);
 }

@@ -13,19 +13,18 @@
 
 using namespace std;
 
-int Game::autoIncrementIDs=1;
 
-Game::Game(int gameId, GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter)
-    : gameId(gameId), mainBuilding(mainBuilding), worker(worker), geyserExploiter(geyserExploiter) {
+Game::Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter)
+    : mainBuilding(mainBuilding), worker(worker), geyserExploiter(geyserExploiter) {
 
     setMineralAmount(INITIAL_MINERAL_AMOUNT);
 
     // create initial workers and main building
     for (int i = 0; i < INITIAL_WORKER_COUNT; ++i) {
-        worker.addNewInstance(getId(), *this);
+        worker.addNewInstance(getInstances(), *this);
         usedSupply += FP_FACTOR;
     }
-    mainBuilding.addNewInstance(getId(), *this);
+    mainBuilding.addNewInstance(getInstances(), *this);
     totalSupply += mainBuilding.getSupplyProvided();
 }
 
@@ -40,7 +39,7 @@ bool Game::timeStep() {
     gas += gasMiningWorkers * gasRate;
 
     //increase energy on all buildings
-    GameObject::increaseInstancesEnergy(getId(), energyRate);
+    GameObject::increaseInstancesEnergy(getInstances(), energyRate);
 
     // Iterate over all running build actions and finish them if possible.
     // std::remove_if moves all finished actions to the end of the list and returns an iterator to the first finished action.
@@ -84,10 +83,10 @@ bool Game::timeStep() {
 
     // Reassign workers when we finish mining resources for a build item or
     // We have a change in the workers business
-    if(finishTimeCurrentBuildItem == curTime || freeWorkers != worker.getFreeInstancesCount(getId())
-       || previousGeyserExploiterCount != geyserExploiter.getInstancesCount(getId())) {
+    if(finishTimeCurrentBuildItem == curTime || freeWorkers != worker.getFreeInstancesCount(getInstances())
+       || previousGeyserExploiterCount != geyserExploiter.getInstancesCount(getInstances())) {
         generateResources();
-        previousGeyserExploiterCount = geyserExploiter.getInstancesCount(getId());
+        previousGeyserExploiterCount = geyserExploiter.getInstancesCount(getInstances());
     }
 
     // If a new message was created, populate its global entries.
@@ -214,7 +213,7 @@ void Game::simulate() {
 
     output.buildListPrecheck(true);
 
-    output.initSimulation(getId());
+    output.initSimulation(getInstances());
 
     currBuildListItem = buildList.begin();
 
@@ -316,7 +315,7 @@ void Game::generateResources() {
     unsigned int oldMineralMiningWorkers = mineralMiningWorkers;
     gasMiningWorkers = 0;
     mineralMiningWorkers = 0;
-    freeWorkers = worker.getFreeInstancesCount(getId());
+    freeWorkers = worker.getFreeInstancesCount(getInstances());
 
     int neededGas = gasDifference < 0 ? 0 : gasDifference;
     int neededMineral = mineralDifference < 0 ? 0 : mineralDifference;
@@ -325,14 +324,14 @@ void Game::generateResources() {
         mineralMiningWorkers = freeWorkers;
     } else
         if (neededMineral == 0) {
-            gasMiningWorkers = min(geyserExploiter.getInstancesCount(getId()) * 3, freeWorkers);
+            gasMiningWorkers = min(geyserExploiter.getInstancesCount(getInstances()) * 3, freeWorkers);
             mineralMiningWorkers = freeWorkers - gasMiningWorkers;
 
         } else if (neededGas == 0) {
             mineralMiningWorkers = freeWorkers;
             gasMiningWorkers = 0;
         } else {
-            int MaxGasMiningWorkers = min(geyserExploiter.getInstancesCount(getId()) * 3, freeWorkers);
+            int MaxGasMiningWorkers = min(geyserExploiter.getInstancesCount(getInstances()) * 3, freeWorkers);
             gasMiningWorkers = ternarySearch(0, MaxGasMiningWorkers, neededGas, neededMineral, freeWorkers);
             mineralMiningWorkers = freeWorkers - gasMiningWorkers;
         }
@@ -350,33 +349,33 @@ void Game::generateResources() {
 }
 
 
-ProtossGame::ProtossGame(int gameId)
-    : Game(gameId, GameObject::get("nexus"), GameObject::get("probe"),
+ProtossGame::ProtossGame()
+    : Game(GameObject::get("nexus"), GameObject::get("probe"),
            GameObject::get("assimilator")) {}
 
 
-TerranGame::TerranGame(int gameId)
-    : Game(gameId, GameObject::get("command_center"), GameObject::get("scv"),
+TerranGame::TerranGame()
+    : Game(GameObject::get("command_center"), GameObject::get("scv"),
            GameObject::get("refinery")), orbitalCommand(GameObject::get("orbital_command")) {}
 
 
-ZergGame::ZergGame(int gameId)
-    : Game(gameId, GameObject::get("hatchery"), GameObject::get("drone"),
+ZergGame::ZergGame()
+    : Game(GameObject::get("hatchery"), GameObject::get("drone"),
            GameObject::get("extractor")),
       larva(GameObject::get("larva")), queen(GameObject::get("queen")),
       larvaProducerTypes{&GameObject::get("hatchery"), &GameObject::get("lair"), &GameObject::get("hive")} {
 
     // Add overlord
     auto& overlord = GameObject::get("overlord");
-    overlord.addNewInstance(getId(), *this);
+    overlord.addNewInstance(getInstances(), *this);
     setTotalSupplyAmount(getTotalSupplyAmount() + overlord.getSupplyProvided());
     setUsedSupplyAmount(getUsedSupplyAmount() + overlord.getSupplyCost());
 
     // Add initial larvae
     for (int i = 0; i < 3; ++i)
-        larva.addNewInstance(getId(), *this);
-    assert(mainBuilding.begin(getId()) != mainBuilding.end(getId()));
-    mainBuilding.begin(getId())->setOccupiedLarvaSlots(3);
+        larva.addNewInstance(getInstances(), *this);
+    assert(mainBuilding.begin(getInstances()) != mainBuilding.end(getInstances()));
+    mainBuilding.begin(getInstances())->setOccupiedLarvaSlots(3);
     previousLarvaCount = 3;
 }
 
@@ -390,9 +389,9 @@ void ProtossGame::invokeRaceActions(bool buildTriggered) {
                    && goi.getType().isBuilding();
         };
 
-        for (GameObjectInstance& instance : mainBuilding.instances(getId())) {
+        for (GameObjectInstance& instance : getInstances()[&mainBuilding]) {
             while (instance.hasEnergy(BOOST_REQUIRED_ENERGY)) {
-                vector<GameObjectInstance*> targets = GameObject::getAllInstances(getId(), isPotentialBoostTarget);
+                vector<GameObjectInstance*> targets = GameObject::getAllInstances(getInstances(), isPotentialBoostTarget);
 
                 if (targets.size() == 0)
                     break;
@@ -412,7 +411,7 @@ void ProtossGame::invokeRaceActions(bool buildTriggered) {
 
 void TerranGame::invokeRaceActions(bool buildTriggered) {
     if (!buildTriggered) {
-        for (GameObjectInstance& instance : orbitalCommand.instances(getId())) {
+        for (GameObjectInstance& instance : getInstances()[&orbitalCommand]) {
             if (instance.hasEnergy(MULE_REQUIRED_ENERGY)) {
 
                 auto action = make_shared<MuleAction>(MuleAction(*this, instance));
@@ -432,14 +431,14 @@ void TerranGame::invokeRaceActions(bool buildTriggered) {
 void ZergGame::invokeRaceActions(bool buildTriggered) {
     // Invoke QueenAction
     if (!buildTriggered) {
-        for (GameObjectInstance& instance : queen.instances(getId())) {
+        for (GameObjectInstance& instance : getInstances()[&queen]) {
             if (instance.hasEnergy(QUEEN_EGGS_REQUIRED_ENERGY)) {
 
                 auto findTarget = [&]() {
                     GameObjectInstance* possibleTarget = nullptr;
                     unsigned int lowest = MAX_LARVA_SLOTS;
                     for (GameObject* go : larvaProducerTypes) {
-                        for (GameObjectInstance& goi : go->instances(getId())) {
+                        for (GameObjectInstance& goi : getInstances()[go]) {
                             unsigned int occupied = goi.getOccupiedLarvaSlots() + goi.getInjectedLarvaeEggs();
                             if (occupied < 3) {
                                 return &goi;
@@ -469,10 +468,10 @@ void ZergGame::invokeRaceActions(bool buildTriggered) {
     }
 
     // Get the larvae decrease between this and the previous execution
-    unsigned int larvaDecrease = previousLarvaCount - larva.getFreeInstancesCount(getId());
+    unsigned int larvaDecrease = previousLarvaCount - larva.getFreeInstancesCount(getInstances());
 
     for (GameObject* go : larvaProducerTypes) {
-        for (GameObjectInstance& instance : go->instances(getId())) {
+        for (GameObjectInstance& instance : getInstances()[go]) {
             if (larvaDecrease >= instance.getOccupiedLarvaSlots()) {
                 larvaDecrease -= instance.getOccupiedLarvaSlots();
                 instance.setOccupiedLarvaSlots(0);
@@ -484,7 +483,7 @@ void ZergGame::invokeRaceActions(bool buildTriggered) {
             if (instance.getOccupiedLarvaSlots() < LARVA_SLOTS) {
                 if (instance.decreaseTimeTillLarvaSpawn() == 0) {
                     instance.setOccupiedLarvaSlots(instance.getOccupiedLarvaSlots() + 1);
-                    larva.addNewInstance(getId(), *this);
+                    larva.addNewInstance(getInstances(), *this);
                     instance.resetTimeTillLarvaSpawn();
                 }
             }
@@ -492,6 +491,6 @@ void ZergGame::invokeRaceActions(bool buildTriggered) {
     }
 
     // Update the previous larvaCount
-    previousLarvaCount = larva.getFreeInstancesCount(getId());
+    previousLarvaCount = larva.getFreeInstancesCount(getInstances());
 
 }

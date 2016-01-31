@@ -89,12 +89,12 @@ template<typename Gametype>
 int Selector<Gametype>::getCompareCriteria(Game& game){
 	if(mode == OptimizationMode::PUSH) {
 		int score = game.getCurrentTime();
-		if (GameObject::get(target).getInstancesCount(game.getId()) == 0)
+		if (GameObject::get(target).getInstancesCount(game.getInstances()) == 0)
 		    score += 1000;
 		return score;
 	} else {
 		if(game.getCurrentTime() - 1 <= 360)
-			return (- GameObject::get(target).getInstancesCount(game.getId()));
+			return (- GameObject::get(target).getInstancesCount(game.getInstances()));
 		return INT_MAX;
 	}
 }
@@ -142,7 +142,7 @@ void Selector<Gametype>::threaded_evalution(vector<list<string>>& newlists, size
 		if(list.size() ==0)
 			continue;
 		try{
-			Gametype g(startIndex);
+			Gametype g;
 			g.readBuildList(list);
 			#ifdef DIAGNOSE_SIMULATE
 				measureTime<void>(bind(&Gametype::simulate, &g), "simulate");
@@ -150,11 +150,9 @@ void Selector<Gametype>::threaded_evalution(vector<list<string>>& newlists, size
 				g.simulate();
 			#endif
 			compareCriteria = getCompareCriteria(g);
-			GameObject::removeAllInstances(startIndex);
 		}catch(SimulationException e){
 			// cerr << e.what() << endl;
 			compareCriteria = 2000;
-			GameObject::removeAllInstances(startIndex);
 		}
 		localBestLists.push_back(make_pair(list,compareCriteria));
 

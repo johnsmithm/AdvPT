@@ -13,7 +13,6 @@ static const char DELIMETER    = ',';
 static const char SUBDELIMITER = '/';
 
 unordered_map<string, GameObject> GameObject::gameObjects;
-std::mutex GameObject::instancesCreationMutex;
 
 
 GameObject::GameObject(std::string name,
@@ -32,15 +31,15 @@ GameObject::GameObject(std::string name,
       }
 
 
-GameObjectInstance& GameObject::addNewInstance(int gameId, Game& game) {
-    instances(gameId).emplace_back(*this, game.newInstanceID(), startEnergy, productionLines);
-    return instances(gameId).back();
+GameObjectInstance& GameObject::addNewInstance(instances& inst, Game& game) {
+    inst[this].emplace_back(*this, game.newInstanceID(), startEnergy, productionLines);
+    return inst[this].back();
 }
 
 
-void GameObject::morphInstance(int gameId, GameObjectInstance& source) {
+void GameObject::morphInstance(instances& inst, GameObjectInstance& source) {
     auto& sourceType = source.getType();
-    auto& sourceInstances = sourceType.instances(gameId);
+    auto& sourceInstances = inst[&sourceType];
     auto it = find(sourceInstances.begin(), sourceInstances.end(), source);
 
     assert(it != sourceInstances.end());
@@ -50,7 +49,7 @@ void GameObject::morphInstance(int gameId, GameObjectInstance& source) {
     source.setEnergy(startEnergy);
     source.setFreeProductionLines(productionLines);
 
-    instances(gameId).splice(instances(gameId).end(), sourceInstances, it);
+    inst[this].splice(inst[this].end(), sourceInstances, it);
 }
 
 
@@ -167,11 +166,11 @@ vector<GameObject*> GameObject::getAll(function<bool(GameObject&)> filter) {
     return results;
 }
 
-vector<GameObjectInstance*> GameObject::getAllInstances(int gameId, function<bool(GameObjectInstance&)> filter) {
+vector<GameObjectInstance*> GameObject::getAllInstances(instances& inst, function<bool(GameObjectInstance&)> filter) {
     vector<GameObjectInstance*> results;
 
     for(auto& go : gameObjects) {
-        for(GameObjectInstance& goi : go.second.instances(gameId)) {
+        for(GameObjectInstance& goi : inst[&(go.second)]) {
             if(filter(goi))
                 results.push_back(&goi);
         }
@@ -187,7 +186,7 @@ vector<GameObjectInstance*> GameObject::getAllInstances(int gameId, function<boo
  *
  *  @return a pointer to the possible producer or nullptr if there is no available producer
  */
-GameObjectInstance* GameObject::getPossibleProducer(int gameId) {
+GameObjectInstance* GameObject::getPossibleProducer(instances& inst) {
     static const auto canMorph = [](GameObjectInstance& inst) {
         // When mophing all production lines must be free
         return (!inst.isDead()) && (inst.getFreeProductionLines() == inst.getType().getProductionLines());
@@ -201,18 +200,18 @@ GameObjectInstance* GameObject::getPossibleProducer(int gameId) {
 
     for(string producerName : producerNames) {
         GameObject& producerType = get(producerName);
-        auto prod = find_if(producerType.begin(gameId), producerType.end(gameId), predicate);
-        if (prod != producerType.end(gameId))
+        auto prod = find_if(producerType.begin(inst), producerType.end(inst), predicate);
+        if (prod != producerType.end(inst))
             return &(*prod);
     }
     return nullptr;
 }
 
 
-bool GameObject::areDependenciesMet(int gameId) const {
+bool GameObject::areDependenciesMet(instances& inst) const {
     if (dependencyNames.size() == 0) return true;
     for(string dependencyName : dependencyNames) {
-        if(get(dependencyName).instances(gameId).size() > 0) {
+        if(inst[&(get(dependencyName))].size() > 0) {
             return true;
         }
     }
@@ -224,28 +223,28 @@ bool GameObject::areDependenciesMet(int gameId) const {
  *
  *  @return the number of the currently free instances
  */
-unsigned int GameObject::getFreeInstancesCount(int gameId) {
+unsigned int GameObject::getFreeInstancesCount(instances& inst) {
     unsigned int free = 0;
-    for (auto unit : instances(gameId))
+    for (auto unit : inst[this])
         if ((!unit.isDead()) && (unit.getFreeProductionLines() > 0))
             ++free;
     return free;
 }
 
 
-GameObject::InstancesIter GameObject::begin(int gameId) {
-    return instances(gameId).begin();
+GameObject::InstancesIter GameObject::begin(instances& inst) {
+    return inst[this].begin();
 }
 
 
-GameObject::InstancesIter GameObject::end(int gameId) {
-    return instances(gameId).end();
+GameObject::InstancesIter GameObject::end(instances& inst) {
+    return inst[this].end();
 }
 
 
-void GameObject::increaseInstancesEnergy(int gameId, int value) {
+void GameObject::increaseInstancesEnergy(instances& inst, int value) {
     for(auto& go : gameObjects){
-        for(GameObjectInstance& goi : go.second.instances(gameId)){
+        for(GameObjectInstance& goi : inst[&(go.second)]){
             goi.updateEnergy(value);
             if(goi.getEnergy() > go.second.maxEnergy)
                 goi.setEnergy(go.second.maxEnergy);
@@ -253,9 +252,9 @@ void GameObject::increaseInstancesEnergy(int gameId, int value) {
     }
 }
 
-void GameObject::removeAllInstances(int gameId){
+void GameObject::removeAllInstances(instances& inst){
     for(auto& go : gameObjects){
-        go.second.instances(gameId).clear();
+        inst[&(go.second)].clear();
     }
 }
 

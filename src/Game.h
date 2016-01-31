@@ -61,15 +61,11 @@ public:
 
     virtual Race getRace() const = 0;
 
-    /** sets gameId manually. use only negative numbers for manual IDs */
-    void setId(int id){gameId=id;}
-    int getId(){return gameId;}
+    inline std::unordered_map<GameObject *, std::list<GameObjectInstance>>& getInstances(){return instances;}
 
 
 protected:
-    Game(int gameId, GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
-
-    int gameId=0;
+    Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
 
     GameObject& mainBuilding;
     GameObject& worker;
@@ -80,10 +76,6 @@ protected:
     void debugOutput(Action& action, bool start);
 
     virtual void invokeRaceActions(bool buildTriggered) = 0;
-
-    static int autoIncrementIDs;
-    static int newId(){return autoIncrementIDs++;}
-
 private:
 
     unsigned int curTime = 1;
@@ -121,13 +113,15 @@ private:
     void updateMessagesForWorkersReassignment();
     int ternarySearch(int left, int right, int neededGas,int neededMineral, int freeWorkers);
     int getMiningTime(int gasMiningWorkers, int mineralMiningWorkers, int neededGas,int neededMineral);
+
+    //this is super duper hacky, but we don't have the time to do this properly :(
+    std::unordered_map<GameObject *, std::list<GameObjectInstance>> instances;
 };
 
 
 class ProtossGame : public Game {
 public:
-    ProtossGame() : ProtossGame(newId()){};
-    ProtossGame(int gameId);
+    ProtossGame();
 
     virtual Race getRace() const {return Race::PROTOSS;}
 
@@ -138,8 +132,7 @@ protected:
 
 class TerranGame : public Game {
 public:
-    TerranGame() : TerranGame(newId()){};
-    TerranGame(int gameId);
+    TerranGame();
 
     virtual Race getRace() const {return Race::TERRAN;}
 
@@ -155,8 +148,7 @@ public:
     GameObject& larva;
     GameObject& queen;
 
-    ZergGame() : ZergGame(newId()){};
-    ZergGame(int gameId);
+    ZergGame();
 
     virtual Race getRace() const {return Race::ZERG;}
     unsigned int getPreviousLarvaCount() {return previousLarvaCount;}

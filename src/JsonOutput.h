@@ -17,7 +17,7 @@ public:
 
     void buildListPrecheck(bool isValid);
 
-    void initSimulation(int gameId);
+    void initSimulation(std::unordered_map<GameObject *, std::list<GameObjectInstance>> inst);
 
     void emptyMessage(Game& game);
 
