@@ -33,7 +33,7 @@ Creator::Creator(string targetUnit, OptimizationMode modeC)
 	if(gasNeeded(targetUnit))
 		involvedUnits.push_back(gasMaker);
 
-	
+
 
 	if(modeC == OptimizationMode::RUSH){
 		for(auto name : involvedUnits){
@@ -44,7 +44,7 @@ Creator::Creator(string targetUnit, OptimizationMode modeC)
 		GameObject::get(baseworker).setIntroductionProbability(40);
 		GameObject::get(baseBuilding).setIntroductionProbability(10);
 		GameObject::get(baseworker).setDeletionProbability(40);
-		GameObject::get(baseBuilding).setDeletionProbability(10);	
+		GameObject::get(baseBuilding).setDeletionProbability(10);
 
 		GameObject::get(targetUnit).setIntroductionProbability(40);
 		GameObject::get(targetUnit).setDeletionProbability(10);
@@ -88,7 +88,7 @@ bool Creator::gasNeeded(string name){
 }
 
 void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<string>>& nextGen){
-	if(nextGen.size() != 0 && curGen.size() != 0)
+	if(curGen.size() != 0)
 		reproduce(curGen, nextGen);
 
 	mutate(curGen);
@@ -102,7 +102,7 @@ void Creator::addDrone(vector<list<string>>& buildLists){
 		for(auto item : buildList)
 			if(GameObject::get(item).getProducerNames()[0] == "drone")
 				++count;
-		count*=2;	
+		count*=2;
 		buildList.push_front(gasMaker);
 		auto it = buildList.begin();
 		while(count>=0 && it != buildList.end()){
@@ -142,7 +142,7 @@ void Creator::createInitialBuildList(string target, vector<list<string>>& buildL
 /** @brief returns recursively all possible dependency trees leading to target
  */
 void Creator::getDeeperDependencies(string target, vector<list<string>>& deeperDependencies,vector<string>& vizitedA, vector<string> vizited, size_t idList){
-	if(target == "larva" || target == baseworker || target == baseBuilding 
+	if(target == "larva" || target == baseworker || target == baseBuilding
 		|| vizitedA.end() != find(vizitedA.begin(), vizitedA.end(), target))
        return;
 
@@ -150,7 +150,7 @@ void Creator::getDeeperDependencies(string target, vector<list<string>>& deeperD
     vizited.push_back(target);
 
 	GameObject& targetGO = GameObject::get(target);
-    
+
 	vector<string> producerNames = targetGO.getProducerNames();
 	for(size_t i = 0; i < producerNames.size(); ++i){
         if(i == producerNames.size() - 1)
@@ -170,7 +170,7 @@ void Creator::getDeeperDependencies(string target, vector<list<string>>& deeperD
     }
 
     for(size_t i = 0; i < producerNames.size(); ++i)
-    	deeperDependencies[idList + i].push_back(target);    
+    	deeperDependencies[idList + i].push_back(target);
 }
 
 void Creator::mutate(vector<list<string>>& buildLists){
@@ -332,7 +332,6 @@ void Creator::reproduce(vector<list<string>>& bestLists, vector<list<string>>& c
 		getChild(bestLists[i],bestLists[maxID],newChild);
 		children.push_back(newChild);
 	}
-
 }
 
 /**
