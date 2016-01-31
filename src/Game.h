@@ -61,8 +61,15 @@ public:
 
     virtual Race getRace() const = 0;
 
+    /** sets gameId manually. use only negative numbers for manual IDs */
+    void setId(int id){gameId=id;}
+    int getId(){return gameId;}
+
+
 protected:
-    Game(GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
+    Game(int gameId, GameObject& mainBuilding, GameObject& worker, GameObject& geyserExploiter);
+
+    int gameId=0;
 
     GameObject& mainBuilding;
     GameObject& worker;
@@ -74,7 +81,11 @@ protected:
 
     virtual void invokeRaceActions(bool buildTriggered) = 0;
 
+    static int autoIncrementIDs;
+    static int newId(){return autoIncrementIDs++;}
+
 private:
+
     unsigned int curTime = 1;
 
     unsigned int minerals = 0;
@@ -115,7 +126,8 @@ private:
 
 class ProtossGame : public Game {
 public:
-    ProtossGame();
+    ProtossGame() : ProtossGame(newId()){};
+    ProtossGame(int gameId);
 
     virtual Race getRace() const {return Race::PROTOSS;}
 
@@ -126,7 +138,8 @@ protected:
 
 class TerranGame : public Game {
 public:
-    TerranGame();
+    TerranGame() : TerranGame(newId()){};
+    TerranGame(int gameId);
 
     virtual Race getRace() const {return Race::TERRAN;}
 
@@ -142,7 +155,8 @@ public:
     GameObject& larva;
     GameObject& queen;
 
-    ZergGame();
+    ZergGame() : ZergGame(newId()){};
+    ZergGame(int gameId);
 
     virtual Race getRace() const {return Race::ZERG;}
     unsigned int getPreviousLarvaCount() {return previousLarvaCount;}

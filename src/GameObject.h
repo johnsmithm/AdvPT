@@ -5,6 +5,7 @@
 #include <iostream>
 #include <list>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -117,17 +118,17 @@ public:
     BuildType getBuildType() const {return buildType;}
     bool isBuilding() const {return building;}
 
-    bool areDependenciesMet() const;
-    GameObjectInstance* getPossibleProducer();
+    bool areDependenciesMet(int gameId) const;
+    GameObjectInstance* getPossibleProducer(int gameId);
 
-    unsigned int getInstancesCount() const {return instances.size();}
-    unsigned int getFreeInstancesCount() const;
+    unsigned int getInstancesCount(int gameId) {return instances(gameId).size();}
+    unsigned int getFreeInstancesCount(int gameId);
 
-    GameObjectInstance& addNewInstance(Game& game);
-    void morphInstance(GameObjectInstance& source);
+    GameObjectInstance& addNewInstance(int gameId, Game& game);
+    void morphInstance(int gameId, GameObjectInstance& source);
 
-    InstancesIter begin();
-    InstancesIter end();
+    InstancesIter begin(int gameId);
+    InstancesIter end(int gameId);
 
     int getIntroductionProbability(){return introductionProbability;}
     int getDeletionProbability(){return deletionProbability;}
@@ -141,10 +142,17 @@ public:
 
     static GameObject& get(const std::string name);
     static std::vector<GameObject*> getAll(std::function<bool(GameObject&)> filter=[](GameObject &go){return true;});
-    static std::vector<GameObjectInstance*> getAllInstances(std::function<bool(GameObjectInstance&)> filter=[](GameObjectInstance &goi){return true;});
-    static void removeAllInstances();
+    static std::vector<GameObjectInstance*> getAllInstances(int gameId, std::function<bool(GameObjectInstance&)> filter=[](GameObjectInstance &goi){return true;});
+    static void removeAllInstances(int gameId);
 
-    static void increaseInstancesEnergy(int value=DEFAULT_ENERGY_INCREASE);
+    static void increaseInstancesEnergy(int gameId, int value=DEFAULT_ENERGY_INCREASE);
+
+    std::list<GameObjectInstance>& instances(int gameId){
+        //lock for thread safety: this methods creates lists of instances, if needed
+        std::lock_guard<std::mutex> lock(instancesCreationMutex);
+        return instances_per_game[gameId];
+    }
+
 
 private:
     std::string name;
@@ -169,7 +177,8 @@ private:
     int introductionProbability; //prob that this object will be introduced into buildlist on mutate
     int deletionProbability; //prob that this object will be deleted from buildlist on mutate
 
-    std::list<GameObjectInstance> instances;
+    std::unordered_map<int, std::list<GameObjectInstance>> instances_per_game;
+    static std::mutex instancesCreationMutex;
 
     static std::unordered_map<std::string, GameObject> gameObjects;
 };

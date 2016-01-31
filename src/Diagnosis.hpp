@@ -1,12 +1,12 @@
 #include <chrono>
 #include <iostream>
 
-//#define DIAGNOSE
+#define DIAGNOSE
 
 #ifdef DIAGNOSE
-	#define DIAGNOSE_NEXTGEN
-	#define DIAGNOSE_GETBEST
-	#define DIAGNOSE_SIMULATE
+	// #define DIAGNOSE_NEXTGEN
+	// #define DIAGNOSE_GETBEST
+	// #define DIAGNOSE_SIMULATE
 	#define DIAGNOSE_PRINT_RESULT
 	#define DIAGNOSE_PRINT_STEPS
 #endif

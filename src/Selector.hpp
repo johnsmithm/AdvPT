@@ -2,8 +2,10 @@
 #define _SELECTOR_H_
 
 #include <functional>
+#include <mutex>
 #include <queue>
 #include <list>
+#include <thread>
 #include <vector>
 #include <utility>
 #include <climits>
@@ -34,11 +36,16 @@ class Selector{
 		void optimize(int maxIterations);
 
 	private:
-		//vector<pair<vector<string>, int>> lastBuildLists;
 		int getCompareCriteria(Game& game);
+		void threaded_evalution(vector<list<string>>& newlists,
+		                         size_t startIndex,
+		                         size_t stepsize,
+		                         list<pair<list<string>, int>>& bestLists);
+
 		OptimizationMode mode;
 		string target;
 		size_t arraySize;
+		std::mutex evaluation_mutex;
 
 		Creator creator;
 };

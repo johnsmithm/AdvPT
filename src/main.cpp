@@ -234,11 +234,11 @@ int main_simulation(int argc, char **argv){
     Game *g;
 
     if(race == "protoss"){
-        g = new ProtossGame();
+        g = new ProtossGame(5);
     }else if(race == "zerg"){
-        g = new ZergGame();
+        g = new ZergGame(5);
     }else{
-        g = new TerranGame();
+        g = new TerranGame(5);
     }
 
     try{

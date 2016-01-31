@@ -1,6 +1,6 @@
 #include "Action.h"
 #include "util.h"
-#include <string> 
+#include <string>
 #include <cmath>
 
 using namespace std;
@@ -15,10 +15,10 @@ bool BuildAction::tryToStart() {
     if (game.getGasAmount() < objectToBuild.getGasCost() ||
         game.getMineralAmount() < objectToBuild.getMineralCost() ||
         game.getAvailableSupplyAmount() < objectToBuild.getSupplyCost() ||
-        (!objectToBuild.areDependenciesMet()))
+        (!objectToBuild.areDependenciesMet(game.getId())))
         return false;
 
-    auto producer = objectToBuild.getPossibleProducer();
+    auto producer = objectToBuild.getPossibleProducer(getGame().getId());
     if (producer == nullptr)
         return false;
     producingInstance = producer;
@@ -40,7 +40,7 @@ bool BuildAction::tryToStart() {
         game.setUsedSupplyAmount(game.getUsedSupplyAmount() + objectToBuild.getSupplyCost());
         break;
     }
-    
+
     // timeLeft is thenths of a second, buildTime is seconds
     timeLeft = objectToBuild.getBuildTime() * FP_BUILDTIME_FACTOR;
     game.setGasAmount(game.getGasAmount() - objectToBuild.getGasCost());
@@ -72,11 +72,11 @@ void BuildAction::finish() {
 
     switch (objectToBuild.getBuildType()) {
     case BuildType::PAIRMORPH:
-        objectToBuild.addNewInstance(game);
+        objectToBuild.addNewInstance(game.getId(), game);
         game.setTotalSupplyAmount(game.getTotalSupplyAmount() - producingType.getSupplyProvided());
         // NO BREAK - intended fallthrough
     case BuildType::MORPH:
-        objectToBuild.morphInstance(*producingInstance);
+        objectToBuild.morphInstance(game.getId(), *producingInstance);
         instance = producingInstance;
         game.setTotalSupplyAmount(game.getTotalSupplyAmount() - producingType.getSupplyProvided());
         break;
@@ -84,7 +84,7 @@ void BuildAction::finish() {
         producingInstance->decreaseBusiness();
         // NO BREAK - intended fallthrough
     case BuildType::INSTANTIATE:
-        instance = &objectToBuild.addNewInstance(game);
+        instance = &objectToBuild.addNewInstance(game.getId(), game);
         break;
     }
 
@@ -135,5 +135,5 @@ void QueenAction::finish() {
     target.setOccupiedLarvaSlots(occupied + increase);
     game.setPreviousLarvaCount(game.getPreviousLarvaCount() + increase);
     for (unsigned int i = 0; i < increase; ++i)
-        game.larva.addNewInstance(game);
+        game.larva.addNewInstance(game.getId(), game);
 }

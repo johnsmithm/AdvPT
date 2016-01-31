@@ -89,12 +89,12 @@ template<typename Gametype>
 int Selector<Gametype>::getCompareCriteria(Game& game){
 	if(mode == OptimizationMode::PUSH) {
 		int score = game.getCurrentTime();
-		if (GameObject::get(target).getInstancesCount() == 0)
+		if (GameObject::get(target).getInstancesCount(game.getId()) == 0)
 		    score += 1000;
 		return score;
 	} else {
 		if(game.getCurrentTime() - 1 <= 360)
-			return (- GameObject::get(target).getInstancesCount());
+			return (- GameObject::get(target).getInstancesCount(game.getId()));
 		return INT_MAX;
 	}
 }
@@ -104,13 +104,45 @@ int Selector<Gametype>::getCompareCriteria(Game& game){
  */
 template<typename Gametype>
 void Selector<Gametype>::getBestBuildLists(vector<list<string>>& newlists, list<pair<list<string>, int>>& bestLists){
-	//lastBuildLists = bestLists;
+
+	thread threads[4];
+	if(bestLists.size() > 20){
+		for(int i=0; i<4; i++){
+			threads[i] = thread(&Selector<Gametype>::threaded_evalution, this, ref(newlists), i, 4, ref(bestLists));
+		}
+		for(int i=0; i<4; i++){
+			threads[i].join();
+		}
+	}else{
+		threaded_evalution(newlists, 0, 1, bestLists);
+	}
+
+	bestLists.sort(ListComparator());
+
+	while(bestLists.size() > arraySize)
+		bestLists.pop_back();
+}
+
+template<typename Gametype>
+void Selector<Gametype>::threaded_evalution(vector<list<string>>& newlists, size_t startIndex, size_t stepsize, list<pair<list<string>, int>>& bestLists){
+	assert(newlists.size()>startIndex);
+	assert(stepsize >= startIndex);
+
 	int compareCriteria;
-	for(auto list : newlists){
+	vector<list<string>>::iterator iterator = newlists.begin();
+	for(size_t i=0; i<startIndex; i++){
+		iterator++;
+	}
+
+	list<pair<list<string>, int>> localBestLists;
+
+	while(true){
+		auto list = *iterator;
+
 		if(list.size() ==0)
 			continue;
 		try{
-			Gametype g;
+			Gametype g(startIndex);
 			g.readBuildList(list);
 			#ifdef DIAGNOSE_SIMULATE
 				measureTime<void>(bind(&Gametype::simulate, &g), "simulate");
@@ -118,18 +150,27 @@ void Selector<Gametype>::getBestBuildLists(vector<list<string>>& newlists, list<
 				g.simulate();
 			#endif
 			compareCriteria = getCompareCriteria(g);
-			GameObject::removeAllInstances();
-		}catch(SimulationException){
+			GameObject::removeAllInstances(startIndex);
+		}catch(SimulationException e){
+			// cerr << e.what() << endl;
 			compareCriteria = 2000;
-			GameObject::removeAllInstances();
+			GameObject::removeAllInstances(startIndex);
 		}
-		bestLists.push_back(make_pair(list,compareCriteria));
+		localBestLists.push_back(make_pair(list,compareCriteria));
+
+		//go through the lists with stepsize-sized steps
+		for(size_t i=0; i<stepsize; i++){
+			iterator++;
+
+			//we've reached the end => copy back our results and return
+			if(iterator == newlists.end()){
+				lock_guard<mutex> lock(evaluation_mutex);
+				bestLists.insert(bestLists.end(), localBestLists.begin(), localBestLists.end());
+				return;
+			}
+		}
 	}
 
-	bestLists.sort(ListComparator());
-
-	while(bestLists.size() > arraySize)
-		bestLists.pop_back();
 }
 
 //force creation of all possible and necessarry selector classes

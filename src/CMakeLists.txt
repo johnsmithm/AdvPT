@@ -26,10 +26,11 @@ file(GLOB SOURCE_FILES
 )
 
 #resolve dependencies
-find_package( Boost REQUIRED COMPONENTS program_options )
+find_package( Boost REQUIRED COMPONENTS program_options)
+find_package( Threads )
 
 include_directories(${Boost_INCLUDE_DIRS})
 
 add_executable(${BINARY_NAME} ${SOURCE_FILES})
-target_link_libraries(${BINARY_NAME} ${Boost_LIBRARIES})
+target_link_libraries(${BINARY_NAME} ${Boost_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT})
 

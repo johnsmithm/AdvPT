@@ -17,7 +17,7 @@ public:
 
     void buildListPrecheck(bool isValid);
 
-    void initSimulation();
+    void initSimulation(int gameId);
 
     void emptyMessage(Game& game);
 
