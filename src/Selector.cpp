@@ -26,7 +26,7 @@ void Selector<Gametype>::optimize(int maxIterations){
 
 	for(int i=0; i<maxIterations; i++){
 		#ifdef DIAGNOSE_PRINT_STEPS
-		if(!(i%10)){
+		if(!(i%100)){
 			end = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double> elapsed_seconds = end-start;
 			cout << "Iteration " << setw(4) << setfill('0') << i << "/" << maxIterations;
