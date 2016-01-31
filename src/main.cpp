@@ -130,22 +130,16 @@ int main_optimization(int argc, char **argv){
         switch(raceFromString(race)){
             case Race::PROTOSS: {
                 Selector<ProtossGame> selector(mode, target);
-                GameObject::get("nexus").setIntroductionProbability(10);
-                GameObject::get("probe").setIntroductionProbability(40);
                 selector.optimize(7000);
                 return 0;
             }
             case Race::ZERG: {
                 Selector<ZergGame> selector(mode, target);
-                // GameObject::get("nexus").setIntroductionProbability(10);
-                // GameObject::get("probe").setIntroductionProbability(40);
                 selector.optimize(7000);
                 return 0;
             }
             case Race::TERRAN:{
                 Selector<TerranGame> selector(mode, target);
-                // GameObject::get("nexus").setIntroductionProbability(10);
-                // GameObject::get("probe").setIntroductionProbability(40);
                 selector.optimize(7000);
                 return 0;
             }
