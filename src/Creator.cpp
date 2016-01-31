@@ -9,7 +9,7 @@ using namespace std;
 
 Creator::Creator(string targetUnit, OptimizationMode modeC)
 : targetRace(GameObject::get(targetUnit).getRace()), targetUnit(targetUnit), modeC(modeC){
-	randgen.seed(std::random_device()());
+	randgen.seed(45038961);
 	if(targetRace == Race::PROTOSS){
 		baseworker = "probe";
 		baseBuilding = "nexus";
