@@ -3,7 +3,7 @@
 declare -A targetMap
 targetMap[terran_rush_A]="marine"
 targetMap[terran_rush_B]="marauder"
-targetMap[terran_push_A]="battlecruser"
+targetMap[terran_push_A]="battlecruiser"
 targetMap[terran_push_B]="siege_tank"
 
 targetMap[protoss_rush_A]="zealot"
@@ -17,7 +17,7 @@ targetMap[zerg_push_A]="brood_lord"
 targetMap[zerg_push_B]="ultralisk"
 
 #supported targets as comma separated list
-supported="colossus"
+supported="colossus,void_ray,battlecruiser,siege_tank"
 
 race=$(echo $1 | cut -d "_" -f 1)
 mode=$(echo $1 | cut -d "_" -f 2)
