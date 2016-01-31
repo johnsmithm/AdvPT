@@ -1,7 +1,7 @@
 #include <chrono>
 #include <iostream>
 
-#define DIAGNOSE
+// #define DIAGNOSE
 
 #ifdef DIAGNOSE
 	// #define DIAGNOSE_NEXTGEN
