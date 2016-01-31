@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 project (SC2BuildOptimize)
 
 # set compiler flags
-set(CMAKE_CXX_FLAGS "--std=c++11 -O0 -g -Wall -pedantic")
+set(CMAKE_CXX_FLAGS "--std=c++11 -O2 -g -Wall -pedantic")
 
 # The version number
 set (VERSION_MAJOR 0)
