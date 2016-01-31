@@ -164,7 +164,7 @@ bool Game::precheckBuildList() const {
     existing.insert(worker.getName());
     existing.insert(GameObject::get("larva").getName());
 
-    bool hasGeyserExploiter = false;
+    int geyserExploiterCount = 0;
     for (auto& item : buildList) {
         auto& obj = item->getObjectToBuild();
 
@@ -187,11 +187,13 @@ bool Game::precheckBuildList() const {
             return false;
 
         // if object needs gas ensure that a geyserExploiter is present
-        if (obj.getGasCost() > 0 && (!hasGeyserExploiter))
+        if (obj.getGasCost() > 0 && (geyserExploiterCount == 0))
             return false;
 
-        if (obj.getName() == geyserExploiter.getName())
-            hasGeyserExploiter = true;
+        if (obj.getName() == geyserExploiter.getName()) {
+            if (geyserExploiterCount == 2) return false;
+            ++geyserExploiterCount;
+        }
         existing.insert(obj.getName());
     }
     return true;
