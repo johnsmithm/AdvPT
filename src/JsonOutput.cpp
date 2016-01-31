@@ -49,7 +49,7 @@ void JsonOutput::buildListPrecheck(bool isValid) {
 /** @brief Outputs initial units and creates messages array.
  *  Should be only called once per game
  */
-void JsonOutput::initSimulation(std::unordered_map<GameObject *, std::list<GameObjectInstance>> inst) {
+void JsonOutput::initSimulation(std::map<GameObject *, std::list<GameObjectInstance>> inst) {
     for (auto goi : GameObject::getAllInstances(inst)) {
         if(goi->getType().getName() != "larva")
             json["initialUnits"][goi->getType().getName()].append(to_string(goi->getID()));

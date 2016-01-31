@@ -7,6 +7,7 @@
 #include <list>
 #include <memory>
 #include <istream>
+#include <map>
 #include "GameObject.h"
 #include "JsonOutput.h"
 #include "Const.h"
@@ -61,7 +62,7 @@ public:
 
     virtual Race getRace() const = 0;
 
-    inline std::unordered_map<GameObject *, std::list<GameObjectInstance>>& getInstances(){return instances;}
+    inline std::map<GameObject *, std::list<GameObjectInstance>>& getInstances(){return instances;}
 
 
 protected:
@@ -115,7 +116,7 @@ private:
     int getMiningTime(int gasMiningWorkers, int mineralMiningWorkers, int neededGas,int neededMineral);
 
     //this is super duper hacky, but we don't have the time to do this properly :(
-    std::unordered_map<GameObject *, std::list<GameObjectInstance>> instances;
+    std::map<GameObject *, std::list<GameObjectInstance>> instances;
 };
 
 

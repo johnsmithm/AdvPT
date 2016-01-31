@@ -9,6 +9,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <map>
 #include <unordered_map>
 #include <vector>
 #include "Const.h"
@@ -97,7 +98,7 @@ class GameObject {
 public:
     // Iterator type; allows to iterate through GameObjectInstances (see begin(), end())
     using InstancesIter = std::list<GameObjectInstance>::iterator;
-    using instances = std::unordered_map<GameObject *, std::list<GameObjectInstance>>;
+    using instances = std::map<GameObject *, std::list<GameObjectInstance>>;
 
     GameObject(std::string name,
                unsigned int mineralCost, unsigned int gasCost, unsigned int buildTime,
