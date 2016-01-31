@@ -104,13 +104,14 @@ int Selector<Gametype>::getCompareCriteria(Game& game){
  */
 template<typename Gametype>
 void Selector<Gametype>::getBestBuildLists(vector<list<string>>& newlists, list<pair<list<string>, int>>& bestLists){
+	const int threadnum = 8;
 
-	thread threads[4];
-	if(bestLists.size() > 20){
-		for(int i=0; i<4; i++){
-			threads[i] = thread(&Selector<Gametype>::threaded_evalution, this, ref(newlists), i, 4, ref(bestLists));
+	thread threads[threadnum];
+	if(bestLists.size() > threadnum){
+		for(int i=0; i<threadnum; i++){
+			threads[i] = thread(&Selector<Gametype>::threaded_evalution, this, ref(newlists), i, threadnum, ref(bestLists));
 		}
-		for(int i=0; i<4; i++){
+		for(int i=0; i<threadnum; i++){
 			threads[i].join();
 		}
 	}else{
