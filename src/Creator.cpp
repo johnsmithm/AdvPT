@@ -331,9 +331,31 @@ void Creator::reproduce(vector<list<string>>& bestLists, vector<list<string>>& c
 		//maybe should check if we use that buildlist ones
 		getChild(bestLists[i],bestLists[maxID],newChild);
 		children.push_back(newChild);
+
+		list<string> newChild1 = nLengthCrossover(bestLists[i],bestLists[maxID],2);
+		children.push_back(newChild1);
+	}
+
+	for(size_t i=0; i<bestLists.size(); ++i){
+		std::uniform_int_distribution<std::default_random_engine::result_type> rand(0,bestLists.size()-1);
+		size_t position = rand(randgen);
+		if(i != position){
+
+			vector<list<string>> newList = nPointsCrossover(bestLists[i],bestLists[position],2);
+			for(auto li : newList)
+				children.push_back(li);
+
+			list<string> newChild;
+			getChild(bestLists[i],bestLists[position],newChild);
+			children.push_back(newChild);
+
+			list<string> newChild1 = nLengthCrossover(bestLists[i],bestLists[position],2);
+			children.push_back(newChild1);
+		}
 	}
 }
 
+//checked
 /**
  * @brief Exchange blocks of genes.
  * blocks are different size, exchange at same position
@@ -361,33 +383,29 @@ vector<list<string>> Creator::nPointsCrossover(list<string> a,list<string> b, si
             std::uniform_int_distribution<std::default_random_engine::result_type> rand(0,maxL-1);
 			size_t position = rand(randgen);
 
-			auto vi = firstChild.begin();
-			advance(vi, position);
-			firstChildNew.splice(firstChildNew.begin(),firstChild ,firstChild.begin(),  vi);
+			auto vi1 = firstChild.begin();
+			advance(vi1, position);
+			firstChildNew.splice(firstChildNew.begin(),firstChild ,firstChild.begin(),  vi1);
 
-			vi = secondChild.begin();
-			advance(vi, position);
-			secondChildNew.splice(secondChildNew.begin(),secondChild, secondChild.begin(), vi);
+			auto vi2 = secondChild.begin();
+			advance(vi2, position);
+			secondChildNew.splice(secondChildNew.begin(),secondChild, secondChild.begin(), vi2);
 
-			vi = firstChildNew.begin();
-			advance(vi, position);
-			auto ti = secondChild.begin();
-			advance(ti, position);
-			firstChildNew.splice(vi ,secondChild, ti, secondChild.end());
+			auto vi3 = firstChildNew.begin();
+			advance(vi3, position);
+			firstChildNew.splice(vi3 ,secondChild, vi2, secondChild.end());
 
-			vi = secondChildNew.begin();
-			advance(vi, position);
-			ti = firstChild.begin();
-			advance(ti, position);
-			secondChildNew.splice(vi,firstChild, ti, firstChild.end());
+			auto vi4 = secondChildNew.begin();
+			advance(vi4, position);
+			secondChildNew.splice(vi4,firstChild, vi1, firstChild.end());
 
 			firstChild = firstChildNew;
 			secondChild = secondChildNew;
 		}
-		//ok1 = checkBuildLists(firstChild);//why checkBuildLists is not seen?
-		//ok2 = checkBuildLists(secondChild);
-		if(ok1 || ok2){
-			if(ok1 && ok2){
+		ok1 = checkBuildLists(firstChild);//why checkBuildLists is not seen?
+		ok2 = checkBuildLists(secondChild);
+		if(ok1 || ok2 || 1){
+			if(ok1 || ok2 || 1){
 				return {firstChild,secondChild};
 			}else if (ok1) return {firstChild};
 			else return {secondChild};
@@ -397,6 +415,7 @@ vector<list<string>> Creator::nPointsCrossover(list<string> a,list<string> b, si
 	return {};
 }
 
+//checked
 /**
  * @brief Blocks of length n are interchanged between lists a and b.
  */
@@ -404,33 +423,32 @@ list<string> Creator::nLengthCrossover(list<string> a,list<string> b, int n){
     std::uniform_int_distribution<std::default_random_engine::result_type> rand(0,1);
 	supplyCheck = 0;
 	int trys = 0;
+	list<string> newList;
 	while(trys++ < 3){
 		int coin = rand(randgen);
-		auto ita = a.begin();
+		//auto ita = a.begin();
 		auto itb = b.begin();
-		list<string> newList;
+		newList = a;
+		auto itN = newList.begin();
 		int j = 0;
-		for(; ita != a.end() && itb != b.end();){
+		for(; itb != b.end() && itN != newList.end();){
 			if(coin){
-				auto itB = a.begin();
-				advance(itB, n*j);
-				auto itE = itB;
-				advance(itE, n);
-				newList.splice(newList.end(), a, itB, itE );
+				for(int i = 0;i< n && itb!=b.end() && itN != newList.end();++i, ++itb, ++itN)
+					*itN = *itb;
 			}else{
-				auto itB = b.begin();
-				advance(itB, n*j);
-				auto itE = itB;
-				advance(itE, n);
-				newList.splice(newList.end(), b, itB, itE );
+				advance(itN, n);				
+				advance(itb, n);
 			}
 			coin = rand(randgen);
-			advance(ita, n);
-			advance(itb, n);
 			++j;
 		}
-		if(checkBuildLists(newList))
+		if(!meetGoal(newList,{})){
+			if(itb != b.end()){
+				newList.insert(newList.end(),itb, b.end());
+			}
+		}
+		//if(checkBuildLists(newList))
 			return newList;
 	}
-	return {};
+	return newList;
 }

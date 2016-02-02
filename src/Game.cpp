@@ -38,6 +38,9 @@ bool Game::timeStep() {
     minerals += muleActions * MULE_MINING_POWER * mineralsRate;
     gas += gasMiningWorkers * gasRate;
 
+    gasTotalNeded -= mineralMiningWorkers * mineralsRate + muleActions * MULE_MINING_POWER * mineralsRate;
+    mineralTotalNeeded -= gasMiningWorkers * gasRate;
+
     //increase energy on all buildings
     GameObject::increaseInstancesEnergy(getInstances(), energyRate);
 
@@ -159,7 +162,7 @@ void Game::readBuildList(istream &input) {
  *
  *  @return true if the buildList is valid
  */
-bool Game::precheckBuildList() const {
+bool Game::precheckBuildList()  {
     unordered_set<string> existing;
     existing.insert(mainBuilding.getName());
     existing.insert(worker.getName());
@@ -168,6 +171,11 @@ bool Game::precheckBuildList() const {
     int geyserExploiterCount = 0;
     for (auto& item : buildList) {
         auto& obj = item->getObjectToBuild();
+
+
+
+        gasTotalNeded += obj.getGasCost();
+        mineralTotalNeeded += obj.getMineralCost();
 
         // check if producer and dependencies are existant
         bool depErr = (obj.getDependencyNames().size() > 0);

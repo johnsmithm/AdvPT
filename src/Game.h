@@ -52,7 +52,7 @@ public:
     template<template <typename, typename> class Container>
     void readBuildList(Container<std::string, std::allocator<std::string>> &input);
 
-    bool precheckBuildList() const;
+    bool precheckBuildList() ;
 
     void updateMuleAction(int value) {muleActions += value;}
 
@@ -88,6 +88,9 @@ private:
 
     unsigned int gasMiningWorkers = 0;
     unsigned int mineralMiningWorkers = 6;
+
+    unsigned int gasTotalNeded = 0;
+    unsigned int mineralTotalNeeded = 0;
 
     unsigned int muleActions = 0;
     unsigned int freeWorkers = 6;
