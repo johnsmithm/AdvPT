@@ -129,8 +129,11 @@ int main_optimization(int argc, char **argv){
     try{
         switch(raceFromString(race)){
             case Race::PROTOSS: {
+                int itarations = 7000;
+                if(target == "colossus")itarations = 200;
+                if(target == "void_ray")itarations = 1000;
                 Selector<ProtossGame> selector(mode, target);
-                selector.optimize(7000);
+                selector.optimize(itarations);
                 return 0;
             }
             case Race::ZERG: {

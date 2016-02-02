@@ -107,7 +107,7 @@ void Selector<Gametype>::getBestBuildLists(vector<list<string>>& newlists, list<
 	const int threadnum = 8;
 
 	thread threads[threadnum];
-	if(bestLists.size() > threadnum){
+	if(bestLists.size() > threadnum && 0){
 		for(int i=0; i<threadnum; i++){
 			threads[i] = thread(&Selector<Gametype>::threaded_evalution, this, ref(newlists), i, threadnum, ref(bestLists));
 		}

@@ -56,9 +56,14 @@ Creator::Creator(string targetUnit, OptimizationMode modeC)
 		}
 	}else{
 		GameObject::get(baseworker).setIntroductionProbability(40);
-		GameObject::get(baseBuilding).setIntroductionProbability(10);
+		GameObject::get(baseBuilding).setIntroductionProbability(10);		
+		//GameObject::get(gasMaker).setIntroductionProbability(8);	
+		//GameObject::get(supplyBuilding).setIntroductionProbability(10);
+
 		GameObject::get(baseworker).setDeletionProbability(40);
 		GameObject::get(baseBuilding).setDeletionProbability(10);
+		//GameObject::get(gasMaker).setDeletionProbability(6);
+		//GameObject::get(supplyBuilding).setDeletionProbability(10);
 	}
 }
 
@@ -95,8 +100,15 @@ void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<stri
     mutate(curGen1);
     nextGen.insert(nextGen.end(), curGen1.begin(), curGen1.end());
 
-    switchGenesMutation(curGen,5,1);
-	nextGen.insert(nextGen.end(), curGen.begin(), curGen.end());
+    //if(0)
+    for(int i=5;i<6;++i){
+    	for(int j=1;j<2;++j){
+	    	vector<list<string>> curGen2 = curGen;
+	    	switchGenesMutation(curGen2,i,j);
+			nextGen.insert(nextGen.end(), curGen2.begin(), curGen2.end());
+		}
+    }
+    
 }
 
 void Creator::addDrone(vector<list<string>>& buildLists){
@@ -137,9 +149,35 @@ void Creator::createInitialBuildList(string target, vector<list<string>>& buildL
 		addDrone(buildLists);
 	}
 
-	//TODO: Producer of all entries of the build-list and their dependencies
-	//have to be added too... But in which order? Maybe we should not generate
-	//a buildList based on dependencies at all...
+	//add all possibilities of two gasbuilding
+	vector<list<string>> withGas;
+	if(involvedUnits.end() != find(involvedUnits.begin(),involvedUnits.end(),gasMaker)){
+		for(list<string> List : buildLists){		   	
+		   		
+			for(size_t i=0; i<1; ++i){
+				list<string>  myList = List;
+				std::list <string>::iterator it = myList.begin();
+				for(size_t k=0;k<i;++k)++it;
+				//myList.insert(it,gasMaker);
+				for(size_t j=i+1; j<myList.size();++j)
+				{
+					list<string>  myList1 = myList;
+					std::list <string>::iterator itE = myList1.begin();
+					for(size_t k=0;k<j;++k)++itE;
+					myList1.insert(itE,gasMaker);
+					withGas.push_back(myList1);
+				}
+				++it;
+			}
+		}
+		/*for(auto ve : withGas){
+			for(auto li: ve)
+				cout<<li<<"\n";
+			cout<<"\n";
+		}*/
+	}
+	//buildLists.insert(buildLists.begin(),withGas.begin(),withGas.end());
+
 }
 
 /** @brief returns recursively all possible dependency trees leading to target
@@ -465,17 +503,17 @@ list<string> Creator::nLengthCrossover(list<string> a,list<string> b, int n){
  */
 void Creator::switchGenesMutation(vector<list<string>> &lists, int times, int length){
     for(int i=0; i<times;++i){
-        for(list<string> & list : lists){
-            //list<string> currentList = list;
-            std::uniform_int_distribution<std::default_random_engine::result_type> rand(0,list.size()-1);
+        for(list<string> & list1 : lists){
+            list<string> currentList = list1;
+            std::uniform_int_distribution<std::default_random_engine::result_type> rand(0,list1.size()-1);
             int position = rand(randgen);
 
-            std::list <string>::iterator itB = list.begin();
-            std::list <string>::iterator itE = list.begin();
+            std::list <string>::iterator itB = list1.begin();
+            std::list <string>::iterator itE = list1.begin();
 
             for(int j=0;j<position;++j)++itB,++itE;
-            for(int j=0;j<length && itE != list.end();++j)++itE;
-            if(itE != list.end())++itE;
+            for(int j=0;j<length && itE != list1.end();++j)++itE;
+            if(itE != list1.end())++itE;
             string ex;
             while(itB != itE){
                 --itE;
@@ -485,8 +523,8 @@ void Creator::switchGenesMutation(vector<list<string>> &lists, int times, int le
                 *itE = ex;
                 ++itB;
             }
-            //if(checkBuildLists(list))
-               // list = currentList;
+            //if(checkBuildLists(list1))
+             //   list1 = currentList;
         }
     }
 }
