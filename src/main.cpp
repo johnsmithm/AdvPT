@@ -131,7 +131,7 @@ int main_optimization(int argc, char **argv){
             case Race::PROTOSS: {
                 int itarations = 7000;
                 if(target == "colossus")itarations = 200;
-                if(target == "void_ray")itarations = 1000;
+                if(target == "void_ray")itarations = 400;
                 Selector<ProtossGame> selector(mode, target);
                 selector.optimize(itarations);
                 return 0;

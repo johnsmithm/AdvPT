@@ -57,13 +57,13 @@ Creator::Creator(string targetUnit, OptimizationMode modeC)
 	}else{
 		GameObject::get(baseworker).setIntroductionProbability(40);
 		GameObject::get(baseBuilding).setIntroductionProbability(10);		
-		//GameObject::get(gasMaker).setIntroductionProbability(8);	
-		//GameObject::get(supplyBuilding).setIntroductionProbability(10);
+		GameObject::get(gasMaker).setIntroductionProbability(10);	
+		GameObject::get(supplyBuilding).setIntroductionProbability(10);
 
 		GameObject::get(baseworker).setDeletionProbability(40);
 		GameObject::get(baseBuilding).setDeletionProbability(10);
-		//GameObject::get(gasMaker).setDeletionProbability(6);
-		//GameObject::get(supplyBuilding).setDeletionProbability(10);
+		GameObject::get(gasMaker).setDeletionProbability(10);
+		GameObject::get(supplyBuilding).setDeletionProbability(10);
 	}
 }
 
@@ -96,11 +96,13 @@ void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<stri
 	if(curGen.size() != 0)
 		reproduce(curGen, nextGen);
 
-    vector<list<string>> curGen1 = curGen;
-    mutate(curGen1);
-    nextGen.insert(nextGen.end(), curGen1.begin(), curGen1.end());
+	for(int i=0;i<1;++i){
+	    vector<list<string>> curGen1 = curGen;
+	    mutate(curGen1);
+	    nextGen.insert(nextGen.end(), curGen1.begin(), curGen1.end());
+	}
 
-    //if(0)
+
     for(int i=5;i<6;++i){
     	for(int j=1;j<2;++j){
 	    	vector<list<string>> curGen2 = curGen;
@@ -154,12 +156,12 @@ void Creator::createInitialBuildList(string target, vector<list<string>>& buildL
 	if(involvedUnits.end() != find(involvedUnits.begin(),involvedUnits.end(),gasMaker)){
 		for(list<string> List : buildLists){		   	
 		   		
-			for(size_t i=0; i<1; ++i){
+			for(size_t i=0; i<List.size() - 1; ++i){
 				list<string>  myList = List;
 				std::list <string>::iterator it = myList.begin();
 				for(size_t k=0;k<i;++k)++it;
-				//myList.insert(it,gasMaker);
-				for(size_t j=i+1; j<myList.size();++j)
+				myList.insert(it,gasMaker);
+				for(size_t j=i+2; j<myList.size();++j)
 				{
 					list<string>  myList1 = myList;
 					std::list <string>::iterator itE = myList1.begin();
