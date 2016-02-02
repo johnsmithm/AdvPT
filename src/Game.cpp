@@ -328,10 +328,25 @@ void Game::generateResources() {
     int neededGas = gasDifference < 0 ? 0 : gasDifference;
     int neededMineral = mineralDifference < 0 ? 0 : mineralDifference;
 
+    bool goTogas = gasTotalNeded > 0;
+
+    if(geyserExploiter.getInstancesCount(getInstances()) > 0){
+        /*int timeTotalMiningGas = getMiningTime(min(geyserExploiter.getInstancesCount(getInstances()) * 3, freeWorkers), 0, gasTotalNeded, 0);
+
+        int MaxGasMiningWorkers = min(geyserExploiter.getInstancesCount(getInstances()) * 3, freeWorkers);
+        int gasMiningWorkers1 = ternarySearch(0, MaxGasMiningWorkers, neededGas, neededMineral, freeWorkers);
+        int mineralMiningWorkers1 = freeWorkers - gasMiningWorkers1;
+
+        int nextAssignment = getMiningTime(gasMiningWorkers1, mineralMiningWorkers1, neededGas, neededMineral);
+
+        goTogas = - curTime -  nextAssignment - timeTotalMiningGas > 0;*/ //need average finishing time
+        goTogas = gasTotalNeded > 0;
+    }
+
     if(neededGas == 0 && neededMineral == 0){
         mineralMiningWorkers = freeWorkers;
     } else
-        if (neededMineral == 0) {
+        if (neededMineral == 0 || goTogas) {
             gasMiningWorkers = min(geyserExploiter.getInstancesCount(getInstances()) * 3, freeWorkers);
             mineralMiningWorkers = freeWorkers - gasMiningWorkers;
 
