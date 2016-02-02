@@ -143,7 +143,7 @@ int main_optimization(int argc, char **argv){
             }
             case Race::TERRAN:{
                 Selector<TerranGame> selector(mode, target);
-                selector.optimize(7000);
+                selector.optimize(300);
                 return 0;
             }
         }
