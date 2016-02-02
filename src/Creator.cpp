@@ -41,18 +41,18 @@ Creator::Creator(string targetUnit, OptimizationMode modeC)
 			GameObject::get(name).setDeletionProbability(9);
 		}
 
-		GameObject::get(baseworker).setIntroductionProbability(40);
+		GameObject::get(baseworker).setIntroductionProbability(60);
 		GameObject::get(baseBuilding).setIntroductionProbability(10);
-		GameObject::get(baseworker).setDeletionProbability(40);
+		GameObject::get(baseworker).setDeletionProbability(10);
 		GameObject::get(baseBuilding).setDeletionProbability(10);
 
-		GameObject::get(targetUnit).setIntroductionProbability(40);
+		GameObject::get(targetUnit).setIntroductionProbability(60);
 		GameObject::get(targetUnit).setDeletionProbability(10);
 
 		vector<string> targetProducer = GameObject::get(targetUnit).getProducerNames();
 		for(auto name : targetProducer){
-			GameObject::get(name).setIntroductionProbability(20);
-			GameObject::get(name).setDeletionProbability(15);
+			GameObject::get(name).setIntroductionProbability(60);
+			GameObject::get(name).setDeletionProbability(10);
 		}
 	}else{
 		GameObject::get(baseworker).setIntroductionProbability(50);
@@ -96,7 +96,7 @@ void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<stri
 	if(curGen.size() != 0)
 		reproduce(curGen, nextGen);
 
-	for(int i=0;i<1;++i){
+	for(int i=0;i<3;++i){
 	    vector<list<string>> curGen1 = curGen;
 	    mutate(curGen1);
 	    nextGen.insert(nextGen.end(), curGen1.begin(), curGen1.end());
@@ -104,7 +104,7 @@ void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<stri
 
 
     for(int i=2;i<8;++i){
-    	for(int j=1;j<5;++j){
+    	for(int j=1;j<4;++j){
 	    	vector<list<string>> curGen2 = curGen;
 	    	switchGenesMutation(curGen2,i,j);
 			nextGen.insert(nextGen.end(), curGen2.begin(), curGen2.end());
@@ -143,7 +143,7 @@ void Creator::createInitialBuildList(string target, vector<list<string>>& buildL
 
 	for(list<string>& buildList : buildLists){
 		//buildList.push_back(target);
-		buildList.push_front(gasMaker);
+		//buildList.push_front(gasMaker);
 		buildList.push_front(supplyBuilding);
 	}
 
