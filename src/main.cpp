@@ -138,7 +138,7 @@ int main_optimization(int argc, char **argv){
             }
             case Race::ZERG: {
                 Selector<ZergGame> selector(mode, target);
-                selector.optimize(200);
+                selector.optimize(100);
                 return 0;
             }
             case Race::TERRAN:{

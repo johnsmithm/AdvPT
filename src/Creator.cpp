@@ -96,7 +96,7 @@ void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<stri
 	if(curGen.size() != 0)
 		reproduce(curGen, nextGen);
 
-	for(int i=0;i<1;++i){
+	for(int i=0;i<2;++i){
 	    vector<list<string>> curGen1 = curGen;
 	    mutate(curGen1);
 	    nextGen.insert(nextGen.end(), curGen1.begin(), curGen1.end());
