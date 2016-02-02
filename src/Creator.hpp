@@ -49,7 +49,7 @@ public:
 	list<string> nLengthCrossover(list<string> a,list<string> b, int n);//Todo-same length for each slice
 	vector<string> nSlicesCrossover(vector<string> a,vector<string> b, int n);//Todo-different points for spliting
 
-	void switchGenesMutation(vector<list<string>> &lists);//Todo-change two genes
+    void switchGenesMutation(vector<list<string>> &lists, int times, int length);
 	void deleteAddGenesMutation(vector<list<string>> &lists);//Todo
 
 

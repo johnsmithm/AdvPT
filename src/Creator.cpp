@@ -91,8 +91,11 @@ void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<stri
 	if(curGen.size() != 0)
 		reproduce(curGen, nextGen);
 
-	mutate(curGen);
+    vector<list<string>> curGen1 = curGen;
+    mutate(curGen1);
+    nextGen.insert(nextGen.end(), curGen1.begin(), curGen1.end());
 
+    switchGenesMutation(curGen,5,1);
 	nextGen.insert(nextGen.end(), curGen.begin(), curGen.end());
 }
 
@@ -447,8 +450,43 @@ list<string> Creator::nLengthCrossover(list<string> a,list<string> b, int n){
 				newList.insert(newList.end(),itb, b.end());
 			}
 		}
-		//if(checkBuildLists(newList))
+        if(checkBuildLists(newList))
 			return newList;
 	}
 	return newList;
+}
+
+//checked
+/**
+ * @brief Creator::switchGenesMutation inverse times blocks of entries
+ * @param lists
+ * @param times numer of inversed blocks
+ * @param length of the blocks
+ */
+void Creator::switchGenesMutation(vector<list<string>> &lists, int times, int length){
+    for(int i=0; i<times;++i){
+        for(list<string> & list : lists){
+            //list<string> currentList = list;
+            std::uniform_int_distribution<std::default_random_engine::result_type> rand(0,list.size()-1);
+            int position = rand(randgen);
+
+            std::list <string>::iterator itB = list.begin();
+            std::list <string>::iterator itE = list.begin();
+
+            for(int j=0;j<position;++j)++itB,++itE;
+            for(int j=0;j<length && itE != list.end();++j)++itE;
+            if(itE != list.end())++itE;
+            string ex;
+            while(itB != itE){
+                --itE;
+                if(itB == itE)break;
+                ex = *itB;
+                *itB = *itE;
+                *itE = ex;
+                ++itB;
+            }
+            //if(checkBuildLists(list))
+               // list = currentList;
+        }
+    }
 }
