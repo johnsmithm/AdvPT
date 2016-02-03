@@ -17,7 +17,7 @@ targetMap[zerg_push_A]="brood_lord"
 targetMap[zerg_push_B]="ultralisk"
 
 #supported targets as comma separated list
-supported="colossus,void_ray,battlecruiser,siege_tank,ultralisk,brood_lord"
+supported="colossus,void_ray,battlecruiser,siege_tank,ultralisk,brood_lord,stalker,marine,marauder"
 
 race=$(echo $1 | cut -d "_" -f 1)
 mode=$(echo $1 | cut -d "_" -f 2)

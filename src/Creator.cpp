@@ -41,12 +41,20 @@ Creator::Creator(string targetUnit, OptimizationMode modeC)
 			GameObject::get(name).setDeletionProbability(9);
 		}
 
-		GameObject::get(baseworker).setIntroductionProbability(60);
+		GameObject::get(baseworker).setIntroductionProbability(70);
 		GameObject::get(baseBuilding).setIntroductionProbability(10);
 		GameObject::get(baseworker).setDeletionProbability(10);
 		GameObject::get(baseBuilding).setDeletionProbability(10);
 
-		GameObject::get(targetUnit).setIntroductionProbability(60);
+
+		GameObject::get(gasMaker).setIntroductionProbability(20);	
+		GameObject::get(supplyBuilding).setIntroductionProbability(10);
+
+		GameObject::get(gasMaker).setDeletionProbability(20);
+		GameObject::get(supplyBuilding).setDeletionProbability(10);
+
+
+		GameObject::get(targetUnit).setIntroductionProbability(70);
 		GameObject::get(targetUnit).setDeletionProbability(10);
 
 		vector<string> targetProducer = GameObject::get(targetUnit).getProducerNames();
@@ -96,15 +104,15 @@ void Creator::createNextGeneration(vector<list<string>> curGen, vector<list<stri
 	if(curGen.size() != 0)
 		reproduce(curGen, nextGen);
 
-	for(int i=0;i<3;++i){
+	for(int i=0;i<2;++i){
 	    vector<list<string>> curGen1 = curGen;
 	    mutate(curGen1);
 	    nextGen.insert(nextGen.end(), curGen1.begin(), curGen1.end());
 	}
 
 
-    for(int i=2;i<8;++i){
-    	for(int j=1;j<4;++j){
+    for(int i=2;i<6;++i){
+    	for(int j=1;j<3;++j){
 	    	vector<list<string>> curGen2 = curGen;
 	    	switchGenesMutation(curGen2,i,j);
 			nextGen.insert(nextGen.end(), curGen2.begin(), curGen2.end());
